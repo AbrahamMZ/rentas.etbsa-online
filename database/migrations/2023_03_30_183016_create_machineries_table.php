@@ -17,6 +17,7 @@ class CreateMachineriesTable extends Migration
             $table->id();
             // $table->unsignedBigInteger('brand_id')->index();
             $table->unsignedBigInteger('category_id');
+            $table->unsignedBigInteger('status_id');
 
             $table->string('no_serie')->unique();
             $table->string('model');
@@ -26,11 +27,13 @@ class CreateMachineriesTable extends Migration
             $table->decimal('sale_price', 12, 2)->nullable();
             $table->date('acquisition_date')->nullable();
             $table->date('sale_date')->nullable();
+
             // $table->unsignedInteger('quantity')->default(0);
             // $table->boolean('active')->default(1);
             // $table->boolean('featured')->default(0);
 
             $table->foreign('category_id')->references('id')->on('categories');
+            $table->foreign('status_id')->references('id')->on('status');
             // $table->foreign('brand_id')->references('id')->on('brands')->onDelete('cascade');
 
             $table->softDeletes();

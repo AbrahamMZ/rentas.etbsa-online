@@ -53,7 +53,7 @@
               {{ item.no_serie }}
             </td>
             <td class="text-no-wrap">
-              {{ item.price }}
+              {{ item.price | currency }}
             </td>
 
             <td class="text-right">
@@ -63,6 +63,9 @@
 
               <v-btn text icon small @click="edit(item.id)">
                 <v-icon small>mdi-pencil</v-icon>
+              </v-btn>
+              <v-btn text icon small @click="show(item.id)">
+                <v-icon small>mdi-eye</v-icon>
               </v-btn>
             </td>
           </tr>
@@ -151,6 +154,9 @@ export default {
     },
     edit(_item_id) {
       this.$inertia.visit(this.route("machineries.edit", _item_id));
+    },
+    show(_item_id) {
+      this.$inertia.visit(this.route("machineries.show", _item_id));
     },
   },
 };

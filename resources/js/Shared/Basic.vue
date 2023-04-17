@@ -10,12 +10,12 @@
 </template>
 
 <script>
-import FlashMessages from '@/Shared/FlashMessages.vue'
+import FlashMessages from "@/Shared/FlashMessages.vue";
 
 export default {
-  name: 'BasicLayout',
+  name: "BasicLayout",
   components: {
     FlashMessages,
   },
-}
+};
 </script>

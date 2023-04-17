@@ -1,10 +1,7 @@
 <template>
   <v-card flat>
-    <v-breadcrumbs :items="breadcrumbs" class="overline">
-      <template v-slot:divider>
-        <v-icon>mdi-chevron-right</v-icon>
-      </template>
-    </v-breadcrumbs>
+    <breadcrumbs :items="breadcrumbs" class="overline" />
+
     <v-card-text>
       <MachineryForm
         :form.sync="form"
@@ -23,11 +20,12 @@
 <script>
 import Layout from "@/Shared/Layout";
 import MachineryForm from "@/Components/Machinery/Form";
+import Breadcrumbs from "@/Shared/Breadcrumbs.vue";
 
 export default {
   metaInfo: { title: "Registrar Maquinaria" },
   layout: Layout,
-  components: { MachineryForm },
+  components: { MachineryForm, Breadcrumbs },
   props: {
     formOptions: Array,
     errors: Object,
@@ -48,7 +46,7 @@ export default {
       },
       breadcrumbs: [
         {
-          text: "Maquinaria",
+          text: "Maquinarias",
           disabled: false,
           href: this.route("machineries"),
         },

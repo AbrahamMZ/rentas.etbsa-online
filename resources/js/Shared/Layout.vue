@@ -13,7 +13,7 @@
                 v-if="$page.props.auth.user.photo"
                 :src="$page.props.auth.user.photo"
                 :alt="$page.props.auth.user.first_name"
-              >
+              />
             </v-avatar>
             <v-chip label outlined class="overline ml-2">
               {{ $page.props.auth.user.first_name }}
@@ -47,11 +47,15 @@
     </v-app-bar>
 
     <v-main class="grey lighten-3">
-      <v-container>
+      <v-container fluid>
         <v-row align="center" justify="center" class="ma-0">
           <v-col cols="12">
             <v-sheet rounded="lg">
-              <!-- <h4>{{ url() }} {{ active }}</h4> -->
+              <h4>
+                <!-- {{ url() }} {{ active }} {{ route("machineries") }} -->
+                <!-- {{ route("machineries") }} <br> -->
+                <!-- {{ route().current() }} -->
+              </h4>
               <flash-messages />
               <slot />
             </v-sheet>
@@ -65,7 +69,7 @@
 </template>
 
 <script>
-import FlashMessages from '@/Shared/FlashMessages'
+import FlashMessages from "@/Shared/FlashMessages";
 
 export default {
   components: { FlashMessages },
@@ -74,26 +78,26 @@ export default {
     showUserMenu: false,
     accounts: null,
     active: null,
-    items: [{ title: 'Logout', route: 'logout' }],
+    items: [{ title: "Logout", route: "logout" }],
   }),
   mounted() {
     for (const key in this.$page.props.tabs) {
       if (!this.$page.props.tabs[key].route) {
-        this.active = parseInt(key)
-        return
+        this.active = parseInt(key);
+        return;
       }
     }
   },
   methods: {
     url() {
-      return location.pathname.substr(1)
+      return location.pathname.substr(1);
     },
     hideDropdownMenus() {
-      this.showUserMenu = false
+      this.showUserMenu = false;
     },
     click(tab) {
-      this.$inertia.visit(this.route(tab.route))
+      this.$inertia.visit(this.route(tab.route));
     },
   },
-}
+};
 </script>

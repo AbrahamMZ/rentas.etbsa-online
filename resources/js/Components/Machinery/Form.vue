@@ -91,7 +91,7 @@ export default {
   props: {
     form: { type: Object, required: true },
     errors: Object,
-    formOptions: Array,
+    formOptions: Object,
   },
 
   data() {

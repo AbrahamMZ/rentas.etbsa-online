@@ -293,13 +293,13 @@
 </template>
 
 <script>
-import Layout from '@/Shared/Layout'
-import Breadcrumbs from '@/Shared/Breadcrumbs'
-import DialogModal from '@/Shared/DialogModal'
-import { each } from 'lodash'
+import Layout from "@/Shared/Layout";
+import Breadcrumbs from "@/Shared/Breadcrumbs";
+import DialogModal from "@/Shared/DialogModal";
+import { each } from "lodash";
 
 export default {
-  metaInfo: { title: 'Administar Expediente' },
+  metaInfo: { title: "Administar Expediente" },
   layout: Layout,
   components: { Breadcrumbs, DialogModal },
   props: {
@@ -312,7 +312,7 @@ export default {
     statuses: Array,
     requirements: Array,
   },
-  remember: 'Document',
+  remember: "Document",
   data() {
     return {
       dialogs: {
@@ -326,15 +326,15 @@ export default {
       filesToUpload: [],
       breadcrumbs: [
         {
-          text: 'Expedientes',
+          text: "Expedientes",
           disabled: false,
-          href: this.route('expedients'),
+          href: this.route("expedients"),
           exact: true,
         },
-        { text: 'Administrar', disabled: true },
+        { text: "Administrar", disabled: true },
         { text: this.expedient.name, disabled: true },
       ],
-    }
+    };
   },
   computed: {
     FoldersRequirement() {
@@ -343,96 +343,96 @@ export default {
           title: folder.status_text,
           documents: folder.documents,
           total: folder.documents_count,
-        }
-      })
+        };
+      });
     },
     statusText() {
       return Object.keys(this.Document).length === 0
-        ? ''
+        ? ""
         : this.statuses.find(status => status.key === this.Document.status_key)
-          .text
+          .text;
     },
   },
   methods: {
     openDialogUploadFiles() {
-      this.dialogs.uploadFiles = true
+      this.dialogs.uploadFiles = true;
     },
     openDialogAddRequirement() {
-      this.dialogs.addRequirement = true
+      this.dialogs.addRequirement = true;
     },
     closeModal() {
-      this.dialogs.uploadFiles = false
-      this.dialogs.addRequirement = false
-      this.filesToUpload = []
-      this.requirement = {}
+      this.dialogs.uploadFiles = false;
+      this.dialogs.addRequirement = false;
+      this.filesToUpload = [];
+      this.requirement = {};
     },
     uploadFileDocument() {
-      const data = new FormData()
+      const data = new FormData();
       each(this.filesToUpload, (file, i) => {
-        data.append(`archivos[${i}]`, file)
-      })
-      data.append('document_id', this.Document.id)
-      data.append('_method', 'put')
+        data.append(`archivos[${i}]`, file);
+      });
+      data.append("document_id", this.Document.id);
+      data.append("_method", "put");
       this.$inertia.post(
-        this.route('documents.uploadFiles', this.Document.id),
+        this.route("documents.uploadFiles", this.Document.id),
         data,
         {
           onStart: () => (this.sending = true),
           onFinish: () => (this.sending = false),
           onSuccess: () => {
-            this.closeModal()
-            this.Document = {}
+            this.closeModal();
+            this.Document = {};
           },
         }
-      )
+      );
     },
     saveRequirement(_requirement) {
       let payload = {
         requirement: _requirement.id,
-      }
+      };
       this.$inertia.put(
-        this.route('expedients.addRequirement', this.expedient.id),
+        this.route("expedients.addRequirement", this.expedient.id),
         payload,
         {
           onStart: () => (this.sending = true),
           onFinish: () => (this.sending = false),
           onSuccess: () => {
-            this.closeModal()
+            this.closeModal();
           },
         }
-      )
+      );
     },
     deleteFile(_file_id) {
-      this.$inertia.delete(this.route('documents.deleteFile', _file_id), {
+      this.$inertia.delete(this.route("documents.deleteFile", _file_id), {
         onStart: () => (this.sending = true),
         onFinish: () => (this.sending = false),
         onSuccess: () => {
-          this.closeModal()
-          this.Document = {}
+          this.closeModal();
+          this.Document = {};
         },
-      })
+      });
     },
     submit(status) {
       let payload = {
         ...this.Document,
-        until_valid: status !== 'valid' ? null : this.Document.until_valid,
-        commentary: status !== 'invalid' ? null : this.Document.commentary,
-      }
+        until_valid: status !== "valid" ? null : this.Document.until_valid,
+        commentary: status !== "invalid" ? null : this.Document.commentary,
+      };
       this.$inertia.put(
-        this.route('documents.update', this.Document.id),
+        this.route("documents.update", this.Document.id),
         payload,
         {
           onStart: () => (this.sending = true),
           onFinish: () => (this.sending = false),
           onSuccess: () => {
-            this.closeModal()
-            this.Document = {}
+            this.closeModal();
+            this.Document = {};
           },
         }
-      )
+      );
     },
   },
-}
+};
 </script>
 
 <style></style>

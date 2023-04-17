@@ -14,7 +14,7 @@ class MachineryController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     *
      */
     public function index()
     {
@@ -52,7 +52,7 @@ class MachineryController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * 
      */
     public function store(Request $request)
     {
@@ -62,6 +62,8 @@ class MachineryController extends Controller
                 'no_serie' => ['required', 'max:100', Rule::unique('machineries')],
                 'model' => ['required'],
                 'price' => ['required'],
+                'acquisition_date' => ['nullable'],
+                'description' => ['nullable'],
             ])
         );
 
@@ -73,7 +75,7 @@ class MachineryController extends Controller
      * Display the specified resource.
      *
      * @param  \App\Models\Machinery  $machinery
-     * @return \Illuminate\Http\Response
+     * 
      */
     public function show(Machinery $machinery)
     {
@@ -81,6 +83,7 @@ class MachineryController extends Controller
             'item' => [
                 'id' => $machinery->id,
                 'category_id' => $machinery->category_id,
+                'category' => $machinery->category->name,
                 'no_serie' => $machinery->no_serie,
                 'model' => $machinery->model,
                 'description' => $machinery->description,
@@ -95,7 +98,7 @@ class MachineryController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param  \App\Models\Machinery  $machinery
-     * @return \Illuminate\Http\Response
+     *
      */
     public function edit(Machinery $machinery)
     {
@@ -119,7 +122,7 @@ class MachineryController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \App\Models\Machinery  $machinery
-     * @return \Illuminate\Http\Response
+     * 
      */
     public function update(Request $request, Machinery $machinery)
     {
@@ -129,6 +132,8 @@ class MachineryController extends Controller
                 'no_serie' => ['required', 'max:100', Rule::unique('machineries')->ignore($machinery->id)],
                 'model' => ['required'],
                 'price' => ['required'],
+                'acquisition_date' => ['nullable'],
+                'description' => ['nullable'],
             ])
         );
 
@@ -139,7 +144,7 @@ class MachineryController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  \App\Models\Machinery  $machinery
-     * @return \Illuminate\Http\Response
+     * 
      */
     public function destroy(Machinery $machinery)
     {
@@ -152,7 +157,7 @@ class MachineryController extends Controller
      * Restore the specified resource from storage.
      *
      * @param  \App\Models\Machinery  $machinery
-     * @return \Illuminate\Http\Response
+     * 
      */
     public function restore(Machinery $machinery)
     {
