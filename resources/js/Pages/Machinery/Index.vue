@@ -1,10 +1,9 @@
 <template>
-  <v-card flat>
-    <v-breadcrumbs :items="breadcrumbs" class="overline pb-0">
-      <template v-slot:divider>
-        <v-icon>mdi-chevron-right</v-icon>
-      </template>
-    </v-breadcrumbs>
+  <layout>
+    <template #breadcrumbs>
+      <breadcrumbs :items="breadcrumbs" />
+    </template>
+
     <search-filter v-model="form.search" @reset="reset">
       <v-col cols="12" md="3" class="pa-1">
         <v-select
@@ -79,7 +78,7 @@
       route="machineries"
       @input="(v) => (form.page = v)"
     />
-  </v-card>
+  </layout>
 </template>
 
 <script>
@@ -90,11 +89,13 @@ import pickBy from "lodash/pickBy";
 import throttle from "lodash/throttle";
 import SearchFilter from "@/Shared/SearchFilter";
 import Pagination from "@/Shared/Pagination";
+import Breadcrumbs from "@/Shared/Breadcrumbs.vue";
 
 export default {
+  name:"MachineryIndex",
   metaInfo: { title: "Maquinaria" },
-  layout: Layout,
-  components: { DataTableWrapper, SearchFilter, Pagination },
+  // layout: Layout,
+  components: { DataTableWrapper, SearchFilter, Pagination, Breadcrumbs,Layout },
   props: { items: Object, filters: Object },
   data() {
     return {
@@ -122,7 +123,7 @@ export default {
         { text: "Con", value: "with" },
         { text: "Solamente", value: "only" },
       ],
-      breadcrumbs: [{ text: "Inventario Maquinaria", disabled: false }],
+      breadcrumbs: [{ text: "Inventario Maquinaria", disabled: true }],
     };
   },
 

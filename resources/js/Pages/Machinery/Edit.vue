@@ -1,6 +1,8 @@
 <template>
-  <v-card flat>
-    <breadcrumbs :items="breadcrumbs" class="overline" />
+  <layout>
+    <template #breadcrumbs>
+      <breadcrumbs :items="breadcrumbs" />
+    </template>
     <trashed-message v-if="item.deleted_at" class="mb-6" @restore="restore">
       Este Registro a sido Eliminado.
     </trashed-message>
@@ -19,7 +21,7 @@
       <v-spacer />
       <v-btn :loading="sending" color="primary" @click="submit">Guardar</v-btn>
     </v-card-actions>
-  </v-card>
+  </layout>
 </template>
 
 <script>
@@ -29,12 +31,14 @@ import MachineryForm from "@/Components/Machinery/Form";
 import Breadcrumbs from "@/Shared/Breadcrumbs.vue";
 
 export default {
+  name:"MachineryEdit",
   metaInfo: { title: "Registrar Maquinaria" },
-  layout: Layout,
+  // layout: ,
   components: {
     MachineryForm,
     TrashedMessage,
-    Breadcrumbs, 
+    Breadcrumbs,
+    Layout,
   },
   props: {
     errors: Object,
@@ -62,8 +66,10 @@ export default {
           href: this.route("machineries"),
           exact: true,
         },
-        { text: `${this.item.no_serie}`, 
-          href: this.route("machineries.show", { machinery: this.item.id }) },
+        {
+          text: `${this.item.no_serie}`,
+          href: this.route("machineries.show", { machinery: this.item.id }),
+        },
         { text: "Editar", disabled: true },
       ],
     };

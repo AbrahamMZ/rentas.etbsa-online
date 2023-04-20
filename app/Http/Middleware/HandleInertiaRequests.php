@@ -41,6 +41,7 @@ class HandleInertiaRequests extends Middleware
                 return [
                     'user' => $request->user() ? [
                         'id' => $request->user()->id,
+                        'name' => $request->user()->name,
                         'first_name' => $request->user()->first_name,
                         'last_name' => $request->user()->last_name,
                         'email' => $request->user()->email,
@@ -57,11 +58,11 @@ class HandleInertiaRequests extends Middleware
             },
             'tabs' => [
                 // ['label' => 'Dashboard', 'route' => 'dashboard'],
-                ['label' => 'Expedientes', 'route' => 'expedients', 'show' => true],
-                ['label' => 'Plantillas', 'route' => 'templates', 'show' =>  $request->user()->owner ?? false],
-                ['label' => 'Requisitos', 'route' => 'requirements', 'show' =>  $request->user()->owner ?? false],
-                ['label' => 'Maquinaria', 'route' => 'machineries', 'show' =>  $request->user()->owner ?? false],
-                ['label' => 'Usuarios', 'route' => 'users', 'show' =>  $request->user()->owner ?? false],
+                ['label' => 'Expedientes', 'route' => 'expedients', "icon" => 'mdi-folder', 'show' => true],
+                ['label' => 'Plantillas', 'route' => 'templates', "icon" => 'mdi-content-copy', 'show' => $request->user()->owner ?? false],
+                ['label' => 'Requisitos', 'route' => 'requirements', "icon" => 'mdi-alert-octagon', 'show' => $request->user()->owner ?? false],
+                ['label' => 'Maquinaria', 'route' => 'machineries', "icon" => 'mdi-alert-octagon', 'show' => $request->user()->owner ?? false],
+                ['label' => 'Usuarios', 'route' => 'users', "icon" => 'mdi-account-box-multiple', 'show' => $request->user()->owner ?? false],
             ],
             'flash' => function () use ($request) {
                 return [

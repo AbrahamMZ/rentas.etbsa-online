@@ -1,17 +1,22 @@
 <template>
-  <v-card flat>
-    <breadcrumbs :items="breadcrumbs" class="overline" />
+  <layout>
+    <template #breadcrumbs>
+      <breadcrumbs :items="breadcrumbs" class="overline" />
+    </template>
     <trashed-message v-if="item.deleted_at" class="mb-6" @restore="restore">
       Este Registro fue Eliminado.
     </trashed-message>
     <v-card-text>
-      <v-row dense align="center">
+      <v-row dense align="start">
         <v-col cols="12" md="4">
-          <v-card color="grey lighten-4">
-            <v-card-text class="text-center">
+          <v-card color="grey lighten-4" min-height="100%">
+            <v-card-text class="text-center pa-2">
               <h3 class="text-h4 mb-2">
                 {{ item.model }}
               </h3>
+              <div class="grey--text mb-2 font-weight-bold">
+                N.E. 34324
+              </div>
               <div class="blue--text mb-2 font-weight-bold">
                 {{ item.category }}
               </div>
@@ -19,9 +24,13 @@
             <v-divider />
             <v-row dense class="text-left" tag="v-card-text">
               <v-col class="text-right mr-4 mb-2" tag="strong" cols="5">
-                No. Serie:
+                No. Serie Equipo:
               </v-col>
               <v-col>{{ item.no_serie }}</v-col>
+              <v-col class="text-right mr-4 mb-2" tag="strong" cols="5">
+                Serie Motor:
+              </v-col>
+              <v-col>CH4X32133T4324</v-col>
               <v-col class="text-right mr-4 mb-2" tag="strong" cols="5">
                 Valor de Maquina:
               </v-col>
@@ -51,14 +60,18 @@
             <v-toolbar flat color="secondary" dark>
               <v-toolbar-title>Informacion</v-toolbar-title>
             </v-toolbar>
-            <v-tabs vertical color="secondary">
+            <v-tabs right color="secondary">
               <v-tab>
-                <v-icon left> mdi-ballot-recount </v-icon>
-                Rentas
+                <v-icon left> mdi-currency-usd </v-icon>
+                Cargos Fijos
               </v-tab>
               <v-tab>
                 <v-icon left> mdi-toolbox </v-icon>
-                Servicios
+                Cargos de Servicios
+              </v-tab>
+              <v-tab>
+                <v-icon left> mdi-ballot-recount </v-icon>
+                Rentas
               </v-tab>
               <v-tab>
                 <v-icon left> mdi-folder </v-icon>
@@ -80,8 +93,17 @@
                 </v-card>
               </v-tab-item>
               <v-tab-item>
-                <v-card flat height="200px">
-                  <v-card-text />
+                <v-card flat>
+                  <v-card-text>
+                    <services-table />
+                  </v-card-text>
+                </v-card>
+              </v-tab-item>
+              <v-tab-item>
+                <v-card flat>
+                  <v-card-text>
+                    <services-table />
+                  </v-card-text>
                 </v-card>
               </v-tab-item>
             </v-tabs>
@@ -89,7 +111,7 @@
         </v-col>
       </v-row>
     </v-card-text>
-  </v-card>
+  </layout>
 </template>
 
 <script>
@@ -99,12 +121,14 @@ import ServicesTable from "@/Components/Machinery/ServicesTable.vue";
 import Breadcrumbs from "@/Shared/Breadcrumbs.vue";
 
 export default {
+  name:"MachineryShow",
   metaInfo: { title: "Detalle Maquinaria" },
-  layout: Layout,
+  // layout: Layout,
   components: {
     TrashedMessage,
     ServicesTable,
     Breadcrumbs,
+    Layout,
   },
   props: {
     errors: Object,

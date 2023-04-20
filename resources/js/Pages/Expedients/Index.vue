@@ -185,14 +185,14 @@
 </template>
 
 <script>
-import Layout from '@/Shared/Layout'
-import { mapValues, pickBy, throttle } from 'lodash'
-import SearchFilter from '@/Shared/SearchFilter'
-import Pagination from '@/Shared/Pagination'
-import Breadcrumbs from '@/Shared/Breadcrumbs'
+import Layout from "@/Shared/Layout";
+import { mapValues, pickBy, throttle } from "lodash";
+import SearchFilter from "@/Shared/SearchFilter";
+import Pagination from "@/Shared/Pagination";
+import Breadcrumbs from "@/Shared/Breadcrumbs";
 
 export default {
-  metaInfo: { title: 'Expedientes' },
+  metaInfo: { title: "Expedientes" },
   layout: Layout,
   components: { SearchFilter, Pagination, Breadcrumbs },
   props: { expedients: Object, filters: Object },
@@ -205,24 +205,24 @@ export default {
         page: this.filters.page | 1,
       },
       items: [
-        { text: '(Vacio)', value: '' },
-        { text: 'Con', value: 'with' },
-        { text: 'Solamente', value: 'only' },
+        { text: "(Vacio)", value: "" },
+        { text: "Con", value: "with" },
+        { text: "Solamente", value: "only" },
       ],
-      breadcrumbs: [{ text: 'Expedientes', disabled: false }],
-    }
+      breadcrumbs: [{ text: "Expedientes", disabled: true }],
+    };
   },
 
   watch: {
     form: {
       handler: throttle(function() {
-        let query = pickBy(this.form)
+        let query = pickBy(this.form);
         this.$inertia.replace(
           this.route(
-            'expedients',
-            Object.keys(query).length ? query : { remember: 'forget' }
+            "expedients",
+            Object.keys(query).length ? query : { remember: "forget" }
           )
-        )
+        );
       }, 150),
       deep: true,
     },
@@ -230,34 +230,34 @@ export default {
   methods: {
     search(value) {
       // eslint-disable-next-line no-console
-      console.log(value, 'input')
+      console.log(value, "input");
     },
     reset() {
-      this.form = mapValues(this.form, () => null)
-      this.form.page = 1
+      this.form = mapValues(this.form, () => null);
+      this.form.page = 1;
     },
     create() {
-      this.$inertia.visit(this.route('expedients.create'))
+      this.$inertia.visit(this.route("expedients.create"));
     },
     adminExpedient(_expedient_id) {
-      this.$inertia.visit(this.route('expedients.documents', _expedient_id))
+      this.$inertia.visit(this.route("expedients.documents", _expedient_id));
     },
     show(_expedient_id) {
-      this.$inertia.visit(this.route('expedients.show', _expedient_id))
+      this.$inertia.visit(this.route("expedients.show", _expedient_id));
     },
     edit(_expedient_id) {
-      this.$inertia.visit(this.route('expedients.edit', _expedient_id))
+      this.$inertia.visit(this.route("expedients.edit", _expedient_id));
     },
     destroy(_expedient_id) {
-      if (confirm('Seguro en Eliminar este Expediente?')) {
-        this.$inertia.delete(this.route('expedients.destroy', _expedient_id))
+      if (confirm("Seguro en Eliminar este Expediente?")) {
+        this.$inertia.delete(this.route("expedients.destroy", _expedient_id));
       }
     },
     restore(_expedient_id) {
-      if (confirm('Seguro en Restaurar este Expediente?')) {
-        this.$inertia.put(this.route('expedients.restore', _expedient_id))
+      if (confirm("Seguro en Restaurar este Expediente?")) {
+        this.$inertia.put(this.route("expedients.restore", _expedient_id));
       }
     },
   },
-}
+};
 </script>

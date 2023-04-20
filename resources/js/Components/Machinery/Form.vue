@@ -12,7 +12,7 @@
           dense
         />
       </v-col>
-      <v-col cols="12">
+      <v-col cols="6">
         <v-text-field
           v-model="form.no_serie"
           :error-messages="errors.no_serie"
@@ -21,6 +21,12 @@
           outlined
           dense
         />
+      </v-col>
+      <v-col cols="6">
+        <v-text-field label="No. Serie Motor" class="overline" outlined dense />
+      </v-col>
+      <v-col cols="12">
+        <v-text-field label="No. Economico" class="overline" outlined dense />
       </v-col>
       <v-col cols="12">
         <v-text-field
@@ -61,22 +67,6 @@
           label="Fecha de la Adquisicion"
           class="overline"
           type="date"
-          outlined
-          dense
-        />
-      </v-col>
-      <v-col cols="12">
-        <v-file-input
-          v-model="form.images"
-          :error="errors.images"
-          label="Fotos del Equipo"
-          prepend-icon="mdi-camera"
-          accept="image/*"
-          truncate-length="30"
-          small-chips
-          multiple
-          show-size
-          counter
           outlined
           dense
         />
