@@ -69,6 +69,7 @@
         </v-row>
       </v-container>
     </v-main>
+    <portal-target name="modal" multiple />
   </v-app>
 </template>
 

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTypesServicesTable extends Migration
+class CreateFixesCostsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,13 @@ class CreateTypesServicesTable extends Migration
      */
     public function up()
     {
-        Schema::create('types_services', function (Blueprint $table) {
+        Schema::create('fixes_costs', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('name')->unique();
+
+
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -27,6 +30,6 @@ class CreateTypesServicesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('types_services');
+        Schema::dropIfExists('fixes_costs');
     }
 }

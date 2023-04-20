@@ -7,6 +7,7 @@
     @close="close"
   >
     <v-card-title>
+      <v-icon left color="red">mdi-alert</v-icon>
       <slot name="title" />
       <v-spacer />
       <v-btn icon @click="close()">

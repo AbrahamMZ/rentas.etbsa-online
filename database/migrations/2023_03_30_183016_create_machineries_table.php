@@ -17,7 +17,7 @@ class CreateMachineriesTable extends Migration
             $table->id();
             // $table->unsignedBigInteger('brand_id')->index();
             $table->unsignedBigInteger('category_id');
-            $table->unsignedBigInteger('status_id');
+            $table->unsignedBigInteger('status_id')->default(1);
 
             $table->string('no_serie')->unique();
             $table->string('model');

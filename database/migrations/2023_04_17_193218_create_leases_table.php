@@ -16,10 +16,12 @@ class CreateLeasesTable extends Migration
         Schema::create('leases', function (Blueprint $table) {
             $table->id();
             $table->double('amount')->default(0);
+            $table->double('monthly_payment')->default(0);
             $table->double('balance')->default(0);
             $table->integer('term_months')->default(1);
             $table->integer('residual_percent')->default(0);
             $table->double('residual_amount')->default(0);
+            
             $table->double('interest_rate')->default(0);
 
             $table->date('lease_start_date')->nullable();
@@ -29,6 +31,7 @@ class CreateLeasesTable extends Migration
             $table->foreign('status_id')->references('id')->on('status');
 
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

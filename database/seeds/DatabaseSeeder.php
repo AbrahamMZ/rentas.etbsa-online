@@ -21,7 +21,7 @@ class DatabaseSeeder extends Seeder
         Status::create(['text' => 'Invalidos', 'key' => Status::STATUS_KEY_INVALID]);
         Status::create(['text' => 'Excluidos', 'key' => Status::STATUS_KEY_EXCLUDED]);
 
-        $category = Category::create(['name' => 'Retroexcabadoras']);
+        $category = Category::create(['name' => 'Retroexcavadoras']);
 
         factory(User::class)->create([
             'account_id' => $account->id,

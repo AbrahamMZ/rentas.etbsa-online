@@ -2,41 +2,26 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Machinery extends Model
+class FixesCosts extends Model
 {
-    use SoftDeletes;
+    use HasFactory, SoftDeletes;
 
-    protected $table = 'machineries';
+    protected $table = 'fixes_costs';
 
     protected $fillable = [
-        'category_id',
-        'no_serie',
-        'model',
-        'slug',
-        'description',
-        'price',
-        'sale_price',
-        'acquisition_date',
-        'sale_date',
+        'name'
     ];
 
-    public function images()
-    {
-        return $this->hasMany(MachineryImage::class);
-    }
 
-    public function category()
+    public function machinery()
     {
-        return $this->belongsTo(Category::class, 'category_id');
-    }
-
-    public function fixesCosts()
-    {
-        return $this->belongsToMany(FixesCosts::class, 'machiner_fixes_costs', 'machinery_id')
+        return $this->belongsToMany(Machinery::class, 'machiner_fixes_costs', 'fixes_cost_id')
             ->withPivot('amount')
             ->withTimestamps();
+        ;
     }
 
     public function scopeOrderByName($query)
@@ -47,7 +32,7 @@ class Machinery extends Model
     public function scopeFilter($query, array $filters)
     {
         $query->when($filters['search'] ?? null, function ($query, $search) {
-            $query->where('no_serie', 'like', '%' . $search . '%');
+            $query->where('name', 'like', '%' . $search . '%');
         })->when($filters['trashed'] ?? null, function ($query, $trashed) {
             if ($trashed === 'with') {
                 $query->withTrashed();
@@ -56,4 +41,5 @@ class Machinery extends Model
             }
         });
     }
+
 }

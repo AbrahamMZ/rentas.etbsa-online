@@ -17,6 +17,9 @@ class CreateMachineryServicesTable extends Migration
             $table->id();
             $table->string('no_order')->nullable();
             $table->double('value')->default(0);
+            $table->double('price_cost')->default(0);
+            $table->double('price_sale')->default(0);
+            
             $table->text('descriptions')->nullable();
             $table->date('worked_date')->nullable();
 

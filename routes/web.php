@@ -5,6 +5,7 @@ use App\Http\Controllers\ContactsController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\ExpedientController;
+use App\Http\Controllers\FixesCostsController;
 use App\Http\Controllers\ImagesController;
 use App\Http\Controllers\MachineryController;
 use App\Http\Controllers\OrganizationsController;
@@ -50,104 +51,52 @@ Route::get('simulador', [DashboardController::class, 'showSimulator'])
 //     ->middleware('auth');
 Route::get('/', [ExpedientController::class, 'index'])->middleware('auth');
 
-// Users
-
-Route::get('users', [UsersController::class, 'index'])
-    ->name('users')
-    ->middleware('remember', 'auth');
-
-Route::get('users/create', [UsersController::class, 'create'])
-    ->name('users.create')
-    ->middleware('auth');
-
-Route::post('users', [UsersController::class, 'store'])
-    ->name('users.store')
-    ->middleware('auth');
-
-Route::get('users/{user}/edit', [UsersController::class, 'edit'])
-    ->name('users.edit')
-    ->middleware('auth');
-
-Route::put('users/{user}', [UsersController::class, 'update'])
-    ->name('users.update')
-    ->middleware('auth');
-
-Route::delete('users/{user}', [UsersController::class, 'destroy'])
-    ->name('users.destroy')
-    ->middleware('auth');
-
-Route::put('users/{user}/restore', [UsersController::class, 'restore'])
-    ->name('users.restore')
-    ->middleware('auth');
-
-// Organizations
-
-Route::get('organizations', [OrganizationsController::class, 'index'])
-    ->name('organizations')
-    ->middleware('remember', 'auth');
-
-Route::get('organizations/create', [OrganizationsController::class, 'create'])
-    ->name('organizations.create')
-    ->middleware('auth');
-
-Route::post('organizations', [OrganizationsController::class, 'store'])
-    ->name('organizations.store')
-    ->middleware('auth');
-
-Route::get('organizations/{organization}/edit', [OrganizationsController::class, 'edit'])
-    ->name('organizations.edit')
-    ->middleware('auth');
-
-Route::put('organizations/{organization}', [OrganizationsController::class, 'update'])
-    ->name('organizations.update')
-    ->middleware('auth');
-
-Route::delete('organizations/{organization}', [OrganizationsController::class, 'destroy'])
-    ->name('organizations.destroy')
-    ->middleware('auth');
-
-Route::put('organizations/{organization}/restore', [OrganizationsController::class, 'restore'])
-    ->name('organizations.restore')
-    ->middleware('auth');
-
-// Contacts
-
-Route::get('contacts', [ContactsController::class, 'index'])
-    ->name('contacts')
-    ->middleware('remember', 'auth');
-
-Route::get('contacts/create', [ContactsController::class, 'create'])
-    ->name('contacts.create')
-    ->middleware('auth');
-
-Route::post('contacts', [ContactsController::class, 'store'])
-    ->name('contacts.store')
-    ->middleware('auth');
-
-Route::get('contacts/{contact}/edit', [ContactsController::class, 'edit'])
-    ->name('contacts.edit')
-    ->middleware('auth');
-
-Route::put('contacts/{contact}', [ContactsController::class, 'update'])
-    ->name('contacts.update')
-    ->middleware('auth');
-
-Route::delete('contacts/{contact}', [ContactsController::class, 'destroy'])
-    ->name('contacts.destroy')
-    ->middleware('auth');
-
-Route::put('contacts/{contact}/restore', [ContactsController::class, 'restore'])
-    ->name('contacts.restore')
-    ->middleware('auth');
-
 // Reports
-
 Route::get('reports', [ReportsController::class, 'index'])
     ->name('reports')
     ->middleware('auth');
 
+
+// Users
+Route::prefix('users')->name('users')->middleware(['auth'])->group(function () {
+    Route::get('/', [UsersController::class, 'index'])->middleware('remember');
+    Route::get('/create', [UsersController::class, 'create'])->name('.create');
+    Route::post('', [UsersController::class, 'store'])->name('.store');
+    Route::get('/{user}/edit', [UsersController::class, 'edit'])->name('.edit');
+    Route::put('/{user}', [UsersController::class, 'update'])->name('.update');
+    Route::delete('/{user}', [UsersController::class, 'destroy'])->name('.destroy');
+    Route::put('/{user}/restore', [UsersController::class, 'restore'])->name('.restore');
+});
+
+// Organizations
+Route::prefix('organizations')->name('organizations')->middleware(['auth'])->group(function () {
+
+    Route::get('/', [OrganizationsController::class, 'index'])->middleware('remember');
+    Route::get('/create', [OrganizationsController::class, 'create'])->name('.create');
+    Route::post('', [OrganizationsController::class, 'store'])->name('.store');
+    Route::get('/{organization}/edit', [OrganizationsController::class, 'edit'])->name('.edit');
+    Route::put('/{organization}', [OrganizationsController::class, 'update'])->name('.update');
+    Route::delete('/{organization}', [OrganizationsController::class, 'destroy'])->name('.destroy');
+    Route::put('/{organization}/restore', [OrganizationsController::class, 'restore'])->name('.restore');
+});
+
+// Contacts
+Route::prefix('contacts')->name('contacts')->middleware(['auth'])->group(function () {
+
+    Route::get('/', [ContactsController::class, 'index'])->middleware('remember');
+    Route::get('/create', [ContactsController::class, 'create'])->name('.create');
+    Route::post('', [ContactsController::class, 'store'])->name('.store');
+    Route::get('/{contact}/edit', [ContactsController::class, 'edit'])->name('.edit');
+    Route::put('/{contact}', [ContactsController::class, 'update'])->name('.update');
+    Route::delete('/{contact}', [ContactsController::class, 'destroy'])->name('.destroy');
+    Route::put('/{contact}/restore', [ContactsController::class, 'restore'])->name('.restore');
+
+});
+
+
+
 // Requirements
-Route::prefix('requirements')->name('requirements')->middleware('auth', 'role:owner')->group(function () {
+Route::prefix('requirements')->name('requirements')->middleware(['auth', 'role:owner'])->group(function () {
     Route::get('/', [RequirementController::class, 'index'])->middleware('remember');
     Route::get('/create', [RequirementController::class, 'create'])->name('.create');
     Route::post('/', [RequirementController::class, 'store'])->name('.store');
@@ -157,7 +106,7 @@ Route::prefix('requirements')->name('requirements')->middleware('auth', 'role:ow
     Route::put('/{requirement}/restore', [RequirementController::class, 'restore'])->name('.restore');
 });
 // Templates
-Route::prefix('templates')->name('templates')->middleware('auth', 'role:owner')->group(function () {
+Route::prefix('templates')->name('templates')->middleware(['auth', 'role:owner'])->group(function () {
     Route::get('/', [TemplateController::class, 'index'])->middleware('remember');
     Route::get('/create', [TemplateController::class, 'create'])->name('.create');
     Route::post('/', [TemplateController::class, 'store'])->name('.store');
@@ -182,28 +131,36 @@ Route::prefix('expedients')->name('expedients')->middleware('auth')->group(funct
 });
 
 // Documents
-Route::prefix('documents')->name('documents')->middleware('auth')->group(
-    function () {
-        Route::get('/', [DocumentController::class, 'index'])->middleware('remember');
-        Route::put('/{document}/update', [DocumentController::class, 'update'])->name('.update');
-        Route::get('/{document}/downloadFilesZip', [DocumentController::class, 'downloadFilesZip'])->name('.downloadFilesZip');
-        Route::put('/{document}/uploadFiles', [DocumentController::class, 'uploadFiles'])->name('.uploadFiles');
-        Route::delete('/{file}/deleteFile', [DocumentController::class, 'deleteFile'])->name('.deleteFile');
-    }
-);
+Route::prefix('documents')->name('documents')->middleware('auth')->group(function () {
+    Route::get('/', [DocumentController::class, 'index'])->middleware('remember');
+    Route::put('/{document}/update', [DocumentController::class, 'update'])->name('.update');
+    Route::get('/{document}/downloadFilesZip', [DocumentController::class, 'downloadFilesZip'])->name('.downloadFilesZip');
+    Route::put('/{document}/uploadFiles', [DocumentController::class, 'uploadFiles'])->name('.uploadFiles');
+    Route::delete('/{file}/deleteFile', [DocumentController::class, 'deleteFile'])->name('.deleteFile');
+});
 // Machinery
-Route::prefix('machineries')->name('machineries')->middleware('auth', 'role:owner')->group(
-    function () {
-        Route::get('/', [MachineryController::class, 'index'])->middleware('remember');
-        Route::get('/create', [MachineryController::class, 'create'])->name('.create');
-        Route::post('/', [MachineryController::class, 'store'])->name('.store');
-        Route::get('/{machinery}/edit', [MachineryController::class, 'edit'])->name('.edit');
-        Route::get('/{machinery}/show', [MachineryController::class, 'show'])->name('.show');
-        Route::put('/{machinery}', [MachineryController::class, 'update'])->name('.update');
-        Route::delete('/{machinery}', [MachineryController::class, 'destroy'])->name('.destroy');
-        Route::put('/{machinery}/restore', [MachineryController::class, 'restore'])->name('.restore');
-    }
-);
+Route::prefix('machineries')->name('machineries')->middleware(['auth', 'role:owner'])->group(function () {
+    Route::get('/', [MachineryController::class, 'index'])->middleware('remember');
+    Route::get('/create', [MachineryController::class, 'create'])->name('.create');
+    Route::post('/', [MachineryController::class, 'store'])->name('.store');
+    Route::get('/{machinery}/edit', [MachineryController::class, 'edit'])->name('.edit');
+    Route::get('/{machinery}/show', [MachineryController::class, 'show'])->name('.show');
+    Route::put('/{machinery}', [MachineryController::class, 'update'])->name('.update');
+    Route::delete('/{machinery}', [MachineryController::class, 'destroy'])->name('.destroy');
+    Route::put('/{machinery}/restore', [MachineryController::class, 'restore'])->name('.restore');
+});
+
+// FixesCosts
+Route::prefix('fixes-costs')->name('fixes-costs')->middleware(['auth', 'role:owner'])->group(function () {
+    Route::get('/', [FixesCostsController::class, 'index'])->middleware('remember');
+    // Route::get('/create', [FixesCostsController::class, 'create'])->name('.create');
+    Route::post('/', [FixesCostsController::class, 'store'])->name('.store');
+    // Route::get('/{fixesCosts}/edit', [FixesCostsController::class, 'edit'])->name('.edit');
+    // Route::get('/{fixesCosts}/show', [FixesCostsController::class, 'show'])->name('.show');
+    Route::put('/{fixesCosts}', [FixesCostsController::class, 'update'])->name('.update');
+    Route::delete('/{fixesCosts}', [FixesCostsController::class, 'destroy'])->name('.destroy');
+    Route::put('/{fixesCosts}/restore', [FixesCostsController::class, 'restore'])->name('.restore');
+});
 
 // Images
 

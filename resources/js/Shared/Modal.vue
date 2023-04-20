@@ -25,7 +25,7 @@ export default {
     },
     maxWidth: {
       type: String,
-      default: '600',
+      default: "600",
     },
     closeable: {
       type: Boolean,
@@ -40,9 +40,9 @@ export default {
   methods: {
     close() {
       if (this.closeable) {
-        this.$emit('close')
+        this.$emit("close");
       }
     },
   },
-}
+};
 </script>
