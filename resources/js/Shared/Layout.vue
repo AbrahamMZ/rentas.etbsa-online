@@ -1,6 +1,6 @@
 <template>
   <v-app id="inspire">
-    <v-navigation-drawer v-model="drawer" app width="224">
+    <v-navigation-drawer v-model="drawer" app>
       <v-sheet color="grey lighten-4" class="pa-4">
         <v-avatar
           class="hidden-sm-and-down mb-4"

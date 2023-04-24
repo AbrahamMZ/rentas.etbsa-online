@@ -19,18 +19,24 @@ class CreateMachineriesTable extends Migration
             $table->unsignedBigInteger('category_id');
             $table->unsignedBigInteger('status_id')->default(1);
 
-            $table->string('no_serie')->unique();
-            $table->string('model');
+            $table->string('name');
+            $table->string('equipment_serial')->unique()->nullable();
+            $table->string('economic_serial')->nullable();
+            $table->string('engine_serial')->unique()->nullable();
+
             $table->string('slug')->nullable();
             $table->text('description')->nullable();
-            $table->decimal('price', 12, 2);
+
+            $table->decimal('total_cost_price', 12, 2)->nullable();
+            $table->decimal('current_price', 12, 2)->nullable();
             $table->decimal('sale_price', 12, 2)->nullable();
+
+            $table->integer('months_depreciation')->default(48);
+
             $table->date('acquisition_date')->nullable();
+            $table->date('purchase_date')->nullable();
             $table->date('sale_date')->nullable();
 
-            // $table->unsignedInteger('quantity')->default(0);
-            // $table->boolean('active')->default(1);
-            // $table->boolean('featured')->default(0);
 
             $table->foreign('category_id')->references('id')->on('categories');
             $table->foreign('status_id')->references('id')->on('status');

@@ -42,14 +42,11 @@
       >
         <template #item="{ item }">
           <tr>
-            <td>
-              {{ item.id }}
+            <td class="text-no-wrap">
+              {{ item.no_serie }}
             </td>
             <td class="text-no-wrap">
               {{ item.category }}
-            </td>
-            <td class="text-no-wrap">
-              {{ item.no_serie }}
             </td>
             <td class="text-no-wrap">
               {{ item.price | currency }}
@@ -92,17 +89,23 @@ import Pagination from "@/Shared/Pagination";
 import Breadcrumbs from "@/Shared/Breadcrumbs.vue";
 
 export default {
-  name:"MachineryIndex",
+  name: "MachineryIndex",
   metaInfo: { title: "Maquinaria" },
   // layout: Layout,
-  components: { DataTableWrapper, SearchFilter, Pagination, Breadcrumbs,Layout },
+  components: {
+    DataTableWrapper,
+    SearchFilter,
+    Pagination,
+    Breadcrumbs,
+    Layout,
+  },
   props: { items: Object, filters: Object },
   data() {
     return {
       headers: [
-        { text: "ID", width: "75", value: "id" },
-        { text: "Categoria ", value: "category" },
+        // { text: "ID", width: "75", value: "id" },
         { text: "No. Serie", value: "no_serie" },
+        { text: "Categoria ", value: "category" },
         { text: "Costo del Equipo", value: "price" },
         {
           text: "",
@@ -134,7 +137,7 @@ export default {
         this.$inertia.get(
           this.route(
             "machineries",
-            Object.keys(query).length ? query :  { remember: "forget" }
+            Object.keys(query).length ? query : { remember: "forget" }
           ),
           {},
           { preserveState: true }

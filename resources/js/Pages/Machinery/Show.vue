@@ -14,9 +14,7 @@
               <h3 class="text-h4 mb-2">
                 {{ item.model }}
               </h3>
-              <div class="grey--text mb-2 font-weight-bold">
-                N.E. 34324
-              </div>
+              <div class="grey--text mb-2 font-weight-bold">N.E. 34324</div>
               <div class="blue--text mb-2 font-weight-bold">
                 {{ item.category }}
               </div>
@@ -63,7 +61,7 @@
             <v-tabs right color="secondary">
               <v-tab>
                 <v-icon left> mdi-currency-usd </v-icon>
-                Cargos Fijos
+                Gastos
               </v-tab>
               <v-tab>
                 <v-icon left> mdi-toolbox </v-icon>
@@ -79,16 +77,27 @@
               </v-tab>
 
               <v-tab-item>
-                <v-card flat>
+                <v-card>
                   <v-card-text>
-                    <services-table />
+                    <!-- <fixes-costs-table
+                      :items="item.fixes_costs"
+                      editable
+                      @submit="updateMachineryFixesCosts"
+                    /> -->
+                    <expenses-table
+                      :items.sync="item.expenses"
+                      :machinery-id="item.id"
+                    />
                   </v-card-text>
                 </v-card>
               </v-tab-item>
               <v-tab-item>
                 <v-card flat>
                   <v-card-text>
-                    <services-table />
+                    <services-expenses-table
+                      :items.sync="item.serivces_expenses"
+                      :machinery-id="item.id"
+                    />
                   </v-card-text>
                 </v-card>
               </v-tab-item>
@@ -119,9 +128,12 @@ import Layout from "@/Shared/Layout";
 import TrashedMessage from "@/Shared/TrashedMessage";
 import ServicesTable from "@/Components/Machinery/ServicesTable.vue";
 import Breadcrumbs from "@/Shared/Breadcrumbs.vue";
+// import FixesCostsTable from "@/Components/FixesCosts/FixesCostsTable.vue";
+import ServicesExpensesTable from "@/Components/ServiceExpenses/ServicesExpensesTable.vue";
+import ExpensesTable from "@/Components/Expenses/ExpensesTable.vue";
 
 export default {
-  name:"MachineryShow",
+  name: "MachineryShow",
   metaInfo: { title: "Detalle Maquinaria" },
   // layout: Layout,
   components: {
@@ -129,6 +141,9 @@ export default {
     ServicesTable,
     Breadcrumbs,
     Layout,
+    // FixesCostsTable,
+    ServicesExpensesTable,
+    ExpensesTable,
   },
   props: {
     errors: Object,
@@ -153,6 +168,11 @@ export default {
       ],
     };
   },
+  computed: {
+    TotalAmountFixesCosts() {
+      return this.item.fixes_costs.reduce((acc, curr) => acc + curr.amount, 0);
+    },
+  },
   methods: {
     destroy() {
       if (confirm("Desea Eliminar la Maquinaria?")) {
@@ -166,6 +186,21 @@ export default {
     },
     edit(_item_id) {
       this.$inertia.visit(this.route("machineries.edit", _item_id));
+    },
+    async updateMachineryFixesCosts(items) {
+      // eslint-disable-next-line no-console
+      console.log(items);
+      let payload = {
+        fixes_costs: items,
+      };
+      await this.$inertia.put(
+        this.route("machineries.updateMachineryFixesCosts", this.item.id),
+        payload,
+        {
+          onStart: () => (this.sending = true),
+          onFinish: () => this.$inertia.reload({ only: ["item.fixes_costs"] }),
+        }
+      );
     },
   },
 };

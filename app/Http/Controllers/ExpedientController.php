@@ -21,9 +21,9 @@ class ExpedientController extends Controller
     {
         return
             Inertia::render('Expedients/Index', [
-                'filters' => Request::all('search', 'trashed', 'page'),
+                'filters' => Request::all(['search', 'trashed', 'page']),
                 'expedients' => Expedient::orderByName()
-                    ->filter(Request::only('search', 'trashed', 'folio'))
+                    ->filter(Request::only(['search', 'trashed', 'folio']))
                     ->ownerOrFollowerUser(Auth::user())
                     ->paginate(10)
                     ->transform(function ($expedient) {
@@ -45,7 +45,7 @@ class ExpedientController extends Controller
      * Display the specified resource.
      *
      * @param  \App\Models\Expedient  $expedient
-     * @return \Illuminate\Http\Response
+     * @return \Inertia\Response
      */
     public function show(Expedient $expedient)
     {

@@ -5,11 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class FixesCosts extends Model
+class ExpenseCatalog extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $table = 'fixes_costs';
+    protected $table = 'expense_catalogs';
 
     protected $fillable = [
         'name'
@@ -18,8 +18,9 @@ class FixesCosts extends Model
 
     public function machinery()
     {
-        return $this->belongsToMany(Machinery::class, 'machinery_fixes_costs', 'fixes_costs_id')
-            ->withPivot('amount')
+        return $this->belongsToMany(Machinery::class, 'machinery_expense_pivot_table', 'expense_id')
+            ->using(MachineryExpense::class)
+            ->withPivot('name', 'reference', 'amount', 'charge_date')
             ->withTimestamps();
         ;
     }
@@ -41,5 +42,4 @@ class FixesCosts extends Model
             }
         });
     }
-
 }

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Pivots\MachineryExpense;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Machinery extends Model
@@ -34,9 +35,22 @@ class Machinery extends Model
 
     public function fixesCosts()
     {
-        return $this->belongsToMany(FixesCosts::class, 'machiner_fixes_costs', 'machinery_id')
+        return $this->belongsToMany(FixesCosts::class, 'machinery_fixes_costs', 'machinery_id')
             ->withPivot('amount')
             ->withTimestamps();
+    }
+    public function expenses()
+    {
+        return $this->belongsToMany(ExpenseCatalog::class, 'machinery_expense_pivot_table', 'machinery_id','expense_id')
+            ->using(MachineryExpense::class)
+            ->withPivot('name', 'reference', 'amount', 'charge_date')
+            ->as('expense')
+            ->withTimestamps();
+    }
+
+    public function servicesExpenses()
+    {
+        return $this->hasMany(MachineryServiceExpenses::class, 'machinery_id');
     }
 
     public function scopeOrderByName($query)

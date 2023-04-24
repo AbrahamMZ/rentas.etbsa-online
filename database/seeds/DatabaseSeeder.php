@@ -3,6 +3,8 @@
 use App\Models\Account;
 use App\Models\Category;
 use App\Models\Contact;
+use App\Models\ExpenseCatalog;
+use App\Models\FixesCosts;
 use App\Models\Organization;
 use App\Models\Requirement;
 use App\Models\Status;
@@ -22,7 +24,7 @@ class DatabaseSeeder extends Seeder
         Status::create(['text' => 'Excluidos', 'key' => Status::STATUS_KEY_EXCLUDED]);
 
         $category = Category::create(['name' => 'Retroexcavadoras']);
-
+        ;
         factory(User::class)->create([
             'account_id' => $account->id,
             'first_name' => 'Admin',
@@ -42,6 +44,8 @@ class DatabaseSeeder extends Seeder
                 $contact->update(['organization_id' => $organizations->random()->id]);
             });
 
+        FixesCosts::factory()->count(5)->create();
+        ExpenseCatalog::factory()->count(5)->create();
         factory(Requirement::class, 5)->create();
         factory(Template::class, 1)->create();
         // factory(Expedient::class, 100)->create();

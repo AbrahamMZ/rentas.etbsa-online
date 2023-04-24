@@ -195,11 +195,11 @@
 </template>
 
 <script>
-import DialogModal from '@/Shared/DialogModal'
-import { throttle } from 'lodash'
+import DialogModal from "@/Shared/DialogModal";
+import { throttle } from "lodash";
 
 export default {
-  name: 'ExpedientForm',
+  name: "ExpedientForm",
   components: { DialogModal },
   props: {
     form: { type: Object, required: true },
@@ -218,40 +218,40 @@ export default {
     value: [],
   }),
   watch: {
-    'form.template': {
+    "form.template": {
       handler: throttle(function(template) {
-        this.form.requirements = template ? template.requirements : []
+        this.form.requirements = template ? template.requirements : [];
       }, 150),
     },
   },
   methods: {
     showAddRequirementDialog() {
       if (this.form.requirements && this.form.requirements.length >= 1) {
-        this.addRequirementDialog = true
+        this.addRequirementDialog = true;
       }
     },
     showAddFollowerDialog() {
-      this.addFollowerDialog = true
+      this.addFollowerDialog = true;
     },
     closeModal() {
-      this.addRequirementDialog = false
-      this.addFollowerDialog = false
-      this.value = []
+      this.addRequirementDialog = false;
+      this.addFollowerDialog = false;
+      this.value = [];
     },
     save(item) {
       if (item.id && !this.form.users_followers.some(e => e.id === item.id)) {
-        this.form.users_followers.push(item)
-        return this.closeModal()
+        this.form.users_followers.push(item);
+        return this.closeModal();
       }
       return !item.id
-        ? alert('Seleccione algun Requisito')
-        : alert('Elemento Duplicado')
+        ? alert("Seleccione algun Requisito")
+        : alert("Elemento Duplicado");
     },
     deleteItemConfirm(index) {
-      if (confirm('Se Eliminara de la lista')) {
-        this.form.users_followers.splice(index, 1)
+      if (confirm("Se Eliminara de la lista")) {
+        this.form.users_followers.splice(index, 1);
       }
     },
   },
-}
+};
 </script>

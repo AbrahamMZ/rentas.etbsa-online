@@ -20,15 +20,14 @@
                 />
                 <v-text-field
                   v-model="form.password"
-                  :error-messages="errors.password"
                   label="Contraseña"
-                  min="8"
+                  :error-messages="errors.password"
                   :append-icon="e1 ? 'mdi-eye' : 'mdi-eye-off'"
                   :type="e1 ? 'password' : 'text'"
-                  :rules="passwordRules"
                   counter
                   required
                   outlined
+                  min="8"
                   @click:append="() => (e1 = !e1)"
                 />
                 <v-checkbox

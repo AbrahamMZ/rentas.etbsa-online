@@ -2,23 +2,25 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\FixesCosts;
+use App\Models\ExpenseCatalog;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Response;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
-class FixesCostsController extends Controller
+class ExpenseCatalogController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
+     * @return \Inertia\Response
      */
     public function index()
     {
-        return Inertia::render('FixesCosts/Index', [
+        return Inertia::render('ExpenseCatalogs/Index', [
             'filters' => Request::all(['search', 'trashed', 'page']),
-            'items' => FixesCosts::orderByName()
+            'items' => ExpenseCatalog::orderByName()
                 ->filter(Request::only(['search', 'trashed', 'folio']))
                 ->paginate(10)
                 ->transform(function ($fixes_cost) {
@@ -36,59 +38,60 @@ class FixesCostsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    // public function create()
-    // {
-    //     //
-    // }
+    public function create()
+    {
+        //
+    }
 
     /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * 
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(Request $request)
     {
-        FixesCosts::create(
+        ExpenseCatalog::create(
             Request::validate([
-                'name' => ['required', Rule::unique('fixes_costs')],
+                'name' => ['required', Rule::unique('expense_catalogs')],
             ])
         );
-        return Redirect::route('fixes-costs')
+        return Redirect::route('expenses')
             ->with('success', 'Gasto Fijo Registrada con Exito.');
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\FixesCosts  $fixesCosts
+     * @param  \App\Models\ExpenseCatalog  $expense
      * @return \Illuminate\Http\Response
      */
-    // public function show(FixesCosts $fixesCosts)
-    // {
-    //     //
-    // }
+    public function show(ExpenseCatalog $expense)
+    {
+        //
+    }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\FixesCosts  $fixesCosts
+     * @param  \App\Models\ExpenseCatalog  $expense
      * @return \Illuminate\Http\Response
      */
-    // public function edit(FixesCosts $fixesCosts)
-    // {
-    //     //
-    // }
+    public function edit(ExpenseCatalog $expense)
+    {
+        //
+    }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\FixesCosts  $fixesCosts
+     * @param  \App\Models\ExpenseCatalog  $expense
+     * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(Request $request, FixesCosts $fixesCosts)
+    public function update(Request $request, ExpenseCatalog $expense)
     {
-        $fixesCosts->update(
+        $expense->update(
             Request::validate([
                 'name' => ['required', Rule::unique('fixes_costs')],
             ])
@@ -101,19 +104,31 @@ class FixesCostsController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\FixesCosts  $fixesCosts
+     * @param  \App\Models\ExpenseCatalog  $expense
+     * @return \Illuminate\Http\RedirectResponse
      */
-    public function destroy(FixesCosts $fixesCosts)
+    public function destroy(ExpenseCatalog $expense)
     {
-        $fixesCosts->delete();
+        $expense->delete();
 
         return Redirect::back()->with('success', 'Gasto Fijo Eliminada.');
     }
 
-    public function restore(FixesCosts $fixesCosts)
+    /**
+     * restore the specified resource from storage.
+     *
+     * @param  \App\Models\ExpenseCatalog  $expense
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function restore(ExpenseCatalog $expense)
     {
-        $fixesCosts->restore();
+        $expense->restore();
 
         return Redirect::back()->with('success', 'Gasto Fijo restored.');
+    }
+    public function options()
+    {
+        $expense_options = ExpenseCatalog::get()->map->only('id', 'name');
+        return Response::json(compact('expense_options'));
     }
 }

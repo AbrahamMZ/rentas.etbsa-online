@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTypesServicesTable extends Migration
+class CreateExpenseCatalogsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,12 @@ class CreateTypesServicesTable extends Migration
      */
     public function up()
     {
-        Schema::create('types_services', function (Blueprint $table) {
+        Schema::create('expense_catalogs', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -27,6 +29,6 @@ class CreateTypesServicesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('types_services');
+        Schema::dropIfExists('expense_catalogs');
     }
 }

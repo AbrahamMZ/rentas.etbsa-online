@@ -5,9 +5,12 @@ use App\Http\Controllers\ContactsController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\ExpedientController;
+use App\Http\Controllers\ExpenseCatalogController;
 use App\Http\Controllers\FixesCostsController;
 use App\Http\Controllers\ImagesController;
 use App\Http\Controllers\MachineryController;
+use App\Http\Controllers\MachineryExpenseController;
+use App\Http\Controllers\MachineryServiceExpensesController;
 use App\Http\Controllers\OrganizationsController;
 use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\RequirementController;
@@ -148,6 +151,8 @@ Route::prefix('machineries')->name('machineries')->middleware(['auth', 'role:own
     Route::put('/{machinery}', [MachineryController::class, 'update'])->name('.update');
     Route::delete('/{machinery}', [MachineryController::class, 'destroy'])->name('.destroy');
     Route::put('/{machinery}/restore', [MachineryController::class, 'restore'])->name('.restore');
+
+    Route::put('/{machinery}/updateMachineryFixesCosts', [MachineryController::class, 'updateMachineryFixesCosts'])->name('.updateMachineryFixesCosts');
 });
 
 // FixesCosts
@@ -161,6 +166,43 @@ Route::prefix('fixes-costs')->name('fixes-costs')->middleware(['auth', 'role:own
     Route::delete('/{fixesCosts}', [FixesCostsController::class, 'destroy'])->name('.destroy');
     Route::put('/{fixesCosts}/restore', [FixesCostsController::class, 'restore'])->name('.restore');
 });
+// Expenses Catalog
+Route::prefix('expenses')->name('expenses')->middleware(['auth', 'role:owner'])->group(function () {
+    Route::get('/', [ExpenseCatalogController::class, 'index'])->middleware('remember');
+    // Route::get('/create', [ExpenseCatalogController::class, 'create'])->name('.create');
+    Route::post('/', [ExpenseCatalogController::class, 'store'])->name('.store');
+    // Route::get('/{expense}/edit', [ExpenseCatalogController::class, 'edit'])->name('.edit');
+    // Route::get('/{expense}/show', [ExpenseCatalogController::class, 'show'])->name('.show');
+    Route::put('/{expense}', [ExpenseCatalogController::class, 'update'])->name('.update');
+    Route::delete('/{expense}', [ExpenseCatalogController::class, 'destroy'])->name('.destroy');
+    Route::put('/{expense}/restore', [ExpenseCatalogController::class, 'restore'])->name('.restore');
+    Route::get('/options', [ExpenseCatalogController::class, 'options'])->name('.options');
+
+});
+// Machinery Services Expenses
+Route::prefix('machinery-services-expenses')->name('machinery-services-expenses')->middleware(['auth', 'role:owner'])->group(function () {
+    Route::get('/', [MachineryServiceExpensesController::class, 'index'])->middleware('remember');
+    // Route::get('/create', [MachineryServiceExpensesController::class, 'create'])->name('.create');
+    Route::post('/', [MachineryServiceExpensesController::class, 'store'])->name('.store');
+    // Route::get('/{machineryServiceExpenses}/edit', [MachineryServiceExpensesController::class, 'edit'])->name('.edit');
+    // Route::get('/{machineryServiceExpenses}/show', [MachineryServiceExpensesController::class, 'show'])->name('.show');
+    Route::put('/{machineryServiceExpenses}', [MachineryServiceExpensesController::class, 'update'])->name('.update');
+    Route::delete('/{machineryServiceExpenses}', [MachineryServiceExpensesController::class, 'destroy'])->name('.destroy');
+    Route::put('/{machineryServiceExpenses}/restore', [MachineryServiceExpensesController::class, 'restore'])->name('.restore');
+});
+// Machinery Expenses
+Route::prefix('machinery-expenses')->name('machinery-expenses')->middleware(['auth', 'role:owner'])->group(function () {
+    Route::get('/', [MachineryExpenseController::class, 'index'])->middleware('remember');
+    // Route::get('/create', [MachineryExpenseController::class, 'create'])->name('.create');
+    Route::post('/', [MachineryExpenseController::class, 'store'])->name('.store');
+    // Route::get('/{machineryExpense}/edit', [MachineryExpenseController::class, 'edit'])->name('.edit');
+    // Route::get('/{machineryExpense}/show', [MachineryExpenseController::class, 'show'])->name('.show');
+    Route::put('/{machineryExpense}', [MachineryExpenseController::class, 'update'])->name('.update');
+    Route::delete('/{machineryExpense}', [MachineryExpenseController::class, 'destroy'])->name('.destroy');
+    Route::put('/{machineryExpense}/restore', [MachineryExpenseController::class, 'restore'])->name('.restore');
+});
+
+
 
 // Images
 
