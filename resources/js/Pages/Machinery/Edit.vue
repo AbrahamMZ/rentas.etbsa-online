@@ -31,7 +31,7 @@ import MachineryForm from "@/Components/Machinery/Form";
 import Breadcrumbs from "@/Shared/Breadcrumbs.vue";
 
 export default {
-  name:"MachineryEdit",
+  name: "MachineryEdit",
   metaInfo: { title: "Registrar Maquinaria" },
   // layout: ,
   components: {
@@ -51,11 +51,12 @@ export default {
       sending: false,
       form: {
         category_id: this.item.category_id,
-        no_serie: this.item.no_serie,
-        model: this.item.model,
+        name: this.item.name,
         description: this.item.description,
-        price: this.item.price,
-        sale_price: this.item.sale_price,
+        equipment_serial: this.item.equipment_serial,
+        economic_serial: this.item.economic_serial,
+        engine_serial: this.item.engine_serial,
+        cost_price: this.item.cost_price,
         acquisition_date: this.item.acquisition_date,
         images: [],
       },
@@ -67,7 +68,7 @@ export default {
           exact: true,
         },
         {
-          text: `${this.item.no_serie}`,
+          text: `${this.item.name}`,
           href: this.route("machineries.show", { machinery: this.item.id }),
         },
         { text: "Editar", disabled: true },

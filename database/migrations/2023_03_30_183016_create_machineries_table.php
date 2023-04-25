@@ -15,9 +15,8 @@ class CreateMachineriesTable extends Migration
     {
         Schema::create('machineries', function (Blueprint $table) {
             $table->id();
-            // $table->unsignedBigInteger('brand_id')->index();
             $table->unsignedBigInteger('category_id');
-            $table->unsignedBigInteger('status_id')->default(1);
+            $table->unsignedBigInteger('status_id')->nullable();
 
             $table->string('name');
             $table->string('equipment_serial')->unique()->nullable();
@@ -27,7 +26,7 @@ class CreateMachineriesTable extends Migration
             $table->string('slug')->nullable();
             $table->text('description')->nullable();
 
-            $table->decimal('total_cost_price', 12, 2)->nullable();
+            $table->decimal('cost_price', 12, 2)->nullable();
             $table->decimal('current_price', 12, 2)->nullable();
             $table->decimal('sale_price', 12, 2)->nullable();
 
@@ -40,7 +39,6 @@ class CreateMachineriesTable extends Migration
 
             $table->foreign('category_id')->references('id')->on('categories');
             $table->foreign('status_id')->references('id')->on('status');
-            // $table->foreign('brand_id')->references('id')->on('brands')->onDelete('cascade');
 
             $table->softDeletes();
             $table->timestamps();

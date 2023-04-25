@@ -10,7 +10,7 @@
       :loading="loading"
       hide-default-footer
       dense
-      class="elevation-4 ma-2 overline"
+      class="elevation-4 ma-2 text-uppercase"
     >
       <template #top="{ top }">
         <slot name="top" :top="top" />

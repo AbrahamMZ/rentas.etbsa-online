@@ -13,16 +13,27 @@ class Machinery extends Model
 
     protected $fillable = [
         'category_id',
-        'no_serie',
-        'model',
+        'status_id',
+        'name',
+        'equipment_serial',
+        'economic_serial',
+        'engine_serial',
         'slug',
         'description',
-        'price',
+        'cost_price',
+        'current_price',
         'sale_price',
+        'months_depreciation',
         'acquisition_date',
+        'purchase_date',
         'sale_date',
     ];
 
+    protected $appends = [
+        'total_expenses_amount',
+        'total_service_expenses_amount',
+        'total_cost_equipment'
+    ];
     public function images()
     {
         return $this->hasMany(MachineryImage::class);
@@ -33,17 +44,27 @@ class Machinery extends Model
         return $this->belongsTo(Category::class, 'category_id');
     }
 
-    public function fixesCosts()
-    {
-        return $this->belongsToMany(FixesCosts::class, 'machinery_fixes_costs', 'machinery_id')
-            ->withPivot('amount')
-            ->withTimestamps();
-    }
+    // public function fixesCosts()
+    // {
+    //     return $this->belongsToMany(FixesCosts::class, 'machinery_fixes_costs', 'machinery_id')
+    //         ->withPivot('amount')
+    //         ->withTimestamps();
+    // }
     public function expenses()
     {
-        return $this->belongsToMany(ExpenseCatalog::class, 'machinery_expense_pivot_table', 'machinery_id','expense_id')
+        return $this->belongsToMany(
+            ExpenseCatalog::class,
+            'machinery_expense_pivot_table',
+            'machinery_id',
+            'id'
+        )
             ->using(MachineryExpense::class)
-            ->withPivot('name', 'reference', 'amount', 'charge_date')
+            ->withPivot(
+                'reference',
+                'folio',
+                'amount',
+                'applied_date',
+            )
             ->as('expense')
             ->withTimestamps();
     }
@@ -61,7 +82,8 @@ class Machinery extends Model
     public function scopeFilter($query, array $filters)
     {
         $query->when($filters['search'] ?? null, function ($query, $search) {
-            $query->where('no_serie', 'like', '%' . $search . '%');
+            $query->where('equipment_serial', 'like', '%' . $search . '%')
+                ->orWhere('name', 'like', '%' . $search . '%');
         })->when($filters['trashed'] ?? null, function ($query, $trashed) {
             if ($trashed === 'with') {
                 $query->withTrashed();
@@ -69,5 +91,43 @@ class Machinery extends Model
                 $query->onlyTrashed();
             }
         });
+    }
+
+    /**
+     * Get the total Expenses Amount.
+     *
+     * @return integer
+     */
+    public function getTotalExpensesAmountAttribute()
+    {
+        return $this->expenses->map(function ($item) {
+            return $item->expense;
+        })->reduce(function ($carry, $item) {
+            return $carry + $item->amount;
+        });
+
+    }
+
+    /**
+     * Get the total Service Expenses Amount.
+     *
+     * @return integer
+     */
+    public function getTotalServiceExpensesAmountAttribute()
+    {
+        return $this->servicesExpenses->map(function ($item) {
+            return $item->amount;
+        })->reduce(function ($carry, $item) {
+            return $carry + $item;
+        });
+    }
+    /**
+     * Get the total Cost's Equipmenet Amount.
+     *
+     * @return integer
+     */
+    public function getTotalCostEquipmentAttribute()
+    {
+        return $this->cost_price + $this->total_expenses_amount + $this->total_service_expenses_amount;
     }
 }

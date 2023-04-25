@@ -33,6 +33,19 @@
                   <v-row>
                     <v-col cols="12">
                       <v-text-field
+                        v-model="editedItem.name"
+                        label="Nombre del Cargo Interno"
+                        placeholder="Mano de Obra, Preparacion, Seguro , etc "
+                        :rules="[
+                          () => !!editedItem.name || 'Nombre is required',
+                        ]"
+                        counter="50"
+                        outlined
+                        dense
+                      />
+                    </v-col>
+                    <v-col cols="12">
+                      <v-text-field
                         v-model="editedItem.reference"
                         label="Referencia Cargo Interno (OT)"
                         placeholder="Numero de OT"
@@ -42,19 +55,6 @@
                             'Numero de Referencia es Requerido',
                         ]"
                         counter="20"
-                        outlined
-                        dense
-                      />
-                    </v-col>
-                    <v-col cols="12">
-                      <v-text-field
-                        v-model="editedItem.name"
-                        label="Nombre del Cargo Interno"
-                        placeholder="Mano de Obra, Preparacion, Seguro , etc "
-                        :rules="[
-                          () => !!editedItem.name || 'Nombre is required',
-                        ]"
-                        counter="50"
                         outlined
                         dense
                       />
@@ -139,8 +139,21 @@
         </v-dialog>
       </v-toolbar>
     </template>
+    <template #[`item.name`]="{ item }">
+      <div class="subtitle-2">{{ item.name }}</div>
+      <div class="caption">OT: {{ item.reference }}</div>
+    </template>
+    <template #[`item.description`]="{ item }">
+      <div class="caption text-truncate" style="max-width: 300px">
+        {{ item.description }}
+      </div>
+      <div class="caption">Fecha: {{ item.applied_date }}</div>
+    </template>
     <template #[`item.amount`]="{ value }">
-      {{ value | currency }}
+      <span>
+        {{ value | currency("$", 2, { spaceBetweenAmountAndSymbol: true }) }}
+        MXN
+      </span>
     </template>
     <template #[`item.actions`]="{ item }">
       <v-icon small class="mr-2" @click="editItem(item)"> mdi-pencil </v-icon>
@@ -152,8 +165,12 @@
           <td class="text-right overline" :colspan="headers.length - 2">
             Total:
           </td>
-          <td class="title">
-            {{ TotalAmountServicesExpenses | currency }} MXN
+          <td colspan="2" class="red--text title">
+            {{
+              TotalAmountServicesExpenses
+                | currency("$", 2, { spaceBetweenAmountAndSymbol: true })
+            }}
+            MXN
           </td>
         </tr>
       </tfoot>
@@ -164,7 +181,6 @@
   </v-data-table>
 </template>
 <script>
-// import { router } from "@inertiajs/vue2";
 export default {
   props: {
     items: {
@@ -188,8 +204,8 @@ export default {
         sortable: false,
         value: "name",
       },
-      { text: "Descripcion", value: "description" },
-      { text: "Importe", value: "amount" },
+      { text: "Descripcion", value: "description", divider: true },
+      { text: "Importe", value: "amount", cellClass: "title" },
       { text: "Actions", value: "actions", sortable: false },
     ],
     servicesExpenses: [],
@@ -200,7 +216,9 @@ export default {
       name: "",
       description: "",
       amount: 0,
-      applied_date: "",
+      applied_date: null,
+      // machinery_id: null,
+      // status_id: null,
     },
     defaultItem: {
       id: null,
@@ -208,7 +226,9 @@ export default {
       name: "",
       description: "",
       amount: 0,
-      applied_date: "",
+      applied_date: null,
+      // machinery_id: null,
+      // status_id: null,
     },
   }),
 
@@ -233,6 +253,8 @@ export default {
   },
 
   mounted() {
+    // eslint-disable-next-line no-console
+    console.log("mounted ServicesExpensesTable");
     this.initialize();
   },
 
@@ -240,7 +262,6 @@ export default {
     initialize() {
       this.servicesExpenses = this.items;
     },
-
     editItem(item) {
       this.editedIndex = this.servicesExpenses.indexOf(item);
       this.editedItem = Object.assign({}, item);
@@ -304,13 +325,8 @@ export default {
         payload,
         {
           onStart: () => (_this.sending = true),
-          onFinish: () => {
-            _this.sending = false;
-            // _this.$nextTick(() => {
-            //   _this.initialize();
-            // });
-          },
-          only: ["item"],
+          onFinish: () => ((_this.sending = false), _this.initialize()),
+          only: ["item", "flash", "errors"],
           preserveState: true,
         }
       );
@@ -326,10 +342,8 @@ export default {
         payload,
         {
           onStart: () => (_this.sending = true),
-          onFinish: () => {
-            _this.sending = false;
-          },
-          only: ["item"],
+          onFinish: () => ((_this.sending = false), _this.initialize()),
+          only: ["item", "flash", "errors"],
           preserveState: true,
         }
       );
@@ -339,7 +353,8 @@ export default {
       await _this.$inertia.delete(
         _this.route("machinery-services-expenses.destroy", _this.editedItem.id),
         {
-          only: ["item"],
+          onFinish: () => ((_this.sending = false), _this.initialize()),
+          only: ["item", "flash", "errors"],
           preserveState: true,
         }
       );

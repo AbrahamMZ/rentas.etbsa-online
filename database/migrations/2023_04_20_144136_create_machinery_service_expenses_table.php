@@ -16,13 +16,13 @@ class CreateMachineryServiceExpensesTable extends Migration
         Schema::create('machinery_service_expenses', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('machinery_id')->index();
-            $table->unsignedBigInteger('status_id');
+            $table->unsignedBigInteger('status_id')->nullable();
 
+            $table->string('reference');
             $table->string('name');
+            $table->text('description')->nullable();
             $table->double('amount')->default(0);
-            $table->string('description')->nullable();
-            $table->date('work_start_date')->nullable();
-            $table->date('work_end_date')->nullable();
+            $table->date('applied_date')->nullable();
 
             $table->foreign('machinery_id')->references('id')
                 ->on('machineries')->onDelete('cascade');

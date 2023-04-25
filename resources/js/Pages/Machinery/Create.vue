@@ -84,22 +84,23 @@ export default {
       sending: false,
       form: {
         category_id: null,
-        no_serie: null,
-        model: null,
-        description: null,
-        price: null,
-        sale_price: null,
-        acquisition_date: null,
-        // fixes_costs: JSON.parse(JSON.stringify(this.formOptions.fixesCosts)),
-        // expenses: JSON.parse(
-        //   JSON.stringify(this.formOptions.expenses)
-        // ),
-        // services_expenses: JSON.parse(
-        //   JSON.stringify(this.formOptions.servicesExpenses)
-        // ),
+        name: "",
+        equipment_serial: "",
+        economic_serial: "",
+        engine_serial: "",
+        description: "",
+        cost_price: "",
+        acquisition_date: "",
         expenses: [],
         services_expenses: [],
         images: [],
+        // current_price: null,
+        // status_id: null,
+        // slug: null,
+        // sale_price: null,
+        // months_depreciation: null,
+        // purchase_date: null,
+        // sale_date: null,
       },
       breadcrumbs: [
         {

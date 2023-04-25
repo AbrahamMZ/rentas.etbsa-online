@@ -18,10 +18,10 @@ class CreateMachineryExpensePivotTable extends Migration
             $table->unsignedBigInteger('machinery_id')->index();
             $table->unsignedBigInteger('expense_id');
 
-            $table->string('description');
+            $table->string('reference');
             $table->string('folio')->nullable();
             $table->double('amount')->default(0);
-            $table->date('charge_date')->nullable();
+            $table->date('applied_date')->nullable();
 
             $table->foreign('machinery_id')->references('id')
                 ->on('machineries')->onDelete('cascade');

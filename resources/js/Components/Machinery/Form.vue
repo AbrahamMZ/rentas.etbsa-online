@@ -2,6 +2,17 @@
   <v-form ref="machinery_form_ref">
     <v-row>
       <v-col cols="12">
+        <v-text-field
+          v-model="form.name"
+          :error-messages="errors.name"
+          label="Nombre del Equipo"
+          placeholder="Modelo"
+          class="overline"
+          outlined
+          dense
+        />
+      </v-col>
+      <v-col cols="12">
         <v-select
           v-model="form.category_id"
           :error-messages="errors.category_id"
@@ -12,27 +23,31 @@
           dense
         />
       </v-col>
-      <v-col cols="6">
+      <v-col cols="12">
         <v-text-field
-          v-model="form.no_serie"
-          :error-messages="errors.no_serie"
-          label="No. Serie"
+          v-model="form.equipment_serial"
+          :error-messages="errors.equipment_serial"
+          label="No. Serie Equipo"
           class="overline"
           outlined
           dense
         />
       </v-col>
-      <v-col cols="6">
-        <v-text-field label="No. Serie Motor" class="overline" outlined dense />
-      </v-col>
       <v-col cols="12">
-        <v-text-field label="No. Economico" class="overline" outlined dense />
+        <v-text-field
+          v-model="form.engine_serial"
+          :error-messages="errors.engine_serial"
+          label="No. Serie Motor"
+          class="overline"
+          outlined
+          dense
+        />
       </v-col>
       <v-col cols="12">
         <v-text-field
-          v-model="form.model"
-          :error-messages="errors.model"
-          label="Modelo"
+          v-model="form.economic_serial"
+          :error-messages="errors.economic_serial"
+          label="No. Economico"
           class="overline"
           outlined
           dense
@@ -50,8 +65,8 @@
       </v-col>
       <v-col cols="12">
         <v-text-field
-          v-model.number="form.price"
-          :error-messages="errors.price"
+          v-model.number="form.cost_price"
+          :error-messages="errors.cost_price"
           label="Costo del Equipo"
           class="overline"
           type="number"

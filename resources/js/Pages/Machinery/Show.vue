@@ -12,9 +12,11 @@
           <v-card color="grey lighten-4" min-height="100%">
             <v-card-text class="text-center pa-2">
               <h3 class="text-h4 mb-2">
-                {{ item.model }}
+                {{ item.name }}
               </h3>
-              <div class="grey--text mb-2 font-weight-bold">N.E. 34324</div>
+              <div class="grey--text mb-2 font-weight-bold">
+                N.E. {{ item.economic_serial }}
+              </div>
               <div class="blue--text mb-2 font-weight-bold">
                 {{ item.category }}
               </div>
@@ -24,16 +26,30 @@
               <v-col class="text-right mr-4 mb-2" tag="strong" cols="5">
                 No. Serie Equipo:
               </v-col>
-              <v-col>{{ item.no_serie }}</v-col>
+              <v-col>{{ item.equipment_serial }}</v-col>
               <v-col class="text-right mr-4 mb-2" tag="strong" cols="5">
                 Serie Motor:
               </v-col>
-              <v-col>CH4X32133T4324</v-col>
+              <v-col>{{ item.engine_serial }}</v-col>
               <v-col class="text-right mr-4 mb-2" tag="strong" cols="5">
                 Valor de Maquina:
               </v-col>
               <v-col>
-                {{ item.price | currency }}
+                {{
+                  item.cost_price
+                    | currency("$", 2, { spaceBetweenAmountAndSymbol: true })
+                }}
+                MXN
+              </v-col>
+              <v-col class="text-right mr-4 mb-2" tag="strong" cols="5">
+                Costo del Equipo:
+              </v-col>
+              <v-col>
+                {{
+                  TotalCostEquipment
+                    | currency("$", 2, { spaceBetweenAmountAndSymbol: true })
+                }}
+                MXN
               </v-col>
               <v-col class="text-right mr-4 mb-2" tag="strong" cols="5">
                 Fecha de Adquisicion:
@@ -79,11 +95,6 @@
               <v-tab-item>
                 <v-card>
                   <v-card-text>
-                    <!-- <fixes-costs-table
-                      :items="item.fixes_costs"
-                      editable
-                      @submit="updateMachineryFixesCosts"
-                    /> -->
                     <expenses-table
                       :items.sync="item.expenses"
                       :machinery-id="item.id"
@@ -102,16 +113,16 @@
                 </v-card>
               </v-tab-item>
               <v-tab-item>
-                <v-card flat>
+                <v-card flat height="200px">
                   <v-card-text>
-                    <services-table />
+                    <div class="text-center text-h2">En Desarrollo</div>
                   </v-card-text>
                 </v-card>
               </v-tab-item>
               <v-tab-item>
-                <v-card flat>
+                <v-card flat height="200px">
                   <v-card-text>
-                    <services-table />
+                    <div class="text-center text-h2">En Desarrollo</div>
                   </v-card-text>
                 </v-card>
               </v-tab-item>
@@ -128,7 +139,6 @@ import Layout from "@/Shared/Layout";
 import TrashedMessage from "@/Shared/TrashedMessage";
 import ServicesTable from "@/Components/Machinery/ServicesTable.vue";
 import Breadcrumbs from "@/Shared/Breadcrumbs.vue";
-// import FixesCostsTable from "@/Components/FixesCosts/FixesCostsTable.vue";
 import ServicesExpensesTable from "@/Components/ServiceExpenses/ServicesExpensesTable.vue";
 import ExpensesTable from "@/Components/Expenses/ExpensesTable.vue";
 
@@ -141,7 +151,6 @@ export default {
     ServicesTable,
     Breadcrumbs,
     Layout,
-    // FixesCostsTable,
     ServicesExpensesTable,
     ExpensesTable,
   },
@@ -160,7 +169,7 @@ export default {
           href: this.route("machineries"),
           exact: true,
         },
-        { text: `${this.item.no_serie}`, disabled: true },
+        { text: `${this.item.name}`, disabled: true },
         {
           text: "Detalle",
           disabled: true,
@@ -169,8 +178,21 @@ export default {
     };
   },
   computed: {
-    TotalAmountFixesCosts() {
-      return this.item.fixes_costs.reduce((acc, curr) => acc + curr.amount, 0);
+    TotalAmountExpenses() {
+      return this.item.expenses.reduce((acc, curr) => acc + curr.amount, 0);
+    },
+    TotalAmountSerivcesExpenses() {
+      return this.item.serivces_expenses.reduce(
+        (acc, curr) => acc + curr.amount,
+        0
+      );
+    },
+    TotalCostEquipment() {
+      return (
+        this.TotalAmountExpenses +
+        this.TotalAmountSerivcesExpenses +
+        Number(this.item.cost_price)
+      );
     },
   },
   methods: {
@@ -187,21 +209,20 @@ export default {
     edit(_item_id) {
       this.$inertia.visit(this.route("machineries.edit", _item_id));
     },
-    async updateMachineryFixesCosts(items) {
-      // eslint-disable-next-line no-console
-      console.log(items);
-      let payload = {
-        fixes_costs: items,
-      };
-      await this.$inertia.put(
-        this.route("machineries.updateMachineryFixesCosts", this.item.id),
-        payload,
-        {
-          onStart: () => (this.sending = true),
-          onFinish: () => this.$inertia.reload({ only: ["item.fixes_costs"] }),
-        }
-      );
-    },
+    // async updateMachineryFixesCosts(items) {
+
+    //   let payload = {
+    //     fixes_costs: items,
+    //   };
+    //   await this.$inertia.put(
+    //     this.route("machineries.updateMachineryFixesCosts", this.item.id),
+    //     payload,
+    //     {
+    //       onStart: () => (this.sending = true),
+    //       onFinish: () => this.$inertia.reload({ only: ["item.fixes_costs"] }),
+    //     }
+    //   );
+    // },
   },
 };
 </script>

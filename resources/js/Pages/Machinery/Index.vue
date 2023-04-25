@@ -43,13 +43,35 @@
         <template #item="{ item }">
           <tr>
             <td class="text-no-wrap">
-              {{ item.no_serie }}
+              <div class="font-weight-bold">{{ item.name }}</div>
+              <span class="caption">serie: {{ item.equipment_serial }}</span>
+            </td>
+            <td class="text-no-wrap">
+              <span class="subtitle-2">{{ item.engine_serial }}</span>
             </td>
             <td class="text-no-wrap">
               {{ item.category }}
             </td>
             <td class="text-no-wrap">
-              {{ item.price | currency }}
+              {{
+                item.total_expenses_amount
+                  | currency("$", 2, { spaceBetweenAmountAndSymbol: true })
+              }}
+              MXN
+            </td>
+            <td class="text-no-wrap">
+              {{
+                item.total_service_expenses_amount
+                  | currency("$", 2, { spaceBetweenAmountAndSymbol: true })
+              }}
+              MXN
+            </td>
+            <td class="text-no-wrap">
+              {{
+                item.total_cost_equipment
+                  | currency("$", 2, { spaceBetweenAmountAndSymbol: true })
+              }}
+              MXN
             </td>
 
             <td class="text-right">
@@ -103,14 +125,19 @@ export default {
   data() {
     return {
       headers: [
-        // { text: "ID", width: "75", value: "id" },
-        { text: "No. Serie", value: "no_serie" },
+        { text: "Nombre Equipo", value: "name" },
+        { text: "Serie Motor", value: "engine_serial" },
         { text: "Categoria ", value: "category" },
-        { text: "Costo del Equipo", value: "price" },
+        {
+          text: "Gastos Totales",
+          value: "total_expenses_amount",
+          cellClass: "title",
+        },
+        { text: "Cargos Totales", value: "total_service_expenses_amount" },
+        { text: "Costo Total Equipo", value: "total_cost_equipment" },
         {
           text: "",
           align: "end",
-          width: "250",
           value: "action",
           sortable: false,
         },

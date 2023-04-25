@@ -41,10 +41,10 @@ class MachineryExpenseController extends Controller
             Request::validate([
                 'machinery_id' => ['required'],
                 'expense_id' => ['required'],
-                'name' => ['required'],
                 'reference' => ['required'],
+                'folio' => ['required'],
                 'amount' => ['required'],
-                'charge_date' => ['required'],
+                'applied_date' => ['required'],
             ])
         );
         return Redirect::back()->with('success', 'Gasto registrado con Exito.');
@@ -85,11 +85,12 @@ class MachineryExpenseController extends Controller
         $machineryExpense->update(
             array_merge(
                 Request::validate([
+                    // 'machinery_id' => ['required'],
                     'expense_id' => ['required'],
-                    'name' => ['required'],
                     'reference' => ['required'],
+                    'folio' => ['required'],
                     'amount' => ['required'],
-                    'charge_date' => ['required'],
+                    'applied_date' => ['required'],
                 ])
                 ,
                 [

@@ -13,13 +13,12 @@ class MachineryServiceExpenses extends Model
 
     protected $fillable = [
         'machinery_id',
+        'status_id',
+        'reference',
         'name',
         'description',
         'amount',
-        'description',
-        'work_start_date',
-        'work_end_date',
-        'staatus_id'
+        'applied_date',
     ];
 
     public function machinery()

@@ -38,13 +38,9 @@
         :items="items.data"
         :headers="headers"
         with-search
-        sort-by="name"
       >
         <template #item="{ item }">
           <tr>
-            <!-- <td>
-              {{ item.id }}
-            </td> -->
             <td class="text-no-wrap">
               {{ item.name }}
             </td>

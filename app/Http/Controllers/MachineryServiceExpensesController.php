@@ -42,8 +42,10 @@ class MachineryServiceExpensesController extends Controller
             Request::validate([
                 'machinery_id' => ['required'],
                 'name' => ['required'],
+                'reference' => ['required'],
                 'description' => ['required'],
                 'amount' => ['required'],
+                'applied_date' => ['required'],
             ])
         );
 
@@ -86,8 +88,10 @@ class MachineryServiceExpensesController extends Controller
             Request::validate([
                 'machinery_id' => ['required'],
                 'name' => ['required'],
+                'reference' => ['required'],
                 'description' => ['required'],
                 'amount' => ['required'],
+                'applied_date' => ['required'],
             ])
         );
 

@@ -61,10 +61,10 @@ class HandleInertiaRequests extends Middleware
                 ['label' => 'Expedientes', 'route' => 'expedients', "icon" => 'mdi-folder', 'show' => true],
                 ['label' => 'Plantillas', 'route' => 'templates', "icon" => 'mdi-content-copy', 'show' => $request->user()->owner ?? false],
                 ['label' => 'Requisitos', 'route' => 'requirements', "icon" => 'mdi-alert-octagon', 'show' => $request->user()->owner ?? false],
-                ['label' => 'Maquinaria', 'route' => 'machineries', "icon" => 'mdi-alert-octagon', 'show' => $request->user()->owner ?? false],
+                ['label' => 'Maquinarias', 'route' => 'machineries', "icon" => 'mdi-alert-octagon', 'show' => $request->user()->owner ?? false],
                 // ['label' => 'Costos Fijos', 'route' => 'fixes-costs', "icon" => 'mdi-alert-octagon', 'show' => $request->user()->owner ?? false],
                 ['label' => 'Catalogo Gastos', 'route' => 'expenses', "icon" => 'mdi-alert-octagon', 'show' => $request->user()->owner ?? false],
-                ['label' => 'Categorias', 'route' => '', "icon" => 'mdi-shape-plus', 'show' => $request->user()->owner ?? false],
+                // ['label' => 'Categorias', 'route' => '', "icon" => 'mdi-shape-plus', 'show' => $request->user()->owner ?? false],
                 ['label' => 'Usuarios', 'route' => 'users', "icon" => 'mdi-account-box-multiple', 'show' => $request->user()->owner ?? false],
             ],
             'flash' => function () use ($request) {

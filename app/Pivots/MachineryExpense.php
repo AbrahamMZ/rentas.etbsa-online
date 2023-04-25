@@ -21,10 +21,10 @@ class MachineryExpense extends Pivot
     protected $fillable = [
         'machinery_id',
         'expense_id',
-        'name',
         'reference',
+        'folio',
         'amount',
-        'charge_date',
+        'applied_date',
     ];
 
     public function machinery()

@@ -43,8 +43,9 @@
                     </v-col>
                     <v-col cols="12">
                       <v-text-field
-                        v-model="editedItem.name"
-                        label="Referencia del Gasto"
+                        v-model="editedItem.reference"
+                        label="Nombre o Referencia del Gasto"
+                        placeholder="Emisor de Factura"
                         :rules="[(v) => !!v || 'Requerido']"
                         counter="50"
                         outlined
@@ -53,7 +54,7 @@
                     </v-col>
                     <v-col cols="12" md="6">
                       <v-text-field
-                        v-model="editedItem.reference"
+                        v-model="editedItem.folio"
                         label="Folio Factura"
                         :rules="[(v) => !!v || 'Requerido']"
                         outlined
@@ -74,7 +75,7 @@
                     </v-col>
                     <v-col cols="12">
                       <v-text-field
-                        v-model="editedItem.charge_date"
+                        v-model="editedItem.applied_date"
                         label="Fecha de Aplicacion"
                         :rules="[(v) => !!v || 'Requerido']"
                         type="date"
@@ -121,8 +122,12 @@
         </v-dialog>
       </v-toolbar>
     </template>
+    <template #[`item.reference`]="{ item }">
+      <div class="subtitle-2">{{ item.reference }}</div>
+      <div class="caption">{{ item.folio }}</div>
+    </template>
     <template #[`item.amount`]="{ value }">
-      {{ value | currency }}
+      {{ value | currency("$", 2, { spaceBetweenAmountAndSymbol: true }) }} MXN
     </template>
     <template #[`item.actions`]="{ item }">
       <v-icon small class="mr-2" @click="editItem(item)"> mdi-pencil </v-icon>
@@ -134,7 +139,13 @@
           <td class="text-right overline" :colspan="headers.length - 2">
             Total:
           </td>
-          <td class="title">{{ TotalAmountexpenses | currency }} MXN</td>
+          <td colspan="2" class="red--text title">
+            {{
+              TotalAmountexpenses
+                | currency("$", 2, { spaceBetweenAmountAndSymbol: true })
+            }}
+            MXN
+          </td>
         </tr>
       </tfoot>
     </template>
@@ -165,13 +176,13 @@ export default {
     dialogDelete: false,
     headers: [
       {
-        text: "Cargo Servicio",
+        text: "Gasto",
         align: "start",
         sortable: false,
         value: "expense.name",
       },
-      { text: "Referencia", value: "reference" },
-      { text: "Importe", value: "amount" },
+      { text: "Referencia", value: "reference", divider: true },
+      { text: "Importe", value: "amount", cellClass: "title" },
       { text: "Actions", value: "actions", sortable: false },
     ],
     expenses: [],
@@ -184,22 +195,24 @@ export default {
       expense: {
         id: null,
       },
-      expense_id: null,
-      name: "",
+      expense_id: "",
       reference: "",
+      folio: "",
       amount: 0,
-      charge_date: "",
+      applied_date: null,
+      // machinery_id: null,
     },
     defaultItem: {
       id: null,
       expense: {
         id: null,
       },
-      expense_id: null,
-      name: "",
+      expense_id: "",
       reference: "",
+      folio: "",
       amount: 0,
-      charge_date: "",
+      applied_date: null,
+      // machinery_id: null,
     },
   }),
 
@@ -222,15 +235,17 @@ export default {
   },
 
   mounted() {
+    // eslint-disable-next-line no-console
+    console.log("mounted ExpensesTable");
     this.initialize();
+    this.getFormOptions();
   },
 
   methods: {
     initialize() {
       this.expenses = this.items;
-      this.getExpensesCatalog();
     },
-    async getExpensesCatalog() {
+    async getFormOptions() {
       const { data } = await axios.get(this.route("expenses.options"));
       this.options = data;
     },
@@ -303,11 +318,9 @@ export default {
         payload,
         {
           onStart: () => (_this.sending = true),
-          onFinish: () => {
-            _this.sending = false;
-          },
-          only: ["item"],
-          preserveState: false,
+          onFinish: () => ((_this.sending = false), _this.initialize()),
+          only: ["item", "flash", "errors"],
+          preserveState: true,
         }
       );
     },
@@ -323,11 +336,9 @@ export default {
         payload,
         {
           onStart: () => (_this.sending = true),
-          onFinish: () => {
-            _this.sending = false;
-          },
-          only: ["item"],
-          preserveState: false,
+          onFinish: () => ((_this.sending = false), _this.initialize()),
+          only: ["item", "flash", "errors"],
+          preserveState: true,
         }
       );
     },
@@ -336,8 +347,9 @@ export default {
       _this.$inertia.delete(
         _this.route("machinery-expenses.destroy", _this.editedItem.id),
         {
-          only: ["item"],
-          preserveState: false,
+          onFinish: () => ((_this.sending = false), _this.initialize()),
+          only: ["item", "flash", "errors"],
+          preserveState: true,
         }
       );
     },

@@ -31,10 +31,18 @@ class MachineryController extends Controller
                 ->transform(function ($machinery) {
                     return [
                         'id' => $machinery->id,
-                        'no_serie' => $machinery->no_serie,
-                        'price' => $machinery->price,
                         'category' => $machinery->category->name,
+                        'name' => $machinery->name,
+                        'equipment_serial' => $machinery->equipment_serial,
+                        'economic_serial' => $machinery->economic_serial,
+                        'engine_serial' => $machinery->engine_serial,
+                        'description' => $machinery->description,
+                        'cost_price' => $machinery->cost_price,
+                        'acquisition_date' => $machinery->acquisition_date,
                         'deleted_at' => $machinery->deleted_at,
+                        'total_expenses_amount' => $machinery->total_expenses_amount,
+                        'total_service_expenses_amount' => $machinery->total_service_expenses_amount,
+                        'total_cost_equipment' => $machinery->total_cost_equipment,
                     ];
                 }),
         ]);
@@ -65,20 +73,17 @@ class MachineryController extends Controller
             tap(
                 Machinery::create(
                     Request::validate([
-                        'category_id' => ['required', 'max:100'],
-                        'no_serie' => ['required', 'max:100', Rule::unique('machineries')],
-                        'model' => ['required'],
-                        'price' => ['required'],
-                        'acquisition_date' => ['nullable'],
+                        'category_id' => ['required'],
+                        'name' => ['required'],
+                        'equipment_serial' => ['required', 'max:50', Rule::unique('machineries')],
+                        'economic_serial' => ['required', 'max:50', Rule::unique('machineries')],
+                        'engine_serial' => ['required', 'max:50', Rule::unique('machineries')],
                         'description' => ['nullable'],
-
+                        'cost_price' => ['required'],
+                        'acquisition_date' => ['nullable'],
                     ])
                 ),
                 function (Machinery $machinery) {
-                    // $this->syncFixesCosts(
-                    //     $machinery,
-                    //     Request::validate(['fixes_costs' => ['array']])['fixes_costs']
-                    // );
                     $this->createOrUpdateMachineryExpense(
                         $machinery,
                         Request::validate(['expenses' => ['array']])['expenses']
@@ -120,42 +125,40 @@ class MachineryController extends Controller
         return Inertia::render('Machinery/Show', [
             'item' => [
                 'id' => $machinery->id,
-                'category_id' => $machinery->category_id,
                 'category' => $machinery->category->name,
-                'no_serie' => $machinery->no_serie,
-                'model' => $machinery->model,
+                'name' => $machinery->name,
+                'equipment_serial' => $machinery->equipment_serial,
+                'economic_serial' => $machinery->economic_serial,
+                'engine_serial' => $machinery->engine_serial,
                 'description' => $machinery->description,
-                'price' => $machinery->price,
+                'cost_price' => $machinery->cost_price,
                 'acquisition_date' => $machinery->acquisition_date,
-                'fixes_costs' => collect($this->getAllFixesCosts())->merge(
-                    $machinery->fixesCosts->map(function ($item) {
-                        return [
-                            'id' => $item->id,
-                            'name' => $item->name,
-                            'amount' => $item->pivot->amount,
-                        ];
-                    })
-                )->keyBy('id')->values()->all(),
-                // 'expenses' => $machinery->expenses,
-                'expenses' => MachineryExpense::with('expense')->where('machinery_id', $machinery->id)->get()
+                'deleted_at' => $machinery->deleted_at,
+                'expenses' => MachineryExpense::with('expense')
+                    ->where('machinery_id', $machinery->id)->get()
                     ->map(function ($item) {
                         return [
                             "id" => $item->id,
                             "expense" => [
-                                "id" => $item->expense->id
-                                ,
+                                "id" => $item->expense->id,
                                 "name" => $item->expense->name
                             ],
                             "expense_id" => $item->expense_id,
-                            "name" => $item->name,
-                            "reference" => $item->reference,
-                            "amount" => $item->amount,
-                            "charge_date" => $item->charge_date
+                            'reference' => $item->reference,
+                            'folio' => $item->folio,
+                            'amount' => $item->amount,
+                            'applied_date' => $item->applied_date,
                         ];
                     }),
-                // ->get()->map->only('id', 'name', 'amount'),
-                'serivces_expenses' => $machinery->servicesExpenses,
-                'deleted_at' => $machinery->deleted_at,
+                'serivces_expenses' => $machinery->servicesExpenses->map
+                    ->only(
+                        'id',
+                        'reference',
+                        'name',
+                        'description',
+                        'amount',
+                        'applied_date',
+                    ),
             ],
         ]);
     }
@@ -173,12 +176,13 @@ class MachineryController extends Controller
             'item' => [
                 'id' => $machinery->id,
                 'category_id' => $machinery->category_id,
-                'no_serie' => $machinery->no_serie,
-                'model' => $machinery->model,
+                'name' => $machinery->name,
+                'equipment_serial' => $machinery->equipment_serial,
+                'economic_serial' => $machinery->economic_serial,
+                'engine_serial' => $machinery->engine_serial,
                 'description' => $machinery->description,
-                'price' => $machinery->price,
+                'cost_price' => $machinery->cost_price,
                 'acquisition_date' => $machinery->acquisition_date,
-                'fixes_costs' => $machinery->fixesCosts->only('id', 'name', 'pivot.amount'),
                 'deleted_at' => $machinery->deleted_at,
             ],
         ]);
@@ -197,12 +201,23 @@ class MachineryController extends Controller
 
             $machinery->update(
                 Request::validate([
-                    'category_id' => ['required', 'max:100'],
-                    'no_serie' => ['required', 'max:100', Rule::unique('machineries')->ignore($machinery->id)],
-                    'model' => ['required'],
-                    'price' => ['required'],
-                    'acquisition_date' => ['nullable'],
+                    'category_id' => ['required'],
+                    'name' => ['required'],
+                    'equipment_serial' => [
+                        'required',
+                        'max:50', Rule::unique('machineries')->ignore($machinery->id)
+                    ],
+                    'engine_serial' => [
+                        'required',
+                        'max:50', Rule::unique('machineries')->ignore($machinery->id)
+                    ],
+                    'economic_serial' => [
+                        'required',
+                        'max:50',
+                    ],
                     'description' => ['nullable'],
+                    'cost_price' => ['required'],
+                    'acquisition_date' => ['nullable'],
                 ])
             );
 
@@ -250,12 +265,12 @@ class MachineryController extends Controller
                 return ['value' => $item->id, 'text' => $item->name];
             }),
             // 'fixesCosts' => $this->getAllFixesCosts(),
-            'expensesCatalogs' => ExpenseCatalog::get()->map(function ($expense) {
-                return [
-                    'value' => $expense->id,
-                    'text' => $expense->name,
-                ];
-            }),
+            // 'expensesCatalogs' => ExpenseCatalog::get()->map(function ($expense) {
+            //     return [
+            //         'value' => $expense->id,
+            //         'text' => $expense->name,
+            //     ];
+            // }),
             // 'servicesExpenses' => [],
             // 'expenses' => []
         ];
@@ -287,10 +302,10 @@ class MachineryController extends Controller
                     'id' => $item['id'],
                     'machinery_id' => $machinery->id,
                     'expense_id' => $item['expense_id'],
-                    'name' => $item['name'],
                     'reference' => $item['reference'],
+                    'folio' => $item['folio'],
                     'amount' => $item['amount'],
-                    'charge_date' => $item['charge_date'],
+                    'applied_date' => $item['applied_date'],
                 ];
             }, $payload);
 

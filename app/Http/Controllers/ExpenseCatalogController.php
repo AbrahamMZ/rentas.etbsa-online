@@ -97,7 +97,7 @@ class ExpenseCatalogController extends Controller
             ])
         );
 
-        return Redirect::route('fixes-costs')
+        return Redirect::back()
             ->with('success', 'Gasto Fijo Actualizado con Exito.');
     }
 
