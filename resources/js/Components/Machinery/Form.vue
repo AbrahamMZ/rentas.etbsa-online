@@ -63,7 +63,7 @@
           dense
         />
       </v-col>
-      <v-col cols="12">
+      <v-col cols="6">
         <v-text-field
           v-model.number="form.cost_price"
           :error-messages="errors.cost_price"
@@ -75,11 +75,49 @@
           dense
         />
       </v-col>
+      <v-col cols="6">
+        <v-text-field
+          v-model.number="form.percent_depreciation"
+          :error-messages="errors.percent_depreciation"
+          :rules="[
+            () => !!form.percent_depreciation || 'Requerido',
+            () => form.percent_depreciation <= 100 || 'No debe ser Mayor a 100',
+            () => form.percent_depreciation > 1 || 'Debe ser Mayor a 1',
+          ]"
+          label="% Depreciacion"
+          class="overline"
+          type="number"
+          suffix="%"
+          outlined
+          dense
+        />
+      </v-col>
+      <v-col cols="12">
+        <v-text-field
+          v-model="form.invoice"
+          :error-messages="errors.invoice"
+          label="Folio Factura"
+          class="overline"
+          outlined
+          dense
+        />
+      </v-col>
       <v-col cols="12">
         <v-text-field
           v-model="form.acquisition_date"
           :error-messages="errors.acquisition_date"
           label="Fecha de la Adquisicion"
+          class="overline"
+          type="date"
+          outlined
+          dense
+        />
+      </v-col>
+      <v-col cols="12">
+        <v-text-field
+          v-model="form.warranty_date"
+          :error-messages="errors.warranty_date"
+          label="Fecha Garantia Extendida"
           class="overline"
           type="date"
           outlined

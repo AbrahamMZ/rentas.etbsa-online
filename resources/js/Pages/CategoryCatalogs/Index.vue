@@ -29,7 +29,7 @@
     </search-filter>
     <v-row class="text-end px-4" no-gutters justify="end" align="center">
       <v-col cols="12" md="3" class="pa-2">
-        <v-btn @click="create()">Agregar Nuevo Gasto</v-btn>
+        <v-btn @click="create()">Agregar Categoria</v-btn>
       </v-col>
     </v-row>
 
@@ -72,16 +72,16 @@
       v-if="items.links.length > 1"
       :links="items.links"
       :page="form.page"
-      route="expenses"
+      route="categories"
       @input="(v) => (form.page = v)"
     />
     <dialog-modal :show="dialog" max-width="500" persistent @close="close()">
-      <template #title> {{ formTitle }} Tipo de Gasto </template>
+      <template #title> {{ formTitle }} Categoria </template>
       <template #content>
         <v-text-field
           v-model="editedForm.name"
           outlined
-          label="Nombre Tipo de Gasto:"
+          label="Nombre Categoria:"
           :error-messages="editedForm.errors.name"
         />
       </template>
@@ -122,7 +122,7 @@ import DialogModal from "@/Shared/DialogModal.vue";
 import ConfirmationModal from "@/Shared/ConfirmationModal.vue";
 
 export default {
-  name: "ExpenseCatalogIndex",
+  name: "CategoryCatalogIndex",
   metaInfo: { title: "Costos Fijos" },
   // layout: Layout,
   components: {
@@ -138,7 +138,7 @@ export default {
   data() {
     return {
       headers: [
-        { text: "Nombre Gasto", value: "name" },
+        { text: "Nombre Categoria", value: "name" },
         {
           text: "",
           align: "end",
@@ -158,7 +158,7 @@ export default {
         { text: "Con", value: "with" },
         { text: "Solamente", value: "only" },
       ],
-      breadcrumbs: [{ text: "Costos Fijos", disabled: true }],
+      breadcrumbs: [{ text: "Categorias", disabled: true }],
       dialog: false,
       dialogDelete: false,
       sending: false,
@@ -170,7 +170,7 @@ export default {
   },
   computed: {
     formTitle() {
-      return this.editedIndex === -1 ? "Nuevo" : "Editar";
+      return this.editedIndex === -1 ? "Nueva" : "Editar";
     },
   },
 
@@ -180,7 +180,7 @@ export default {
         let query = pickBy(this.form);
         this.$inertia.get(
           this.route(
-            "expenses",
+            "categories",
             Object.keys(query).length ? query : { remember: "forget" }
           ),
           {},
@@ -225,7 +225,7 @@ export default {
     save() {
       if (this.editedIndex > -1) {
         this.editedForm.put(
-          this.route("expenses.update", this.editedForm.id),
+          this.route("categories.update", this.editedForm.id),
           {
             onStart: () => (this.sending = true),
             onFinish: () => (this.sending = false),
@@ -233,7 +233,7 @@ export default {
           }
         );
       } else {
-        this.editedForm.post(this.route("expenses.store"), {
+        this.editedForm.post(this.route("categories.store"), {
           onStart: () => (this.sending = true),
           onFinish: () => (this.sending = false),
           onSuccess: () => this.close(),
@@ -248,13 +248,13 @@ export default {
     },
     deleteItemConfirm() {
       this.editedForm.delete(
-        this.route("expenses.destroy", this.editedForm.id)
+        this.route("categories.destroy", this.editedForm.id)
       );
       this.closeDelete();
     },
     restore(_item) {
-      if (confirm("Desea Restaurar Gasto?")) {
-        this.$inertia.put(this.route("expenses.restore", _item.id));
+      if (confirm("Desea Restaurar Categoria?")) {
+        this.$inertia.put(this.route("categories.restore", _item.id));
       }
     },
   },

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Pivots\MachineryExpense;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Machinery extends Model
@@ -10,6 +11,7 @@ class Machinery extends Model
     use SoftDeletes;
 
     protected $table = 'machineries';
+
 
     protected $fillable = [
         'category_id',
@@ -21,8 +23,11 @@ class Machinery extends Model
         'slug',
         'description',
         'cost_price',
+        'invoice',
         'current_price',
         'sale_price',
+        'monthly_lease_base_amount',
+        'percent_depreciation',
         'months_depreciation',
         'acquisition_date',
         'purchase_date',
@@ -96,16 +101,11 @@ class Machinery extends Model
     /**
      * Get the total Expenses Amount.
      *
-     * @return integer
+     * @return double
      */
     public function getTotalExpensesAmountAttribute()
     {
-        return $this->expenses->map(function ($item) {
-            return $item->expense;
-        })->reduce(function ($carry, $item) {
-            return $carry + $item->amount;
-        });
-
+        return MachineryExpense::where('machinery_id', $this->id)->sum('amount');
     }
 
     /**
@@ -115,19 +115,28 @@ class Machinery extends Model
      */
     public function getTotalServiceExpensesAmountAttribute()
     {
-        return $this->servicesExpenses->map(function ($item) {
-            return $item->amount;
-        })->reduce(function ($carry, $item) {
-            return $carry + $item;
-        });
+        return doubleval($this->servicesExpenses->sum('amount'));
     }
     /**
      * Get the total Cost's Equipmenet Amount.
      *
-     * @return integer
+     * @return double
      */
     public function getTotalCostEquipmentAttribute()
     {
-        return $this->cost_price + $this->total_expenses_amount + $this->total_service_expenses_amount;
+        return doubleval($this->cost_price) +
+            doubleval($this->total_expenses_amount) +
+            doubleval($this->total_service_expenses_amount);
+    }
+
+    public function getMonthsUsedAttribute()
+    {
+        $date = Carbon::parse($this->acquisition_date);
+        return $date->diffInMonths(Carbon::now());
+    }
+
+    public function getMonthlyDepreciationAttribute()
+    {
+        return ($this->cost_price * $this->percent_depreciation) / 12;
     }
 }

@@ -38,19 +38,21 @@
         :items="items.data"
         :headers="headers"
         with-search
-        sort-by="name"
+        sort-by="id"
+        sort-desc
       >
         <template #item="{ item }">
           <tr>
             <td class="text-no-wrap">
               <div class="font-weight-bold">{{ item.name }}</div>
-              <span class="caption">serie: {{ item.equipment_serial }}</span>
+              <span class="caption">{{ item.category }}</span>
             </td>
             <td class="text-no-wrap">
-              <span class="subtitle-2">{{ item.engine_serial }}</span>
+              <div class="font-weight-bold">{{ item.equipment_serial }}</div>
+              <!-- <div class="subtitle-2">Serie Motor: {{ item.engine_serial }}</div> -->
             </td>
             <td class="text-no-wrap">
-              {{ item.category }}
+              {{ item.economic_serial }}
             </td>
             <td class="text-no-wrap">
               {{
@@ -126,8 +128,8 @@ export default {
     return {
       headers: [
         { text: "Nombre Equipo", value: "name" },
-        { text: "Serie Motor", value: "engine_serial" },
-        { text: "Categoria ", value: "category" },
+        { text: "Serie Equipo", value: "equipment_serial" },
+        { text: "No. Economico ", value: "economic_serial" },
         {
           text: "Gastos Totales",
           value: "total_expenses_amount",

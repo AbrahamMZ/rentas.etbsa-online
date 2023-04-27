@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Pivots\MachineryExpense;
 
 class ExpenseCatalog extends Model
 {
@@ -18,9 +19,15 @@ class ExpenseCatalog extends Model
 
     public function machinery()
     {
-        return $this->belongsToMany(Machinery::class, 'machinery_expense_pivot_table', 'expense_id')
+        return $this->belongsToMany(Machinery::class, 'machinery_expense_pivot_table', 'expense_id','id')
             ->using(MachineryExpense::class)
-            ->withPivot('name', 'reference', 'amount', 'charge_date')
+            ->withPivot(
+                'reference',
+                'folio',
+                'amount',
+                'applied_date',
+            )
+            ->as('expense')
             ->withTimestamps();
         ;
     }

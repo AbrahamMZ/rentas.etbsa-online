@@ -3,18 +3,34 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Response;
+use Illuminate\Validation\Rule;
+use Inertia\Inertia;
 
 class CategoryController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Inertia\Response
      */
     public function index()
     {
-        //
+        return Inertia::render('CategoryCatalogs/Index', [
+            'filters' => Request::all(['search', 'trashed', 'page']),
+            'items' => Category::orderByName()
+                ->filter(Request::only(['search', 'trashed', 'folio']))
+                ->paginate(10)
+                ->transform(function ($fixes_cost) {
+                    return [
+                        'id' => $fixes_cost->id,
+                        'name' => $fixes_cost->name,
+                        'deleted_at' => $fixes_cost->deleted_at,
+                    ];
+                }),
+        ]);
     }
 
     /**
@@ -31,11 +47,17 @@ class CategoryController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(Request $request)
     {
-        //
+        Category::create(
+            Request::validate([
+                'name' => ['required', Rule::unique('expense_catalogs')],
+            ])
+        );
+        return Redirect::back()
+            ->with('success', 'Categoria Registrada con Exito.');
     }
 
     /**
@@ -65,21 +87,48 @@ class CategoryController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \App\Models\Category  $category
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function update(Request $request, Category $category)
     {
-        //
+        $category->update(
+            Request::validate([
+                'name' => ['required', Rule::unique('categories')],
+            ])
+        );
+
+        return Redirect::back()
+            ->with('success', 'Categoria Actualizado con Exito.');
     }
 
     /**
      * Remove the specified resource from storage.
      *
      * @param  \App\Models\Category  $category
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function destroy(Category $category)
     {
-        //
+        $category->delete();
+
+        return Redirect::back()->with('success', 'Categoria Eliminada.');
+    }
+
+    /**
+     * restore the specified resource from storage.
+     *
+     * @param  \App\Models\Category  $category
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function restore(Category $category)
+    {
+        $category->restore();
+
+        return Redirect::back()->with('success', 'Categoria restored.');
+    }
+    public function options()
+    {
+        $category_options = Category::get()->map->only('id', 'name');
+        return Response::json(compact('category_options'));
     }
 }

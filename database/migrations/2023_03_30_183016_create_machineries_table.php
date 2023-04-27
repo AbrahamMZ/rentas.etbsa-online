@@ -29,9 +29,12 @@ class CreateMachineriesTable extends Migration
             $table->decimal('cost_price', 12, 2)->nullable();
             $table->decimal('current_price', 12, 2)->nullable();
             $table->decimal('sale_price', 12, 2)->nullable();
+            $table->double('monthly_lease_base_amount', 12, 2)->default(0);
 
+            $table->double('percent_depreciation')->default(.25);
             $table->integer('months_depreciation')->default(48);
 
+            $table->date('warranty_date')->nullable();
             $table->date('acquisition_date')->nullable();
             $table->date('purchase_date')->nullable();
             $table->date('sale_date')->nullable();

@@ -15,19 +15,28 @@ class CreateLeasesTable extends Migration
     {
         Schema::create('leases', function (Blueprint $table) {
             $table->id();
-            $table->double('amount')->default(0);
-            $table->double('monthly_payment')->default(0);
+            $table->unsignedBigInteger('machinery_id')->index();
+            $table->unsignedBigInteger('status_id');
+            $table->unsignedBigInteger('customer_id');
+
+
+            $table->string('customer_name');
+
+            $table->double('monthly_fee')->default(0);
+            $table->double('daily_fee')->default(0);
+            
             $table->double('balance')->default(0);
-            $table->integer('term_months')->default(1);
             $table->integer('residual_percent')->default(0);
             $table->double('residual_amount')->default(0);
             
             $table->double('interest_rate')->default(0);
+            
+            $table->date('start_date')->nullable();
+            $table->date('end_date')->nullable();
+            $table->integer('term_months')->default(1);
 
-            $table->date('lease_start_date')->nullable();
-            $table->date('lease_end_date')->nullable();
-
-            $table->unsignedBigInteger('status_id');
+            $table->foreign('machinery_id')->references('id')
+            ->on('machineries')->onDelete('cascade');
             $table->foreign('status_id')->references('id')->on('status');
 
             $table->timestamps();

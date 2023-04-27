@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
-use App\Models\ExpenseCatalog;
 use App\Models\FixesCosts;
 use App\Models\Machinery;
 use App\Pivots\MachineryExpense;
@@ -43,8 +42,9 @@ class MachineryController extends Controller
                         'total_expenses_amount' => $machinery->total_expenses_amount,
                         'total_service_expenses_amount' => $machinery->total_service_expenses_amount,
                         'total_cost_equipment' => $machinery->total_cost_equipment,
+                        'months_used' => $machinery->months_used,
                     ];
-                }),
+                })
         ]);
     }
 
@@ -77,10 +77,13 @@ class MachineryController extends Controller
                         'name' => ['required'],
                         'equipment_serial' => ['required', 'max:50', Rule::unique('machineries')],
                         'economic_serial' => ['required', 'max:50', Rule::unique('machineries')],
-                        'engine_serial' => ['required', 'max:50', Rule::unique('machineries')],
+                        'engine_serial' => ['nullable', 'max:50', Rule::unique('machineries')],
                         'description' => ['nullable'],
                         'cost_price' => ['required'],
+                        'invoice' => ['nullable'],
+                        'percent_depreciation' => ['required'],
                         'acquisition_date' => ['nullable'],
+                        'warranty_date' => ['nullable'],
                     ])
                 ),
                 function (Machinery $machinery) {
@@ -132,8 +135,12 @@ class MachineryController extends Controller
                 'engine_serial' => $machinery->engine_serial,
                 'description' => $machinery->description,
                 'cost_price' => $machinery->cost_price,
+                'invoice' => $machinery->invoice,
                 'acquisition_date' => $machinery->acquisition_date,
                 'deleted_at' => $machinery->deleted_at,
+                'months_used' => $machinery->months_used,
+                'monthly_depreciation' => $machinery->monthly_depreciation,
+                'percent_depreciation' => $machinery->percent_depreciation,
                 'expenses' => MachineryExpense::with('expense')
                     ->where('machinery_id', $machinery->id)->get()
                     ->map(function ($item) {
@@ -182,7 +189,10 @@ class MachineryController extends Controller
                 'engine_serial' => $machinery->engine_serial,
                 'description' => $machinery->description,
                 'cost_price' => $machinery->cost_price,
+                'invoice' => $machinery->invoice,
+                'percent_depreciation' => $machinery->percent_depreciation * 100,
                 'acquisition_date' => $machinery->acquisition_date,
+                'warranty_date' => $machinery->warranty_date,
                 'deleted_at' => $machinery->deleted_at,
             ],
         ]);
@@ -208,7 +218,7 @@ class MachineryController extends Controller
                         'max:50', Rule::unique('machineries')->ignore($machinery->id)
                     ],
                     'engine_serial' => [
-                        'required',
+                        'nullable',
                         'max:50', Rule::unique('machineries')->ignore($machinery->id)
                     ],
                     'economic_serial' => [
@@ -217,7 +227,10 @@ class MachineryController extends Controller
                     ],
                     'description' => ['nullable'],
                     'cost_price' => ['required'],
+                    'invoice' => ['nullable'],
+                    'percent_depreciation' => ['required'],
                     'acquisition_date' => ['nullable'],
+                    'warranty_date' => ['nullable'],
                 ])
             );
 

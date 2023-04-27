@@ -90,17 +90,13 @@ export default {
         engine_serial: "",
         description: "",
         cost_price: "",
+        invoice: "",
+        percent_depreciation: 25,
         acquisition_date: "",
+        warranty_date: "",
         expenses: [],
         services_expenses: [],
         images: [],
-        // current_price: null,
-        // status_id: null,
-        // slug: null,
-        // sale_price: null,
-        // months_depreciation: null,
-        // purchase_date: null,
-        // sale_date: null,
       },
       breadcrumbs: [
         {
@@ -125,7 +121,11 @@ export default {
   },
   methods: {
     submit() {
-      this.$inertia.post(this.route("machineries.store"), this.form, {
+      let payload = {
+        ...this.form,
+        percent_depreciation: this.form.percent_depreciation / 100,
+      };
+      this.$inertia.post(this.route("machineries.store"), payload, {
         onStart: () => (this.sending = true),
         onFinish: () => (this.sending = false),
         preserveState: true,

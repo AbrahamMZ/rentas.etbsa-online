@@ -5,6 +5,7 @@
     class="elevation-0 text-uppercase"
     disable-pagination
     hide-default-footer
+    mobile-breakpoint="0"
     dense
     item-key="id"
   >
@@ -178,11 +179,10 @@ export default {
       {
         text: "Gasto",
         align: "start",
-        sortable: false,
         value: "expense.name",
       },
       { text: "Referencia", value: "reference", divider: true },
-      { text: "Importe", value: "amount", cellClass: "title" },
+      { text: "Importe", value: "amount" },
       { text: "Actions", value: "actions", sortable: false },
     ],
     expenses: [],

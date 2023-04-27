@@ -57,7 +57,10 @@ export default {
         economic_serial: this.item.economic_serial,
         engine_serial: this.item.engine_serial,
         cost_price: this.item.cost_price,
+        invoice: this.item.invoice,
+        percent_depreciation: this.item.percent_depreciation,
         acquisition_date: this.item.acquisition_date,
+        warranty_date: this.item.warranty_date,
         images: [],
       },
       breadcrumbs: [
@@ -77,9 +80,13 @@ export default {
   },
   methods: {
     submit() {
+      let payload = {
+        ...this.form,
+        percent_depreciation: this.form.percent_depreciation / 100,
+      };
       this.$inertia.put(
         this.route("machineries.update", this.item.id),
-        this.form,
+        payload,
         {
           onStart: () => (this.sending = true),
           onFinish: () => (this.sending = false),

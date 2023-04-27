@@ -4,6 +4,7 @@
     :items="servicesExpenses"
     class="elevation-0 text-uppercase"
     disable-pagination
+    mobile-breakpoint="0"
     hide-default-footer
     dense
   >
@@ -201,11 +202,10 @@ export default {
       {
         text: "Cargo Servicio",
         align: "start",
-        sortable: false,
         value: "name",
       },
       { text: "Descripcion", value: "description", divider: true },
-      { text: "Importe", value: "amount", cellClass: "title" },
+      { text: "Importe", value: "amount" },
       { text: "Actions", value: "actions", sortable: false },
     ],
     servicesExpenses: [],

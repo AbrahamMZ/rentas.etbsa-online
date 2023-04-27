@@ -23,25 +23,28 @@
             </v-card-text>
             <v-divider />
             <v-row dense class="text-left" tag="v-card-text">
-              <v-col class="text-right mr-4 mb-2" tag="strong" cols="5">
+              <v-col class="text-right mr-4" tag="strong" cols="5">
                 No. Serie Equipo:
               </v-col>
               <v-col>{{ item.equipment_serial }}</v-col>
-              <v-col class="text-right mr-4 mb-2" tag="strong" cols="5">
+              <v-col class="text-right mr-4" tag="strong" cols="5">
                 Serie Motor:
               </v-col>
-              <v-col>{{ item.engine_serial }}</v-col>
-              <v-col class="text-right mr-4 mb-2" tag="strong" cols="5">
+              <v-col>{{ item.engine_serial | placeholder("N/A") }}</v-col>
+              <v-col class="text-right mr-4" tag="strong" cols="5">
                 Valor de Maquina:
               </v-col>
               <v-col>
-                {{
-                  item.cost_price
-                    | currency("$", 2, { spaceBetweenAmountAndSymbol: true })
-                }}
-                MXN
+                <div>
+                  {{
+                    item.cost_price
+                      | currency("$", 2, { spaceBetweenAmountAndSymbol: true })
+                  }}
+                  MXN
+                </div>
+                <div>Factura: {{ item.invoice | placeholder("N/E") }}</div>
               </v-col>
-              <v-col class="text-right mr-4 mb-2" tag="strong" cols="5">
+              <v-col class="text-right mr-4" tag="strong" cols="5">
                 Costo del Equipo:
               </v-col>
               <v-col>
@@ -51,11 +54,51 @@
                 }}
                 MXN
               </v-col>
-              <v-col class="text-right mr-4 mb-2" tag="strong" cols="5">
+              <v-col class="text-right mr-4" tag="strong" cols="5">
                 Fecha de Adquisicion:
               </v-col>
               <v-col>
                 {{ item.acquisition_date | placeholder("No Especificado") }}
+              </v-col>
+              <v-col class="text-right mr-4" tag="strong" cols="5">
+                Meses de USO:
+              </v-col>
+              <v-col>
+                {{
+                  `${item.months_used} Meses` | placeholder("No Especificado")
+                }}
+              </v-col>
+              <v-col class="text-right mr-4" tag="strong" cols="5">
+                Depreciacion Mensual:
+              </v-col>
+              <v-col>
+                {{
+                  item.monthly_depreciation
+                    | currency("$", 2, { spaceBetweenAmountAndSymbol: true })
+                }}
+                MXN
+              </v-col>
+              <v-col class="text-right mr-4" tag="strong" cols="5">
+                Costo s/Inv. Actual:
+              </v-col>
+              <v-col>
+                {{
+                  (item.cost_price -
+                    item.monthly_depreciation * item.months_used)
+                    | currency("$", 2, { spaceBetweenAmountAndSymbol: true })
+                }}
+                MXN
+              </v-col>
+              <v-col class="text-right mr-4" tag="strong" cols="5">
+                Costo c/Inv. Actual:
+              </v-col>
+              <v-col>
+                {{
+                  (TotalCostEquipment -
+                    item.monthly_depreciation * item.months_used)
+                    | currency("$", 2, { spaceBetweenAmountAndSymbol: true })
+                }}
+                MXN
               </v-col>
             </v-row>
             <v-card-actions>
@@ -70,64 +113,49 @@
           </v-card>
         </v-col>
         <v-col cols="12" md="8">
-          <v-card color="grey lighten-4">
-            <v-toolbar flat color="secondary" dark>
-              <v-toolbar-title>Informacion</v-toolbar-title>
-            </v-toolbar>
-            <v-tabs right color="secondary">
-              <v-tab>
-                <v-icon left> mdi-currency-usd </v-icon>
-                Gastos
-              </v-tab>
-              <v-tab>
-                <v-icon left> mdi-toolbox </v-icon>
-                Cargos de Servicios
-              </v-tab>
-              <v-tab>
-                <v-icon left> mdi-ballot-recount </v-icon>
-                Rentas
-              </v-tab>
-              <v-tab>
-                <v-icon left> mdi-folder </v-icon>
-                Expedientes
-              </v-tab>
+          <v-row>
+            <v-col cols="12">
+              <summary-stats-machinery
+                :statistics="Statistics"
+                :percent="item.percent_depreciation"
+              />
+            </v-col>
+            <v-col cols="12">
+              <v-card>
+                <v-tabs right color="secondary">
+                  <v-tab>
+                    <v-icon left> mdi-currency-usd </v-icon>
+                    Gastos
+                  </v-tab>
+                  <v-tab>
+                    <v-icon left> mdi-toolbox </v-icon>
+                    Cargos de Servicio
+                  </v-tab>
 
-              <v-tab-item>
-                <v-card>
-                  <v-card-text>
-                    <expenses-table
-                      :items.sync="item.expenses"
-                      :machinery-id="item.id"
-                    />
-                  </v-card-text>
-                </v-card>
-              </v-tab-item>
-              <v-tab-item>
-                <v-card flat>
-                  <v-card-text>
-                    <services-expenses-table
-                      :items.sync="item.serivces_expenses"
-                      :machinery-id="item.id"
-                    />
-                  </v-card-text>
-                </v-card>
-              </v-tab-item>
-              <v-tab-item>
-                <v-card flat height="200px">
-                  <v-card-text>
-                    <div class="text-center text-h2">En Desarrollo</div>
-                  </v-card-text>
-                </v-card>
-              </v-tab-item>
-              <v-tab-item>
-                <v-card flat height="200px">
-                  <v-card-text>
-                    <div class="text-center text-h2">En Desarrollo</div>
-                  </v-card-text>
-                </v-card>
-              </v-tab-item>
-            </v-tabs>
-          </v-card>
+                  <v-tab-item>
+                    <v-card>
+                      <v-card-text>
+                        <expenses-table
+                          :items.sync="item.expenses"
+                          :machinery-id="item.id"
+                        />
+                      </v-card-text>
+                    </v-card>
+                  </v-tab-item>
+                  <v-tab-item>
+                    <v-card flat>
+                      <v-card-text>
+                        <services-expenses-table
+                          :items.sync="item.serivces_expenses"
+                          :machinery-id="item.id"
+                        />
+                      </v-card-text>
+                    </v-card>
+                  </v-tab-item>
+                </v-tabs>
+              </v-card>
+            </v-col>
+          </v-row>
         </v-col>
       </v-row>
     </v-card-text>
@@ -137,10 +165,11 @@
 <script>
 import Layout from "@/Shared/Layout";
 import TrashedMessage from "@/Shared/TrashedMessage";
-import ServicesTable from "@/Components/Machinery/ServicesTable.vue";
+// import ServicesTable from "@/Components/Machinery/ServicesTable.vue";
 import Breadcrumbs from "@/Shared/Breadcrumbs.vue";
 import ServicesExpensesTable from "@/Components/ServiceExpenses/ServicesExpensesTable.vue";
 import ExpensesTable from "@/Components/Expenses/ExpensesTable.vue";
+import SummaryStatsMachinery from "@/Components/Templates/SummaryStatsMachinery.vue";
 
 export default {
   name: "MachineryShow",
@@ -148,11 +177,12 @@ export default {
   // layout: Layout,
   components: {
     TrashedMessage,
-    ServicesTable,
+    // ServicesTable,
     Breadcrumbs,
     Layout,
     ServicesExpensesTable,
     ExpensesTable,
+    SummaryStatsMachinery,
   },
   props: {
     errors: Object,
@@ -193,6 +223,36 @@ export default {
         this.TotalAmountSerivcesExpenses +
         Number(this.item.cost_price)
       );
+    },
+    Statistics() {
+      return [
+        {
+          title: "Depreciacion",
+          stats: this.item.monthly_depreciation,
+          icon: "mdi-trending-down",
+          color: "primary",
+        },
+        {
+          title: "Gastos",
+          stats: this.TotalAmountExpenses,
+          icon: "mdi-credit-card-outline",
+          color: "success",
+        },
+        {
+          title: "Cargos Internos",
+          stats: this.TotalAmountSerivcesExpenses,
+          icon: "mdi-hammer-screwdriver",
+          color: "warning",
+        },
+        {
+          title: "Valor Actual",
+          stats:
+            this.TotalCostEquipment -
+            this.item.monthly_depreciation * this.item.months_used,
+          icon: "mdi-currency-usd",
+          color: "info",
+        },
+      ];
     },
   },
   methods: {

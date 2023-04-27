@@ -9,7 +9,6 @@
       item-key="id"
       :loading="loading"
       hide-default-footer
-      dense
       class="elevation-4 ma-2 text-uppercase"
     >
       <template #top="{ top }">
@@ -33,7 +32,7 @@
 // import Pagination from '@/Shared/Pagination'
 
 export default {
-  name: 'DataTableWrapper',
+  name: "DataTableWrapper",
   components: {
     // Pagination,
   },
@@ -59,10 +58,12 @@ export default {
       type: Boolean,
       default: false,
     },
+    loading: {
+      type: Boolean,
+      default: false,
+    },
   },
 
-  data: () => ({
-    loading: false,
-  }),
-}
+  data: () => ({}),
+};
 </script>
