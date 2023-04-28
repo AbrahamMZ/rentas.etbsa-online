@@ -14,6 +14,7 @@ class LeaseIncomes extends Model
         'reference',
         'term_lease',
         'amount',
+        'balance',
         'start_date',
         'end_date',
         'total_income',

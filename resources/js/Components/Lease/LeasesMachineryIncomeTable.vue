@@ -45,6 +45,7 @@
                         <v-text-field
                           v-model="editedItem.contract_lease"
                           label="Contrato"
+                          placeholder="Folio de Contrato"
                           :rules="[(v) => !!v || 'Requerido']"
                           outlined
                           dense
@@ -87,6 +88,20 @@
                       <v-col> Renta/Dia: {{ DailyFee | currency }} </v-col>
                       <v-col>
                         Ingreso Total: {{ (DailyFee * TermInDays) | currency }}
+                      </v-col>
+                      <v-col cols="12">
+                        <v-text-field
+                          v-model.number="editedItem.balance"
+                          label="Balance Actual"
+                          hint="El Ingreso total de Cuotas Pagadas Actual."
+                          persistent-hint
+                          :rules="[(v) => !!v || 'Requerido']"
+                          type="number"
+                          prefix="$"
+                          suffix="MXN"
+                          outlined
+                          dense
+                        />
                       </v-col>
                     </v-row>
                   </v-form>
@@ -153,68 +168,32 @@
         </div>
       </template>
       <template #[`item.term_lease`]="{ item }">
-        <div class="d-flex flex-column">
-          <h6 class="text-md font-weight-medium mb-0">
+        <div class="d-flex flex-column pt-1">
+          <h6 class="text-md font-weight-medium mb-1">
             {{ item.term_lease }} Meses
           </h6>
-          <span class="caption">
-            {{ `${item.start_date} | ${item.end_date}` }}
-          </span>
+          <div class="caption">
+            <v-icon left x-small>mdi-calendar</v-icon>
+            {{ item.start_date }}
+          </div>
+          <div class="caption">
+            <v-icon left x-small>mdi-calendar</v-icon>
+            {{ item.end_date }}
+          </div>
         </div>
-        <!-- <v-list-item two-line dense class="pa-0">
-          <v-list-item-content>
-            <v-list-item-title class="text-sm font-weight-medium">
-              {{ item.term_lease }} Meses
-            </v-list-item-title>
-            <v-list-item-subtitle
-              class="v-list-item-subtitle text-no-wrap text-xs"
-            >
-              {{ `${item.start_date} | ${item.end_date}` }}
-            </v-list-item-subtitle>
-          </v-list-item-content>
-        </v-list-item> -->
+      </template>
+      <template #[`item.amount`]="{ value }">
+        {{ value | currency("$", 2, { spaceBetweenAmountAndSymbol: true }) }}
       </template>
       <template #[`item.total_income`]="{ value }">
         {{ value | currency("$", 2, { spaceBetweenAmountAndSymbol: true }) }}
       </template>
-      <!-- <template #[`item.status`]>
-        <v-chip small color="green" text-color="white"> Pagada </v-chip>
-      </template> -->
-      <!-- <template #body="{ items }">
-        <tbody>
-          <tr v-for="item in items" :key="item.contract_lease">
-            <td>{{ item.contract_lease }}</td>
-
-            <td>
-              <div class="d-flex align-center">
-                <v-avatar size="34" class="me-3">
-                  <img :src="item.customer.avatar" :alt="item.customer.name" />
-                </v-avatar>
-
-                <div class="d-flex flex-column">
-                  <h6 class="text-sm font-weight-medium mb-0">
-                    {{ item.customer.name }}
-                  </h6>
-                  <span class="text-caption">{{ item.customer.email }} </span>
-                </div>
-              </div>
-            </td>
-
-            <td>{{ item.term_lease }} Meses</td>
-
-            <td>
-              {{
-                item.balance
-                  | currency("$", 2, { spaceBetweenAmountAndSymbol: true })
-              }}
-            </td>
-
-            <td>
-              <v-chip small color="green" text-color="white"> paid </v-chip>
-            </td>
-          </tr>
-        </tbody>
-      </template> -->
+      <template #[`item.balance`]="{ item }">
+        {{
+          (item.total_income - item.balance)
+            | currency("$", 2, { spaceBetweenAmountAndSymbol: true })
+        }}
+      </template>
       <template #[`item.actions`]="{ item }">
         <v-icon small class="mr-2" @click="editItem(item)"> mdi-pencil </v-icon>
         <v-icon small @click="deleteItem(item)"> mdi-delete </v-icon>
@@ -222,12 +201,19 @@
       <template #foot>
         <tfoot>
           <tr>
-            <td class="text-right overline" :colspan="headers.length - 2">
+            <td class="text-right overline" :colspan="headers.length - 3">
               Total:
             </td>
-            <td colspan="2" class="red--text title">
+            <td class="blue--text subtitle-2">
               {{
                 TotalAmountLeases
+                  | currency("$", 2, { spaceBetweenAmountAndSymbol: true })
+              }}
+              MXN
+            </td>
+            <td colspan="2" class="red--text subtitle-2">
+              {{
+                TotalBalanceLeases
                   | currency("$", 2, { spaceBetweenAmountAndSymbol: true })
               }}
               MXN
@@ -272,7 +258,9 @@ export default {
       },
       { text: "Cliente", value: "customer" },
       { text: "Periodo", value: "term_lease" },
+      { text: "Monto Renta/Mes", value: "amount" },
       { text: "Ingreso", value: "total_income" },
+      { text: "Balance", value: "balance" },
       // { text: "Status", value: "status", sortable: false },
       { text: "", value: "actions", sortable: false },
     ],
@@ -287,6 +275,7 @@ export default {
       reference: "",
       term_lease: 0,
       amount: 0,
+      balance: 0,
       start_date: null,
       end_date: null,
       total_income: 0,
@@ -298,6 +287,7 @@ export default {
       reference: "",
       term_lease: 0,
       amount: 0,
+      balance: 0,
       start_date: null,
       end_date: null,
       total_income: 0,
@@ -329,6 +319,12 @@ export default {
     },
     TotalAmountLeases() {
       return this.leases.reduce((acc, curr) => acc + curr.total_income, 0);
+    },
+    TotalBalanceLeases() {
+      return this.leases.reduce(
+        (acc, curr) => acc + (curr.total_income - curr.balance),
+        0
+      );
     },
   },
   watch: {

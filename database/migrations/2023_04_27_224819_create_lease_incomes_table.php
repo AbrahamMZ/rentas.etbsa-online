@@ -21,6 +21,7 @@ class CreateLeaseIncomesTable extends Migration
             $table->string("reference");
             $table->integer("term_lease")->default(1);
             $table->double("amount")->default(0);
+            $table->double("balance")->default(0);
             $table->date("start_date");
             $table->date("end_date");
             $table->double("total_income")->default(0);

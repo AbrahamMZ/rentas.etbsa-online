@@ -95,6 +95,10 @@ class MachineryController extends Controller
                         $machinery,
                         Request::validate(['services_expenses' => ['array']])['services_expenses']
                     );
+                    $this->attachLeaseIncome(
+                        $machinery,
+                        Request::validate(['lease_incomes' => ['array']])['lease_incomes']
+                    );
                 }
             );
             return Redirect::route('machineries')
@@ -173,6 +177,7 @@ class MachineryController extends Controller
                         'reference' => $item->reference,
                         'term_lease' => $item->term_lease,
                         'amount' => $item->amount,
+                        'balance' => $item->balance,
                         'start_date' => $item->start_date,
                         'end_date' => $item->end_date,
                         'total_income' => $item->total_income,
@@ -184,17 +189,6 @@ class MachineryController extends Controller
                         ],
                     ];
                 })
-                // ->only(
-                //     'id',
-                //     'contract_lease',
-                //     'reference',
-                //     'term_lease',
-                //     'amount',
-                //     'start_date',
-                //     'end_date',
-                //     'total_income',
-                //     'machinery_id',
-                // ),
             ],
         ]);
     }
@@ -365,6 +359,12 @@ class MachineryController extends Controller
     {
         if (!empty($payload)) {
             $machinery->servicesExpenses()->createMany($payload);
+        }
+    }
+    public function attachLeaseIncome(Machinery $machinery, array $payload = []): void
+    {
+        if (!empty($payload)) {
+            $machinery->leaseIncomes()->createMany($payload);
         }
     }
 }

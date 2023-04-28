@@ -153,12 +153,6 @@
         <v-col cols="12" md="8">
           <v-row>
             <v-col cols="12">
-              <summary-stats-machinery
-                :statistics="Statistics"
-                :percent="item.percent_depreciation"
-              />
-            </v-col>
-            <v-col cols="12">
               <v-card>
                 <v-tabs right color="secondary">
                   <v-tab>
@@ -196,6 +190,22 @@
               </v-card>
             </v-col>
           </v-row>
+          <v-row>
+            <v-col cols="12">
+              <summary-stats-machinery
+                :statistics="Statistics"
+                :percent="item.percent_depreciation"
+              />
+            </v-col>
+            <v-col cols="12">
+              <summary-profit-machinery
+                class="mt-2"
+                :statistics="Profit"
+                :profit="TotalProfit"
+                :balance="TotalBalanceIncome"
+              />
+            </v-col>
+          </v-row>
         </v-col>
       </v-row>
     </v-card-text>
@@ -210,6 +220,7 @@ import ServicesExpensesTable from "@/Components/ServiceExpenses/ServicesExpenses
 import ExpensesTable from "@/Components/Expenses/ExpensesTable.vue";
 import SummaryStatsMachinery from "@/Components/Templates/SummaryStatsMachinery.vue";
 import LeasesMachineryIncomeTable from "@/Components/Lease/LeasesMachineryIncomeTable.vue";
+import SummaryProfitMachinery from "@/Components/Templates/SummaryProfitMachinery.vue";
 
 export default {
   name: "MachineryShow",
@@ -222,6 +233,7 @@ export default {
     ExpensesTable,
     SummaryStatsMachinery,
     LeasesMachineryIncomeTable,
+    SummaryProfitMachinery,
   },
   props: {
     errors: Object,
@@ -282,6 +294,21 @@ export default {
         0
       );
     },
+    TotalIncome() {
+      return this.item.leases_incomes.reduce(
+        (acc, curr) => acc + curr.total_income,
+        0
+      );
+    },
+    TotalBalanceIncome() {
+      return this.item.leases_incomes.reduce(
+        (acc, curr) => acc + curr.balance,
+        0
+      );
+    },
+    TotalProfit() {
+      return this.TotalIncome - this.TotalCostEquipment;
+    },
     TotalCostEquipment() {
       return (
         this.TotalAmountExpenses +
@@ -316,6 +343,28 @@ export default {
             this.item.monthly_depreciation * this.item.months_used,
           icon: "mdi-currency-usd",
           color: "info",
+        },
+      ];
+    },
+    Profit() {
+      return [
+        {
+          title: "total Beneficio",
+          stats: this.TotalIncome,
+          icon: "mdi-trending-up",
+          color: "primary",
+        },
+        {
+          title: "Total Gastos",
+          stats: this.TotalCostEquipment,
+          icon: "mdi-currency-usd",
+          color: "error",
+        },
+        {
+          title: "Total Ingresos",
+          stats: this.TotalBalanceIncome,
+          icon: "mdi-account-outline",
+          color: "success",
         },
       ];
     },
