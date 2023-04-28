@@ -36,6 +36,7 @@
     },
     "dependencies": {
         "@inertiajs/vue2": "^1.0.6",
+        "date-fns": "^2.29.3",
         "vue2-filters": "^0.14.0"
     }
 }

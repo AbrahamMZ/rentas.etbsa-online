@@ -78,6 +78,10 @@ class Machinery extends Model
     {
         return $this->hasMany(MachineryServiceExpenses::class, 'machinery_id');
     }
+    public function leaseIncomes()
+    {
+        return $this->hasMany(LeaseIncomes::class, 'machinery_id');
+    }
 
     public function scopeOrderByName($query)
     {

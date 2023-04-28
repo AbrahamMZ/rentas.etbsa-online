@@ -6,6 +6,11 @@ import { InertiaProgress } from '@inertiajs/progress/src'
 import vuetify from '@/Plugins/vuetify'
 import Vue2Filters from 'vue2-filters'
 
+
+import { setDefaultOptions } from 'date-fns'
+import { es } from 'date-fns/locale'
+setDefaultOptions({ locale: es })
+
 Vue.config.productionTip = false
 Vue.mixin({ methods: { route: window.route } })
 Vue.use(plugin)

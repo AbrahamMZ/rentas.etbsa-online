@@ -111,6 +111,44 @@
               </v-btn>
             </v-card-actions>
           </v-card>
+          <!-- <VCard class="mt-4">
+            <VCardTitle class="text-h5">
+              $482.85k
+              <VSpacer />
+
+              <div class="mt-n7 me-n3">
+                <VBtn icon size="x-small" color="default" variant="text">
+                  <VIcon size="24"> mdi-dots-vertical </VIcon>
+                </VBtn>
+              </div>
+            </VCardTitle>
+            <VCardSubtitle>Last month balance $234.40k</VCardSubtitle>
+
+            <VCardText class="pt-2">
+              <VList class="card-list" two-line>
+                <VListItem
+                  v-for="transaction in lastThreeTransactions"
+                  :key="transaction.title"
+                >
+                  <VListItemAvatar tile>
+                    <VAvatar :color="transaction.avatar.color" tile>
+                      <VIcon dark> {{ transaction.avatar.icon }}</VIcon>
+                    </VAvatar>
+                  </VListItemAvatar>
+                  <VListItemContent>
+                    <VListItemTitle class="font-weight-medium">
+                      {{ transaction.title }}
+                    </VListItemTitle>
+                    <VListItemSubtitle>
+                      {{ transaction.subtitle }}
+                    </VListItemSubtitle>
+                  </VListItemContent>
+                </VListItem>
+              </VList>
+
+              <VBtn block class="mt-6"> View Report </VBtn>
+            </VCardText>
+          </VCard> -->
         </v-col>
         <v-col cols="12" md="8">
           <v-row>
@@ -131,26 +169,28 @@
                     <v-icon left> mdi-toolbox </v-icon>
                     Cargos de Servicio
                   </v-tab>
+                  <v-tab>
+                    <v-icon left> mdi-car-key </v-icon>
+                    Rentas
+                  </v-tab>
 
                   <v-tab-item>
-                    <v-card>
-                      <v-card-text>
-                        <expenses-table
-                          :items.sync="item.expenses"
-                          :machinery-id="item.id"
-                        />
-                      </v-card-text>
-                    </v-card>
+                    <expenses-table
+                      :items.sync="item.expenses"
+                      :machinery-id="item.id"
+                    />
                   </v-tab-item>
                   <v-tab-item>
-                    <v-card flat>
-                      <v-card-text>
-                        <services-expenses-table
-                          :items.sync="item.serivces_expenses"
-                          :machinery-id="item.id"
-                        />
-                      </v-card-text>
-                    </v-card>
+                    <services-expenses-table
+                      :items.sync="item.serivces_expenses"
+                      :machinery-id="item.id"
+                    />
+                  </v-tab-item>
+                  <v-tab-item>
+                    <leases-machinery-income-table
+                      :items.sync="item.leases_incomes"
+                      :machinery-id="item.id"
+                    />
                   </v-tab-item>
                 </v-tabs>
               </v-card>
@@ -165,24 +205,23 @@
 <script>
 import Layout from "@/Shared/Layout";
 import TrashedMessage from "@/Shared/TrashedMessage";
-// import ServicesTable from "@/Components/Machinery/ServicesTable.vue";
 import Breadcrumbs from "@/Shared/Breadcrumbs.vue";
 import ServicesExpensesTable from "@/Components/ServiceExpenses/ServicesExpensesTable.vue";
 import ExpensesTable from "@/Components/Expenses/ExpensesTable.vue";
 import SummaryStatsMachinery from "@/Components/Templates/SummaryStatsMachinery.vue";
+import LeasesMachineryIncomeTable from "@/Components/Lease/LeasesMachineryIncomeTable.vue";
 
 export default {
   name: "MachineryShow",
   metaInfo: { title: "Detalle Maquinaria" },
-  // layout: Layout,
   components: {
     TrashedMessage,
-    // ServicesTable,
     Breadcrumbs,
     Layout,
     ServicesExpensesTable,
     ExpensesTable,
     SummaryStatsMachinery,
+    LeasesMachineryIncomeTable,
   },
   props: {
     errors: Object,
@@ -203,6 +242,32 @@ export default {
         {
           text: "Detalle",
           disabled: true,
+        },
+      ],
+      lastThreeTransactions: [
+        {
+          avatar: {
+            icon: "mdi-trending-up",
+            color: "success",
+          },
+          title: "$48,568.20",
+          subtitle: "Total Profit",
+        },
+        {
+          avatar: {
+            icon: "mdi-account-outline",
+            color: "primary",
+          },
+          title: "$38,453.25",
+          subtitle: "Total Income",
+        },
+        {
+          avatar: {
+            icon: "mdi-currency-usd",
+            color: "secondary",
+          },
+          title: "$2,453.45",
+          subtitle: "Total Expense",
         },
       ],
     };
@@ -287,4 +352,36 @@ export default {
 };
 </script>
 
-<style></style>
+<style lang="scss">
+.card-list {
+  --v-card-list-gap: 20px;
+
+  &.v-list {
+    padding-block: 0;
+  }
+
+  .v-list-item {
+    min-block-size: unset;
+    min-block-size: auto !important;
+    padding-block: 0 !important;
+    padding-inline: 0 !important;
+
+    > .v-ripple__container {
+      opacity: 0;
+    }
+
+    &:not(:last-child) {
+      padding-block-end: var(--v-card-list-gap) !important;
+    }
+  }
+
+  .v-list-item:hover,
+  .v-list-item:focus,
+  .v-list-item:active,
+  .v-list-item.active {
+    > .v-list-item__overlay {
+      opacity: 0 !important;
+    }
+  }
+}
+</style>

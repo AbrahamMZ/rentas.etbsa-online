@@ -1,159 +1,163 @@
 <template>
-  <v-data-table
-    :headers="headers"
-    :items="expenses"
-    class="elevation-0 text-uppercase"
-    disable-pagination
-    hide-default-footer
-    mobile-breakpoint="0"
-    dense
-    item-key="id"
-  >
-    <template v-slot:top>
-      <v-toolbar flat>
-        <v-toolbar-title>Gastos</v-toolbar-title>
-        <v-divider class="mx-4" inset vertical />
-        <v-spacer />
-        <v-dialog v-model="dialog" max-width="500px">
-          <template v-slot:activator="{ on, attrs }">
-            <v-btn color="primary" dark class="mb-2" v-bind="attrs" v-on="on">
-              Agregar Nuevo Gasto
-            </v-btn>
-          </template>
-          <v-card>
-            <v-card-title>
-              <span class="text-h5">{{ formTitle }}</span>
-            </v-card-title>
+  <v-card>
+    <v-data-table
+      :headers="headers"
+      :items="expenses"
+      class="elevation-0 text-uppercase"
+      disable-pagination
+      hide-default-footer
+      mobile-breakpoint="0"
+      item-key="id"
+    >
+      <template v-slot:top>
+        <v-toolbar flat>
+          <v-toolbar-title>Gastos</v-toolbar-title>
+          <v-divider class="mx-4" inset vertical />
+          <v-spacer />
+          <v-dialog v-model="dialog" max-width="500px">
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn color="primary" dark class="mb-2" v-bind="attrs" v-on="on">
+                Agregar Nuevo Gasto
+              </v-btn>
+            </template>
+            <v-card>
+              <v-card-title>
+                <span class="text-h5">{{ formTitle }}</span>
+              </v-card-title>
 
-            <v-card-text>
-              <v-container>
-                <v-form ref="formExpense" v-model="valid" lazy-validation>
-                  <v-row>
-                    <v-col cols="12">
-                      <v-select
-                        v-model="editedItem.expense"
-                        label="Tipo de  Gasto"
-                        :items="options.expense_options"
-                        item-text="name"
-                        item-value="id"
-                        :rules="[(v) => !!v.id || 'Requerido']"
-                        return-object
-                        outlined
-                        dense
-                      />
-                    </v-col>
-                    <v-col cols="12">
-                      <v-text-field
-                        v-model="editedItem.reference"
-                        label="Nombre o Referencia del Gasto"
-                        placeholder="Emisor de Factura"
-                        :rules="[(v) => !!v || 'Requerido']"
-                        counter="50"
-                        outlined
-                        dense
-                      />
-                    </v-col>
-                    <v-col cols="12" md="6">
-                      <v-text-field
-                        v-model="editedItem.folio"
-                        label="Folio Factura"
-                        :rules="[(v) => !!v || 'Requerido']"
-                        outlined
-                        dense
-                      />
-                    </v-col>
-                    <v-col cols="12" md="6">
-                      <v-text-field
-                        v-model.number="editedItem.amount"
-                        label="Importe"
-                        :rules="[(v) => !!v || 'Requerido']"
-                        type="number"
-                        prefix="$"
-                        suffix="MXN"
-                        outlined
-                        dense
-                      />
-                    </v-col>
-                    <v-col cols="12">
-                      <v-text-field
-                        v-model="editedItem.applied_date"
-                        label="Fecha de Aplicacion"
-                        :rules="[(v) => !!v || 'Requerido']"
-                        type="date"
-                        outlined
-                        dense
-                      />
-                    </v-col>
-                  </v-row>
-                </v-form>
-              </v-container>
-            </v-card-text>
+              <v-card-text>
+                <v-container>
+                  <v-form ref="formExpense" v-model="valid" lazy-validation>
+                    <v-row>
+                      <v-col cols="12">
+                        <v-select
+                          v-model="editedItem.expense"
+                          label="Tipo de  Gasto"
+                          :items="options.expense_options"
+                          item-text="name"
+                          item-value="id"
+                          :rules="[(v) => !!v.id || 'Requerido']"
+                          return-object
+                          outlined
+                          dense
+                        />
+                      </v-col>
+                      <v-col cols="12">
+                        <v-text-field
+                          v-model="editedItem.reference"
+                          label="Nombre o Referencia del Gasto"
+                          placeholder="Emisor de Factura"
+                          :rules="[(v) => !!v || 'Requerido']"
+                          counter="50"
+                          outlined
+                          dense
+                        />
+                      </v-col>
+                      <v-col cols="12" md="6">
+                        <v-text-field
+                          v-model="editedItem.folio"
+                          label="Folio Factura"
+                          :rules="[(v) => !!v || 'Requerido']"
+                          outlined
+                          dense
+                        />
+                      </v-col>
+                      <v-col cols="12" md="6">
+                        <v-text-field
+                          v-model.number="editedItem.amount"
+                          label="Importe"
+                          :rules="[(v) => !!v || 'Requerido']"
+                          type="number"
+                          prefix="$"
+                          suffix="MXN"
+                          outlined
+                          dense
+                        />
+                      </v-col>
+                      <v-col cols="12">
+                        <v-text-field
+                          v-model="editedItem.applied_date"
+                          label="Fecha de Aplicacion"
+                          :rules="[(v) => !!v || 'Requerido']"
+                          type="date"
+                          outlined
+                          dense
+                        />
+                      </v-col>
+                    </v-row>
+                  </v-form>
+                </v-container>
+              </v-card-text>
 
-            <v-card-actions>
-              <v-spacer />
-              <v-btn color="blue darken-1" text @click="close"> Cancel </v-btn>
-              <v-btn
-                color="blue darken-1"
-                text
-                :loading="sending"
-                :disabled="sending"
-                @click="save"
-              >
-                Save
-              </v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
-        <v-dialog v-model="dialogDelete" max-width="500px">
-          <v-card>
-            <v-card-title class="text-h5">
-              Are you sure you want to delete this item?
-            </v-card-title>
-            <v-card-actions>
-              <v-spacer />
-              <v-btn color="blue darken-1" text @click="closeDelete">
-                Cancel
-              </v-btn>
-              <v-btn color="blue darken-1" text @click="deleteItemConfirm">
-                OK
-              </v-btn>
-              <v-spacer />
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
-      </v-toolbar>
-    </template>
-    <template #[`item.reference`]="{ item }">
-      <div class="subtitle-2">{{ item.reference }}</div>
-      <div class="caption">{{ item.folio }}</div>
-    </template>
-    <template #[`item.amount`]="{ value }">
-      {{ value | currency("$", 2, { spaceBetweenAmountAndSymbol: true }) }} MXN
-    </template>
-    <template #[`item.actions`]="{ item }">
-      <v-icon small class="mr-2" @click="editItem(item)"> mdi-pencil </v-icon>
-      <v-icon small @click="deleteItem(item)"> mdi-delete </v-icon>
-    </template>
-    <template #foot>
-      <tfoot>
-        <tr>
-          <td class="text-right overline" :colspan="headers.length - 2">
-            Total:
-          </td>
-          <td colspan="2" class="red--text title">
-            {{
-              TotalAmountexpenses
-                | currency("$", 2, { spaceBetweenAmountAndSymbol: true })
-            }}
-            MXN
-          </td>
-        </tr>
-      </tfoot>
-    </template>
-    <template v-slot:no-data>
-      <div class="text-h4 ma-3">Sin Registros</div>
-    </template>
-  </v-data-table>
+              <v-card-actions>
+                <v-spacer />
+                <v-btn color="blue darken-1" text @click="close">
+                  Cancel
+                </v-btn>
+                <v-btn
+                  color="blue darken-1"
+                  text
+                  :loading="sending"
+                  :disabled="sending"
+                  @click="save"
+                >
+                  Save
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+          <v-dialog v-model="dialogDelete" max-width="500px">
+            <v-card>
+              <v-card-title class="text-h5">
+                Are you sure you want to delete this item?
+              </v-card-title>
+              <v-card-actions>
+                <v-spacer />
+                <v-btn color="blue darken-1" text @click="closeDelete">
+                  Cancel
+                </v-btn>
+                <v-btn color="blue darken-1" text @click="deleteItemConfirm">
+                  OK
+                </v-btn>
+                <v-spacer />
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+        </v-toolbar>
+      </template>
+      <template #[`item.reference`]="{ item }">
+        <div class="subtitle-2">{{ item.reference }}</div>
+        <div class="caption">{{ item.folio }}</div>
+      </template>
+      <template #[`item.amount`]="{ value }">
+        {{ value | currency("$", 2, { spaceBetweenAmountAndSymbol: true }) }}
+        MXN
+      </template>
+      <template #[`item.actions`]="{ item }">
+        <v-icon small class="mr-2" @click="editItem(item)"> mdi-pencil </v-icon>
+        <v-icon small @click="deleteItem(item)"> mdi-delete </v-icon>
+      </template>
+      <template #foot>
+        <tfoot>
+          <tr>
+            <td class="text-right overline" :colspan="headers.length - 2">
+              Total:
+            </td>
+            <td colspan="2" class="red--text title">
+              {{
+                TotalAmountexpenses
+                  | currency("$", 2, { spaceBetweenAmountAndSymbol: true })
+              }}
+              MXN
+            </td>
+          </tr>
+        </tfoot>
+      </template>
+      <template v-slot:no-data>
+        <div class="text-h4 ma-3">Sin Registros</div>
+      </template>
+    </v-data-table>
+  </v-card>
 </template>
 <script>
 // import { router } from "@inertiajs/vue2";
@@ -235,8 +239,6 @@ export default {
   },
 
   mounted() {
-    // eslint-disable-next-line no-console
-    console.log("mounted ExpensesTable");
     this.initialize();
     this.getFormOptions();
   },

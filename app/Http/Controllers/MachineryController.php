@@ -166,6 +166,35 @@ class MachineryController extends Controller
                         'amount',
                         'applied_date',
                     ),
+                'leases_incomes' => $machinery->leaseIncomes->map(function ($item) {
+                    return [
+                        'id' => $item->id,
+                        'contract_lease' => $item->contract_lease,
+                        'reference' => $item->reference,
+                        'term_lease' => $item->term_lease,
+                        'amount' => $item->amount,
+                        'start_date' => $item->start_date,
+                        'end_date' => $item->end_date,
+                        'total_income' => $item->total_income,
+                        'machinery_id' => $item->machinery_id,
+                        'customer' => [
+                            'avatar' => null,
+                            'name' => $item->reference,
+                            'email' => "mail@example.com",
+                        ],
+                    ];
+                })
+                // ->only(
+                //     'id',
+                //     'contract_lease',
+                //     'reference',
+                //     'term_lease',
+                //     'amount',
+                //     'start_date',
+                //     'end_date',
+                //     'total_income',
+                //     'machinery_id',
+                // ),
             ],
         ]);
     }
