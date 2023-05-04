@@ -443,7 +443,7 @@ export default {
       const _this = this;
       _this.$inertia.delete(
         _this.route(
-          "machinery-monthly-monthly_expenses.destroy",
+          "machinery-monthly-expenses.destroy",
           _this.editedItem.id
         ),
         {
