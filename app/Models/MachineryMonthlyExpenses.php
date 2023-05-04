@@ -3,39 +3,35 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Pivots\MachineryExpense;
 
-class ExpenseCatalog extends Model
+class MachineryMonthlyExpenses extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
 
-    protected $table = 'expense_catalogs';
+
+    protected $table = 'machinery_monthly_expenses';
 
     protected $fillable = [
-        'name'
+        'monthly_expense_types_id',
+        'machinery_id',
+        'description',
+        'base_cost_type',
+        'base_cost_amount',
+        'percent',
+        'amount',
     ];
-
 
     public function machinery()
     {
-        return $this->belongsToMany(Machinery::class, 'machinery_expense_pivot_table', 'expense_id', 'id')
-            ->using(MachineryExpense::class)
-            ->withPivot(
-                'reference',
-                'folio',
-                'amount',
-                'applied_date',
-            )
-            ->as('expense')
-            ->withTimestamps();
-        ;
+        return $this->belongsTo(Machinery::class, 'machinery_id');
     }
 
-    public function machineryExpenseMonthly()
+    public function expenseType()
     {
-        return $this->hasMany(MachineryMonthlyExpenses::class, 'monthly_expense_types_id');
+        return $this->belongsTo(ExpenseCatalog::class, 'monthly_expense_types_id');
     }
+
+
 
     public function scopeOrderByName($query)
     {

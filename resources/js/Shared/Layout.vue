@@ -1,5 +1,11 @@
+<!-- eslint-disable vue/html-self-closing -->
 <template>
   <v-app id="inspire">
+    <!-- <drawer
+      :drawer="drawer"
+      :sidebar-color="sidebarColor"
+      :sidebar-theme="sidebarTheme"
+    /> -->
     <v-navigation-drawer v-model="drawer" app>
       <v-sheet color="grey lighten-4" class="pa-4">
         <v-avatar
@@ -7,7 +13,6 @@
           color="grey darken-1 shrink"
           size="64"
         >
-          <!-- eslint-disable-next-line vue/html-self-closing -->
           <img
             v-if="$page.props.auth.user.photo"
             :src="$page.props.auth.user.photo"
@@ -52,6 +57,7 @@
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
+
     <v-app-bar app dense flat>
       <v-app-bar-nav-icon @click="drawer = !drawer" />
       <slot name="breadcrumbs" />
@@ -79,6 +85,10 @@ export default {
   components: { FlashMessages },
   data: () => ({
     drawer: null,
+    showSettingsDrawer: false,
+    sidebarColor: "success",
+    sidebarTheme: "transparent",
+    navbarFixed: false,
     // showUserMenu: false,
     // accounts: null,
     // active: null,

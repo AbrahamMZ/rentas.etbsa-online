@@ -49,10 +49,16 @@
             </td>
             <td class="text-no-wrap">
               <div class="font-weight-bold">{{ item.equipment_serial }}</div>
-              <!-- <div class="subtitle-2">Serie Motor: {{ item.engine_serial }}</div> -->
+              <div class="grey--text text-subtitle-2">
+                N.E: {{ item.economic_serial }}
+              </div>
             </td>
             <td class="text-no-wrap">
-              {{ item.economic_serial }}
+              {{
+                item.total_monthly_expenses_amount
+                  | currency("$", 2, { spaceBetweenAmountAndSymbol: true })
+              }}
+              MXN
             </td>
             <td class="text-no-wrap">
               {{
@@ -129,13 +135,15 @@ export default {
       headers: [
         { text: "Nombre Equipo", value: "name" },
         { text: "Serie Equipo", value: "equipment_serial" },
-        { text: "No. Economico ", value: "economic_serial" },
         {
-          text: "Gastos Totales",
-          value: "total_expenses_amount",
-          cellClass: "title",
+          text: "Gasto Mensual",
+          value: "total_monthly_expenses_amount",
         },
-        { text: "Cargos Totales", value: "total_service_expenses_amount" },
+        {
+          text: "Gastos",
+          value: "total_expenses_amount",
+        },
+        { text: "Cargos Internos", value: "total_service_expenses_amount" },
         { text: "Costo Total Equipo", value: "total_cost_equipment" },
         {
           text: "",

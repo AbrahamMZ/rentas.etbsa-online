@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\FixesCosts;
 use App\Models\Machinery;
+use App\Models\MachineryMonthlyExpenses;
 use App\Pivots\MachineryExpense;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
@@ -30,7 +31,7 @@ class MachineryController extends Controller
                 ->transform(function ($machinery) {
                     return [
                         'id' => $machinery->id,
-                        'category' => $machinery->category->name,
+                        'category' => $machinery->category_name,
                         'name' => $machinery->name,
                         'equipment_serial' => $machinery->equipment_serial,
                         'economic_serial' => $machinery->economic_serial,
@@ -40,6 +41,7 @@ class MachineryController extends Controller
                         'acquisition_date' => $machinery->acquisition_date,
                         'deleted_at' => $machinery->deleted_at,
                         'total_expenses_amount' => $machinery->total_expenses_amount,
+                        'total_monthly_expenses_amount' => $machinery->total_monthly_expenses_amount,
                         'total_service_expenses_amount' => $machinery->total_service_expenses_amount,
                         'total_cost_equipment' => $machinery->total_cost_equipment,
                         'months_used' => $machinery->months_used,
@@ -95,10 +97,10 @@ class MachineryController extends Controller
                         $machinery,
                         Request::validate(['services_expenses' => ['array']])['services_expenses']
                     );
-                    $this->attachLeaseIncome(
-                        $machinery,
-                        Request::validate(['lease_incomes' => ['array']])['lease_incomes']
-                    );
+                    // $this->attachLeaseIncome(
+                    //     $machinery,
+                    //     Request::validate(['lease_incomes' => ['array']])['lease_incomes']
+                    // );
                 }
             );
             return Redirect::route('machineries')
@@ -139,6 +141,7 @@ class MachineryController extends Controller
                 'engine_serial' => $machinery->engine_serial,
                 'description' => $machinery->description,
                 'cost_price' => $machinery->cost_price,
+                'total_cost_amount' => $machinery->total_cost_equipment,
                 'invoice' => $machinery->invoice,
                 'acquisition_date' => $machinery->acquisition_date,
                 'deleted_at' => $machinery->deleted_at,
@@ -161,7 +164,24 @@ class MachineryController extends Controller
                             'applied_date' => $item->applied_date,
                         ];
                     }),
-                'serivces_expenses' => $machinery->servicesExpenses->map
+                'monthly_expenses' => MachineryMonthlyExpenses::with('expenseType')
+                    ->where('machinery_id', $machinery->id)->get()
+                    ->map(function ($item) {
+                        return [
+                            "id" => $item->id,
+                            "expense" => [
+                                "id" => $item->expenseType->id,
+                                "name" => $item->expenseType->name
+                            ],
+                            "monthly_expense_types_id" => $item->monthly_expense_types_id,
+                            'description' => $item->description,
+                            'base_cost_type' => $item->base_cost_type,
+                            'base_cost_amount' => $item->base_cost_amount,
+                            'percent' => $item->percent,
+                            'amount' => $item->amount,
+                        ];
+                    }),
+                'services_expenses' => $machinery->servicesExpenses->map
                     ->only(
                         'id',
                         'reference',

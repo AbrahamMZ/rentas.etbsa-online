@@ -95,7 +95,6 @@
                           label="Balance Actual"
                           hint="El Ingreso total de Cuotas Pagadas Actual."
                           persistent-hint
-                          :rules="[(v) => !!v || 'Requerido']"
                           type="number"
                           prefix="$"
                           suffix="MXN"
@@ -150,25 +149,25 @@
       </template>
       <template #[`item.customer`]="{ item }">
         <div class="d-flex align-center">
-          <v-avatar size="28" color="green" class="me-3">
+          <!-- <v-avatar size="28" color="green" class="me-3">
             <img v-if="item.customer.avatar" :src="item.customer.avatar" />
             <span v-else class="white--text text-sm">{{
               avatarText(item.customer.name)
             }}</span>
-          </v-avatar>
+          </v-avatar> -->
 
           <div class="d-flex flex-column">
             <h6 class="text-sm font-weight-medium mb-0">
               {{ item.customer.name }}
             </h6>
-            <span class="text-caption">
+            <!-- <span class="text-caption">
               {{ item.customer.email }}
-            </span>
+            </span> -->
           </div>
         </div>
       </template>
       <template #[`item.term_lease`]="{ item }">
-        <div class="d-flex flex-column pt-1">
+        <div class="d-flex flex-column pt-1" style="min-width: 100px">
           <h6 class="text-md font-weight-medium mb-1">
             {{ item.term_lease }} Meses
           </h6>
@@ -189,10 +188,20 @@
         {{ value | currency("$", 2, { spaceBetweenAmountAndSymbol: true }) }}
       </template>
       <template #[`item.balance`]="{ item }">
-        {{
+        <VChip
+          v-bind="
+            resolveInvoiceBalanceVariant(item.balance, item.total_income).chip
+          "
+          small
+        >
+          {{
+            resolveInvoiceBalanceVariant(item.balance, item.total_income).status
+          }}
+        </VChip>
+        <!-- {{
           (item.total_income - item.balance)
             | currency("$", 2, { spaceBetweenAmountAndSymbol: true })
-        }}
+        }} -->
       </template>
       <template #[`item.actions`]="{ item }">
         <v-icon small class="mr-2" @click="editItem(item)"> mdi-pencil </v-icon>
@@ -211,7 +220,7 @@
               }}
               MXN
             </td>
-            <td colspan="2" class="red--text subtitle-2">
+            <td colspan="2" class="green--text subtitle-2">
               {{
                 TotalBalanceLeases
                   | currency("$", 2, { spaceBetweenAmountAndSymbol: true })
@@ -321,10 +330,7 @@ export default {
       return this.leases.reduce((acc, curr) => acc + curr.total_income, 0);
     },
     TotalBalanceLeases() {
-      return this.leases.reduce(
-        (acc, curr) => acc + (curr.total_income - curr.balance),
-        0
-      );
+      return this.leases.reduce((acc, curr) => acc + curr.balance, 0);
     },
   },
   watch: {
@@ -468,6 +474,23 @@ export default {
       const nameArray = value.split(" ", 2);
 
       return nameArray.map((word) => word.charAt(0).toUpperCase()).join("");
+    },
+    resolveInvoiceBalanceVariant(balance, total) {
+      if (balance === total)
+        return {
+          status: "Pagada",
+          chip: { color: "success" },
+        };
+      if (balance === 0)
+        return {
+          status: "Sin Pago",
+          chip: { color: "error" },
+        };
+
+      return {
+        status: balance,
+        chip: "text",
+      };
     },
   },
 };

@@ -42,6 +42,13 @@
                 <services-expenses-table :items.sync="form.services_expenses" />
               </v-card>
             </v-col>
+            <v-col cols="12">
+              <v-card flat>
+                <leases-machinery-income-table
+                  :items.sync="form.leases_incomes"
+                />
+              </v-card>
+            </v-col>
           </v-row>
         </v-col>
       </v-row>
@@ -61,6 +68,7 @@ import Breadcrumbs from "@/Shared/Breadcrumbs.vue";
 // import FixesCostsTable from "@/Components/FixesCosts/FixesCostsTable.vue";
 import ServicesExpensesTable from "@/Components/ServiceExpenses/ServicesExpensesTable.vue";
 import ExpensesTable from "@/Components/Expenses/ExpensesTable.vue";
+import LeasesMachineryIncomeTable from "@/Components/Lease/LeasesMachineryIncomeTable.vue";
 
 export default {
   name: "MachineryCreate",
@@ -73,6 +81,7 @@ export default {
     // FixesCostsTable,
     ServicesExpensesTable,
     ExpensesTable,
+    LeasesMachineryIncomeTable,
   },
   props: {
     formOptions: Object,
@@ -96,6 +105,7 @@ export default {
         warranty_date: "",
         expenses: [],
         services_expenses: [],
+        leases_incomes: [],
         images: [],
       },
       breadcrumbs: [

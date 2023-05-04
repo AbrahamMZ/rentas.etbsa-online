@@ -2268,6 +2268,11 @@
   dependencies:
     "browserslist" "^4.21.5"
 
+"core-js@^3.6.5":
+  "integrity" "sha512-ZNS5nbiSwDTq4hFosEDqm65izl2CWmLz0hARJMyNQBgkUZMIF51cQiMvIQKA6hvuaeWxQDP3hEedM1JZIgTldQ=="
+  "resolved" "https://registry.npmjs.org/core-js/-/core-js-3.30.1.tgz"
+  "version" "3.30.1"
+
 "core-util-is@~1.0.0":
   "integrity" "sha512-ZQBvi1DcpJ4GDqanjucZ2Hj3wEO5pZDS89BWbkcrvdxksJorwUDDZamX9ldFkp9aw2lmBDLgkObEA4DWNJ9FYQ=="
   "resolved" "https://registry.npmjs.org/core-util-is/-/core-util-is-1.0.3.tgz"
@@ -5893,6 +5898,11 @@
   "resolved" "https://registry.npmjs.org/uuid/-/uuid-8.3.2.tgz"
   "version" "8.3.2"
 
+"v-currency-field@^3.1.2":
+  "integrity" "sha512-gWA6GKEOhfPzgqQ/6X7LLIqGKdaAZTINRqaPcZ0a8JkXHzmJelkmjZrU+OB6wWhMhumYAzqHrovS99s9NwAtrw=="
+  "resolved" "https://registry.npmjs.org/v-currency-field/-/v-currency-field-3.1.2.tgz"
+  "version" "3.1.2"
+
 "vary@~1.1.2":
   "integrity" "sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg=="
   "resolved" "https://registry.npmjs.org/vary/-/vary-1.1.2.tgz"
@@ -5959,7 +5969,7 @@
   "resolved" "https://registry.npmjs.org/vue-template-es2015-compiler/-/vue-template-es2015-compiler-1.9.1.tgz"
   "version" "1.9.1"
 
-"vue@^2.5.17", "vue@^2.5.18", "vue@^2.6.0", "vue@^2.6.4", "vue@^2.7.0", "vue@^2.7.2":
+"vue@^2.5.17", "vue@^2.5.18", "vue@^2.6.0", "vue@^2.6.10", "vue@^2.6.4", "vue@^2.7.0", "vue@^2.7.2":
   "integrity" "sha512-b2qkFyOM0kwqWFuQmgd4o+uHGU7T+2z3T+WQp8UBjADfEv2n4FEMffzBmCKNP0IGzOEEfYjvtcC62xaSKeQDrQ=="
   "resolved" "https://registry.npmjs.org/vue/-/vue-2.7.14.tgz"
   "version" "2.7.14"
@@ -5983,7 +5993,7 @@
     "file-loader" "^6.2.0"
     "loader-utils" "^2.0.0"
 
-"vuetify@^1.3.0 || ^2.0.0", "vuetify@^2.4.2":
+"vuetify@^1.3.0 || ^2.0.0", "vuetify@^2.2.28", "vuetify@^2.4.2":
   "integrity" "sha512-nr6wU3uTzhhEPssH23cW0Ee/hCrayp7cjl3nNjM2OmNwiJlV91tZiL1VO3597SqZyjh1xIa+m9J2rpKTSdIlrA=="
   "resolved" "https://registry.npmjs.org/vuetify/-/vuetify-2.6.14.tgz"
   "version" "2.6.14"

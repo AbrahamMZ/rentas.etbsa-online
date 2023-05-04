@@ -9,152 +9,139 @@
     <v-card-text>
       <v-row dense align="start">
         <v-col cols="12" md="4">
-          <v-card color="grey lighten-4" min-height="100%">
-            <v-card-text class="text-center pa-2">
-              <h3 class="text-h4 mb-2">
-                {{ item.name }}
-              </h3>
-              <div class="grey--text mb-2 font-weight-bold">
-                N.E. {{ item.economic_serial }}
-              </div>
-              <div class="blue--text mb-2 font-weight-bold">
-                {{ item.category }}
-              </div>
-            </v-card-text>
-            <v-divider />
-            <v-row dense class="text-left" tag="v-card-text">
-              <v-col class="text-right mr-4" tag="strong" cols="5">
-                No. Serie Equipo:
-              </v-col>
-              <v-col>{{ item.equipment_serial }}</v-col>
-              <v-col class="text-right mr-4" tag="strong" cols="5">
-                Serie Motor:
-              </v-col>
-              <v-col>{{ item.engine_serial | placeholder("N/A") }}</v-col>
-              <v-col class="text-right mr-4" tag="strong" cols="5">
-                Valor de Maquina:
-              </v-col>
-              <v-col>
-                <div>
-                  {{
-                    item.cost_price
-                      | currency("$", 2, { spaceBetweenAmountAndSymbol: true })
-                  }}
-                  MXN
-                </div>
-                <div>Factura: {{ item.invoice | placeholder("N/E") }}</div>
-              </v-col>
-              <v-col class="text-right mr-4" tag="strong" cols="5">
-                Costo del Equipo:
-              </v-col>
-              <v-col>
-                {{
-                  TotalCostEquipment
-                    | currency("$", 2, { spaceBetweenAmountAndSymbol: true })
-                }}
-                MXN
-              </v-col>
-              <v-col class="text-right mr-4" tag="strong" cols="5">
-                Fecha de Adquisicion:
-              </v-col>
-              <v-col>
-                {{ item.acquisition_date | placeholder("No Especificado") }}
-              </v-col>
-              <v-col class="text-right mr-4" tag="strong" cols="5">
-                Meses de USO:
-              </v-col>
-              <v-col>
-                {{
-                  `${item.months_used} Meses` | placeholder("No Especificado")
-                }}
-              </v-col>
-              <v-col class="text-right mr-4" tag="strong" cols="5">
-                Depreciacion Mensual:
-              </v-col>
-              <v-col>
-                {{
-                  item.monthly_depreciation
-                    | currency("$", 2, { spaceBetweenAmountAndSymbol: true })
-                }}
-                MXN
-              </v-col>
-              <v-col class="text-right mr-4" tag="strong" cols="5">
-                Costo s/Inv. Actual:
-              </v-col>
-              <v-col>
-                {{
-                  (item.cost_price -
-                    item.monthly_depreciation * item.months_used)
-                    | currency("$", 2, { spaceBetweenAmountAndSymbol: true })
-                }}
-                MXN
-              </v-col>
-              <v-col class="text-right mr-4" tag="strong" cols="5">
-                Costo c/Inv. Actual:
-              </v-col>
-              <v-col>
-                {{
-                  (TotalCostEquipment -
-                    item.monthly_depreciation * item.months_used)
-                    | currency("$", 2, { spaceBetweenAmountAndSymbol: true })
-                }}
-                MXN
-              </v-col>
-            </v-row>
-            <v-card-actions>
-              <v-btn v-if="!item.deleted_at" color="error" @click="destroy">
-                Eliminar
-              </v-btn>
-              <v-spacer />
-              <v-btn dark color="blue" @click="edit(item.id)">
-                Modificar
-              </v-btn>
-            </v-card-actions>
-          </v-card>
-          <!-- <VCard class="mt-4">
-            <VCardTitle class="text-h5">
-              $482.85k
-              <VSpacer />
+          <v-row>
+            <v-col cols="12">
+              <VCard class="mb-4">
+                <v-card-title>
+                  <span class="text-xs">Acerca de</span>
+                  <v-spacer />
+                  <v-menu transition="slide-x-transition" bottom right offset-x>
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-btn icon v-bind="attrs" v-on="on">
+                        <v-icon size="24">mdi-settings</v-icon>
+                      </v-btn>
+                    </template>
 
-              <div class="mt-n7 me-n3">
-                <VBtn icon size="x-small" color="default" variant="text">
-                  <VIcon size="24"> mdi-dots-vertical </VIcon>
-                </VBtn>
-              </div>
-            </VCardTitle>
-            <VCardSubtitle>Last month balance $234.40k</VCardSubtitle>
-
-            <VCardText class="pt-2">
-              <VList class="card-list" two-line>
-                <VListItem
-                  v-for="transaction in lastThreeTransactions"
-                  :key="transaction.title"
-                >
-                  <VListItemAvatar tile>
-                    <VAvatar :color="transaction.avatar.color" tile>
-                      <VIcon dark> {{ transaction.avatar.icon }}</VIcon>
-                    </VAvatar>
-                  </VListItemAvatar>
-                  <VListItemContent>
-                    <VListItemTitle class="font-weight-medium">
-                      {{ transaction.title }}
-                    </VListItemTitle>
-                    <VListItemSubtitle>
-                      {{ transaction.subtitle }}
-                    </VListItemSubtitle>
-                  </VListItemContent>
-                </VListItem>
-              </VList>
-
-              <VBtn block class="mt-6"> View Report </VBtn>
-            </VCardText>
-          </VCard> -->
+                    <v-list shaped>
+                      <v-list-item @click="edit(item.id)">
+                        <v-list-item-title> Editar </v-list-item-title>
+                      </v-list-item>
+                      <v-list-item @click="openDialog('ValuationTable')">
+                        <v-list-item-title>Proyeccion Renta </v-list-item-title>
+                      </v-list-item>
+                      <v-list-item @click="destroy(item.id)">
+                        <v-list-item-title> Eliminar </v-list-item-title>
+                      </v-list-item>
+                      <v-list-item
+                        v-if="item.deleted_at"
+                        @click="restore(item.id)"
+                      >
+                        <v-list-item-title> Recuperar </v-list-item-title>
+                      </v-list-item>
+                    </v-list>
+                  </v-menu>
+                </v-card-title>
+                <VCardText>
+                  <VList
+                    class="card-list text-medium-emphasis text-secondary"
+                    dense
+                  >
+                    <VListItem>
+                      <v-list-item-icon>
+                        <VIcon size="24">mdi-currency-usd</VIcon>
+                      </v-list-item-icon>
+                      <VListItemTitle class="align-center">
+                        <span class="font-weight-medium me-1 text--primary">
+                          Costo del Equipo:
+                        </span>
+                        <span class="text--secondary">
+                          {{ item.cost_price | currency }}
+                        </span>
+                      </VListItemTitle>
+                    </VListItem>
+                    <VListItem>
+                      <v-list-item-icon>
+                        <VIcon size="24" left>mdi-cash-100 </VIcon>
+                      </v-list-item-icon>
+                      <VListItemTitle class="align-center">
+                        <span class="font-weight-medium me-1 text--primary">
+                          Costo Total:
+                        </span>
+                        <span class="text--secondary">
+                          {{ item.total_cost_amount | currency }}
+                        </span>
+                      </VListItemTitle>
+                    </VListItem>
+                    <VListItem>
+                      <v-list-item-icon>
+                        <VIcon size="24" left>mdi-history </VIcon>
+                      </v-list-item-icon>
+                      <VListItemTitle class="align-center">
+                        <span class="font-weight-medium me-1 text--primary">
+                          Meses de Antiguedad:
+                        </span>
+                        <span class="text--secondary">
+                          {{ item.months_used }}
+                        </span>
+                      </VListItemTitle>
+                    </VListItem>
+                    <VListItem>
+                      <v-list-item-icon>
+                        <VIcon size="24" left>mdi-currency-usd-off </VIcon>
+                      </v-list-item-icon>
+                      <VListItemTitle class="align-center">
+                        <span class="font-weight-medium me-1 text--primary">
+                          Gasto Mensual:
+                        </span>
+                        <span class="text--secondary">
+                          {{ TotalAmountMounthlyExpenses | currency }}
+                        </span>
+                      </VListItemTitle>
+                    </VListItem>
+                    <VListItem>
+                      <v-list-item-icon>
+                        <VIcon size="24" left>mdi-currency-usd-off </VIcon>
+                      </v-list-item-icon>
+                      <VListItemTitle class="align-center">
+                        <span class="font-weight-medium me-1 text--primary">
+                          Gasto Inical/Fijo:
+                        </span>
+                        <span class="text--secondary">
+                          {{ TotalAmountExpenses | currency }}
+                        </span>
+                      </VListItemTitle>
+                    </VListItem>
+                    <VListItem>
+                      <v-list-item-icon>
+                        <VIcon size="24" left>mdi-currency-usd-off </VIcon>
+                      </v-list-item-icon>
+                      <VListItemTitle class="align-center">
+                        <span class="font-weight-medium me-1 text--primary">
+                          Cargos Internos:
+                        </span>
+                        <span class="text--secondary">
+                          {{ TotalAmountSerivcesExpenses | currency }}
+                        </span>
+                      </VListItemTitle>
+                    </VListItem>
+                  </VList>
+                </VCardText>
+              </VCard>
+            </v-col>
+            <!-- <v-col cols="12">
+              <valuation-table :machinery-id="item.id" />
+            </v-col> -->
+          </v-row>
         </v-col>
         <v-col cols="12" md="8">
           <v-row>
             <v-col cols="12">
               <v-card>
                 <v-tabs right color="secondary">
+                  <v-tab>
+                    <v-icon left> mdi-currency-usd </v-icon>
+                    Gastos Mensuales
+                  </v-tab>
                   <v-tab>
                     <v-icon left> mdi-currency-usd </v-icon>
                     Gastos
@@ -169,6 +156,14 @@
                   </v-tab>
 
                   <v-tab-item>
+                    <monthly-expenses-table
+                      :items.sync="item.monthly_expenses"
+                      :machinery-id="item.id"
+                      :machinery-invoice-amount.sync="item.cost_price"
+                      :machinery-total-cost.sync="item.total_cost_amount"
+                    />
+                  </v-tab-item>
+                  <v-tab-item>
                     <expenses-table
                       :items.sync="item.expenses"
                       :machinery-id="item.id"
@@ -176,7 +171,7 @@
                   </v-tab-item>
                   <v-tab-item>
                     <services-expenses-table
-                      :items.sync="item.serivces_expenses"
+                      :items.sync="item.services_expenses"
                       :machinery-id="item.id"
                     />
                   </v-tab-item>
@@ -190,7 +185,7 @@
               </v-card>
             </v-col>
           </v-row>
-          <v-row>
+          <!-- <v-row>
             <v-col cols="12">
               <summary-stats-machinery
                 :statistics="Statistics"
@@ -205,10 +200,29 @@
                 :balance="TotalBalanceIncome"
               />
             </v-col>
-          </v-row>
+          </v-row> -->
         </v-col>
       </v-row>
     </v-card-text>
+
+    <!-- Dialogs -->
+    <dialog-modal
+      :show="dialog"
+      max-width="750"
+      persistent
+      @close="closeDialog"
+    >
+      <template #title> Proyeccion de Renta </template>
+      <template #content>
+        <component
+          :is="'ValuationTable'"
+          v-bind="{
+            'machinery-id': item.id,
+            monthlyExpense: TotalAmountMounthlyExpenses,
+          }"
+        />
+      </template>
+    </dialog-modal>
   </layout>
 </template>
 
@@ -218,9 +232,12 @@ import TrashedMessage from "@/Shared/TrashedMessage";
 import Breadcrumbs from "@/Shared/Breadcrumbs.vue";
 import ServicesExpensesTable from "@/Components/ServiceExpenses/ServicesExpensesTable.vue";
 import ExpensesTable from "@/Components/Expenses/ExpensesTable.vue";
-import SummaryStatsMachinery from "@/Components/Templates/SummaryStatsMachinery.vue";
 import LeasesMachineryIncomeTable from "@/Components/Lease/LeasesMachineryIncomeTable.vue";
-import SummaryProfitMachinery from "@/Components/Templates/SummaryProfitMachinery.vue";
+import MonthlyExpensesTable from "@/Components/Expenses/MonthlyExpensesTable.vue";
+// import SummaryStatsMachinery from "@/Components/Templates/SummaryStatsMachinery.vue";
+// import SummaryProfitMachinery from "@/Components/Templates/SummaryProfitMachinery.vue";
+import ValuationTable from "@/Components/Machinery/ValuationTable.vue";
+import DialogModal from "@/Shared/DialogModal.vue";
 
 export default {
   name: "MachineryShow",
@@ -231,9 +248,12 @@ export default {
     Layout,
     ServicesExpensesTable,
     ExpensesTable,
-    SummaryStatsMachinery,
     LeasesMachineryIncomeTable,
-    SummaryProfitMachinery,
+    MonthlyExpensesTable,
+    // SummaryStatsMachinery,
+    // SummaryProfitMachinery,
+    ValuationTable,
+    DialogModal,
   },
   props: {
     errors: Object,
@@ -242,6 +262,7 @@ export default {
   remember: "form",
   data() {
     return {
+      dialog: false,
       sending: false,
       breadcrumbs: [
         {
@@ -288,8 +309,14 @@ export default {
     TotalAmountExpenses() {
       return this.item.expenses.reduce((acc, curr) => acc + curr.amount, 0);
     },
+    TotalAmountMounthlyExpenses() {
+      return this.item.monthly_expenses.reduce(
+        (acc, curr) => acc + curr.amount,
+        0
+      );
+    },
     TotalAmountSerivcesExpenses() {
-      return this.item.serivces_expenses.reduce(
+      return this.item.services_expenses.reduce(
         (acc, curr) => acc + curr.amount,
         0
       );
@@ -397,40 +424,19 @@ export default {
     //     }
     //   );
     // },
+    openDialog() {
+      this.dialog = true;
+    },
+    closeDialog() {
+      this.dialog = false;
+    },
   },
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .card-list {
-  --v-card-list-gap: 20px;
-
-  &.v-list {
-    padding-block: 0;
-  }
-
-  .v-list-item {
-    min-block-size: unset;
-    min-block-size: auto !important;
-    padding-block: 0 !important;
-    padding-inline: 0 !important;
-
-    > .v-ripple__container {
-      opacity: 0;
-    }
-
-    &:not(:last-child) {
-      padding-block-end: var(--v-card-list-gap) !important;
-    }
-  }
-
-  .v-list-item:hover,
-  .v-list-item:focus,
-  .v-list-item:active,
-  .v-list-item.active {
-    > .v-list-item__overlay {
-      opacity: 0 !important;
-    }
-  }
+  --v-card-list-gap: 16px;
 }
 </style>
+

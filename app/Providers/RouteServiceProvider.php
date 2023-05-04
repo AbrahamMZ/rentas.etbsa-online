@@ -30,7 +30,24 @@ class RouteServiceProvider extends ServiceProvider
 
         $this->routes(function () {
             Route::middleware('web')
-                ->group(base_path('routes/web.php'));
+                ->group(
+                    function () {
+                        # code...
+                        include(base_path('routes/web.php'));
+                        include(base_path('routes/auth.php'));
+                        include(base_path('routes/resources/expenses.php'));
+                        include(base_path('routes/resources/users.php'));
+                        include(base_path('routes/resources/contacts.php'));
+                        include(base_path('routes/resources/organizations.php'));
+                        include(base_path('routes/resources/fixesCosts.php'));
+                        include(base_path('routes/resources/machineries.php'));
+                        include(base_path('routes/resources/leaseIncomes.php'));
+                        include(base_path('routes/resources/categories.php'));
+                        include(base_path('routes/resources/machineryExpenses.php'));
+                        include(base_path('routes/resources/machineryMonthlyExpenses.php'));
+                        include(base_path('routes/resources/machineryServiceExpenses.php'));
+                    }
+                );
 
             Route::prefix('api')
                 ->middleware('api')
@@ -45,7 +62,7 @@ class RouteServiceProvider extends ServiceProvider
      */
     protected function configureRateLimiting()
     {
-        RateLimiter::for('api', function (Request $request) {
+        RateLimiter::for ('api', function (Request $request) {
             return Limit::perMinute(60);
         });
     }

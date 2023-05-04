@@ -5,6 +5,7 @@ import { App, plugin } from '@inertiajs/inertia-vue'
 import { InertiaProgress } from '@inertiajs/progress/src'
 import vuetify from '@/Plugins/vuetify'
 import Vue2Filters from 'vue2-filters'
+import VCurrencyField from 'v-currency-field'
 
 
 import { setDefaultOptions } from 'date-fns'
@@ -17,6 +18,7 @@ Vue.use(plugin)
 Vue.use(PortalVue)
 Vue.use(VueMeta)
 Vue.use(Vue2Filters)
+Vue.use(VCurrencyField)
 
 InertiaProgress.init({
   // The delay after which the progress bar will

@@ -74,6 +74,14 @@ class Machinery extends Model
             ->withTimestamps();
     }
 
+    public function machineryExpenses()
+    {
+        return $this->hasMany(MachineryExpense::class, 'machinery_id');
+    }
+    public function machineryMonthlyExpenses()
+    {
+        return $this->hasMany(MachineryMonthlyExpenses::class, 'machinery_id');
+    }
     public function servicesExpenses()
     {
         return $this->hasMany(MachineryServiceExpenses::class, 'machinery_id');
@@ -109,7 +117,13 @@ class Machinery extends Model
      */
     public function getTotalExpensesAmountAttribute()
     {
-        return MachineryExpense::where('machinery_id', $this->id)->sum('amount');
+        // return MachineryExpense::where('machinery_id', $this->id)->sum('amount');
+        return $this->machineryExpenses->sum('amount');
+    }
+    public function getTotalMonthlyExpensesAmountAttribute()
+    {
+        // return MachineryExpense::where('machinery_id', $this->id)->sum('amount');
+        return $this->machineryMonthlyExpenses->sum('amount');
     }
 
     /**
@@ -137,6 +151,10 @@ class Machinery extends Model
     {
         $date = Carbon::parse($this->acquisition_date);
         return $date->diffInMonths(Carbon::now());
+    }
+    public function getCategoryNameAttribute()
+    {
+        return $this->category->name;
     }
 
     public function getMonthlyDepreciationAttribute()
