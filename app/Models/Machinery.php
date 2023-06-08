@@ -38,7 +38,8 @@ class Machinery extends Model
     protected $appends = [
         'total_expenses_amount',
         'total_service_expenses_amount',
-        'total_cost_equipment'
+        'total_cost_equipment',
+        'current_value'
     ];
     public function images()
     {
@@ -136,6 +137,10 @@ class Machinery extends Model
     {
         return doubleval($this->servicesExpenses->sum('amount'));
     }
+    public function getTotalLeaseIncomesBalanceAttribute()
+    {
+        return doubleval($this->leaseIncomes->sum('balance'));
+    }
     /**
      * Get the total Cost's Equipmenet Amount.
      *
@@ -162,4 +167,40 @@ class Machinery extends Model
     {
         return ($this->cost_price * $this->percent_depreciation) / 12;
     }
+
+    public function getCurrentSalePriceAttribute()
+    {
+        $percent_margin_cost = 0.85;
+        $percent_margin_value = 0.85;
+        $percent_margin_renta = 0.8;
+        $limitMonthPercent = 24;
+        $MonthsUsed = $this->monthsUsed;
+
+        $TotalExpensesAmount = $this->totalExpensesAmount;
+        $TotalMonthlyExpensesAmount = $this->totalMonthlyExpensesAmount;
+
+        $Costo_Real = $this->cost_price + $TotalExpensesAmount;
+        $Valor_Actual = $this->value_price + $TotalExpensesAmount;
+
+        $Monto_Renta = $TotalMonthlyExpensesAmount / $percent_margin_renta;
+        // $Valor_Real = round($Costo_Real / $percent_margin_cost, 2);
+        // $Valor_Comercial = round($Valor_Actual / $percent_margin_value, 2);
+        $Valor_Real = $Costo_Real / $percent_margin_cost;
+        $Valor_Comercial = $Valor_Actual / $percent_margin_value;
+
+        $Gasto_Mensual_Estimado = $TotalMonthlyExpensesAmount * $MonthsUsed;
+        $Valor_Real_Estimado = $Valor_Real - $Gasto_Mensual_Estimado;
+        $Valor_Comercial_Estimado = $Valor_Comercial - $Gasto_Mensual_Estimado;
+
+        // $Percent_Valor_Comercial = round($Valor_Comercial_Estimado / $Valor_Actual, 2);
+        $Percent_Valor_Comercial = $Valor_Comercial_Estimado / $Valor_Actual;
+        if ($limitMonthPercent < $MonthsUsed) {
+            $Percent_Valor_Comercial += 0.01;
+        }
+        $Price_Sales = $Valor_Actual * $Percent_Valor_Comercial;
+
+        return $Price_Sales;
+    }
+
+
 }

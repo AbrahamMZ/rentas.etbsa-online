@@ -12,8 +12,8 @@
           <v-row>
             <v-col cols="12">
               <VCard class="mb-4">
-                <v-card-title>
-                  <span class="text-xs">Acerca de</span>
+                <v-card-title class="title text-uppercase">
+                  Resumen
                   <v-spacer />
                   <v-menu transition="slide-x-transition" bottom right offset-x>
                     <template v-slot:activator="{ on, attrs }">
@@ -47,90 +47,121 @@
                     dense
                   >
                     <VListItem>
-                      <v-list-item-icon>
+                      <VListItemIcon>
                         <VIcon size="24">mdi-currency-usd</VIcon>
-                      </v-list-item-icon>
-                      <VListItemTitle class="align-center">
-                        <span class="font-weight-medium me-1 text--primary">
-                          Costo del Equipo:
-                        </span>
-                        <span class="text--secondary">
+                      </VListItemIcon>
+                      <VListItemContent>
+                        <VListItemTitle class="align-center">
+                          <span class="font-weight-medium me-1 text-uppercase">
+                            Costo del Equipo:
+                          </span>
+                        </VListItemTitle>
+                      </VListItemContent>
+                      <VListItemActionText>
+                        <span class="title">
                           {{ item.cost_price | currency }}
                         </span>
-                      </VListItemTitle>
+                      </VListItemActionText>
                     </VListItem>
                     <VListItem>
-                      <v-list-item-icon>
-                        <VIcon size="24" left>mdi-cash-100 </VIcon>
-                      </v-list-item-icon>
-                      <VListItemTitle class="align-center">
-                        <span class="font-weight-medium me-1 text--primary">
-                          Costo Total:
-                        </span>
-                        <span class="text--secondary">
+                      <VListItemIcon>
+                        <VIcon size="24">mdi-currency-usd </VIcon>
+                      </VListItemIcon>
+                      <VListItemContent>
+                        <VListItemTitle class="align-center">
+                          <span class="font-weight-medium me-1 text-uppercase">
+                            Costo Total:
+                          </span>
+                        </VListItemTitle>
+                      </VListItemContent>
+                      <VListItemActionText>
+                        <span class="title">
                           {{ item.total_cost_amount | currency }}
                         </span>
-                      </VListItemTitle>
+                      </VListItemActionText>
                     </VListItem>
                     <VListItem>
-                      <v-list-item-icon>
-                        <VIcon size="24" left>mdi-history </VIcon>
-                      </v-list-item-icon>
-                      <VListItemTitle class="align-center">
-                        <span class="font-weight-medium me-1 text--primary">
-                          Meses de Antiguedad:
+                      <VListItemIcon>
+                        <VIcon size="24" left>mdi-currency-usd </VIcon>
+                      </VListItemIcon>
+                      <VListItemContent>
+                        <VListItemTitle class="align-center">
+                          <span class="font-weight-medium me-1 text-uppercase">
+                            Utilidad Total Rentas:
+                          </span>
+                        </VListItemTitle>
+                      </VListItemContent>
+                      <VListItemActionText>
+                        <span class="title">
+                          {{ TotalBalanceIncome | currency }}
                         </span>
-                        <span class="text--secondary">
-                          {{ item.months_used }}
-                        </span>
-                      </VListItemTitle>
+                      </VListItemActionText>
                     </VListItem>
                     <VListItem>
-                      <v-list-item-icon>
+                      <VListItemIcon>
                         <VIcon size="24" left>mdi-currency-usd-off </VIcon>
-                      </v-list-item-icon>
-                      <VListItemTitle class="align-center">
-                        <span class="font-weight-medium me-1 text--primary">
-                          Gasto Mensual:
-                        </span>
-                        <span class="text--secondary">
+                      </VListItemIcon>
+                      <VListItemContent>
+                        <VListItemTitle class="align-center">
+                          <span class="font-weight-medium me-1 text-uppercase">
+                            Gasto Mensual:
+                          </span>
+                        </VListItemTitle>
+                      </VListItemContent>
+                      <VListItemActionText>
+                        <span class="title">
                           {{ TotalAmountMounthlyExpenses | currency }}
                         </span>
-                      </VListItemTitle>
+                      </VListItemActionText>
                     </VListItem>
                     <VListItem>
-                      <v-list-item-icon>
+                      <VListItemIcon>
                         <VIcon size="24" left>mdi-currency-usd-off </VIcon>
-                      </v-list-item-icon>
-                      <VListItemTitle class="align-center">
-                        <span class="font-weight-medium me-1 text--primary">
-                          Gasto Inical/Fijo:
-                        </span>
-                        <span class="text--secondary">
+                      </VListItemIcon>
+                      <VListItemContent>
+                        <VListItemTitle class="align-center">
+                          <span class="font-weight-medium me-1 text-uppercase">
+                            Gasto Inical/Fijo:
+                          </span>
+                        </VListItemTitle>
+                      </VListItemContent>
+                      <VListItemActionText>
+                        <span class="title">
                           {{ TotalAmountExpenses | currency }}
                         </span>
-                      </VListItemTitle>
+                      </VListItemActionText>
                     </VListItem>
                     <VListItem>
-                      <v-list-item-icon>
+                      <VListItemIcon>
                         <VIcon size="24" left>mdi-currency-usd-off </VIcon>
-                      </v-list-item-icon>
-                      <VListItemTitle class="align-center">
-                        <span class="font-weight-medium me-1 text--primary">
-                          Cargos Internos:
-                        </span>
-                        <span class="text--secondary">
+                      </VListItemIcon>
+                      <VListItemContent>
+                        <VListItemTitle class="align-center">
+                          <span class="font-weight-medium me-1 text-uppercase">
+                            Cargos de Servicio:
+                          </span>
+                        </VListItemTitle>
+                      </VListItemContent>
+                      <VListItemActionText>
+                        <span class="title">
                           {{ TotalAmountSerivcesExpenses | currency }}
                         </span>
-                      </VListItemTitle>
+                      </VListItemActionText>
                     </VListItem>
                   </VList>
                 </VCardText>
               </VCard>
             </v-col>
-            <!-- <v-col cols="12">
-              <valuation-table :machinery-id="item.id" />
-            </v-col> -->
+          </v-row>
+          <v-row>
+            <v-col cols="12">
+              <summary-current-value-machinery
+                :value-price="item.value_price"
+                :sale-price="item.current_sale_price"
+                :month-machinery="item.months_used"
+                :calculator-params="ParamsToCalculateValue"
+              />
+            </v-col>
           </v-row>
         </v-col>
         <v-col cols="12" md="8">
@@ -140,11 +171,11 @@
                 <v-tabs right color="secondary">
                   <v-tab>
                     <v-icon left> mdi-currency-usd </v-icon>
-                    Gastos Mensuales
+                    Gasto Mensual
                   </v-tab>
                   <v-tab>
                     <v-icon left> mdi-currency-usd </v-icon>
-                    Gastos Inicia/Fijo
+                    Gasto Fijo Inicial
                   </v-tab>
                   <v-tab>
                     <v-icon left> mdi-toolbox </v-icon>
@@ -234,10 +265,11 @@ import ServicesExpensesTable from "@/Components/ServiceExpenses/ServicesExpenses
 import ExpensesTable from "@/Components/Expenses/ExpensesTable.vue";
 import LeasesMachineryIncomeTable from "@/Components/Lease/LeasesMachineryIncomeTable.vue";
 import MonthlyExpensesTable from "@/Components/Expenses/MonthlyExpensesTable.vue";
-// import SummaryStatsMachinery from "@/Components/Templates/SummaryStatsMachinery.vue";
-// import SummaryProfitMachinery from "@/Components/Templates/SummaryProfitMachinery.vue";
+// import SummaryStatsMachinery from "@/Components/Machinery/SummaryStatsMachinery.vue";
+// import SummaryProfitMachinery from "@/Components/Machinery/SummaryProfitMachinery.vue";
 import ValuationTable from "@/Components/Machinery/ValuationTable.vue";
 import DialogModal from "@/Shared/DialogModal.vue";
+import SummaryCurrentValueMachinery from "@/Components/Machinery/SummaryCurrentValueMachinery.vue";
 
 export default {
   name: "MachineryShow",
@@ -254,6 +286,7 @@ export default {
     // SummaryProfitMachinery,
     ValuationTable,
     DialogModal,
+    SummaryCurrentValueMachinery,
   },
   props: {
     errors: Object,
@@ -394,6 +427,16 @@ export default {
           color: "success",
         },
       ];
+    },
+    ParamsToCalculateValue() {
+      const { cost_price, value_price, months_used } = this.item;
+      return {
+        months_used,
+        cost_price,
+        value_price,
+        TotalAmountMounthlyExpenses: this.TotalAmountMounthlyExpenses,
+        TotalAmountExpenses: this.TotalAmountExpenses,
+      };
     },
   },
   methods: {

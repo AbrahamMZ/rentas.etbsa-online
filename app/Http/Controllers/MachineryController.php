@@ -132,8 +132,10 @@ class MachineryController extends Controller
     public function show(Machinery $machinery)
     {
 
+
         return Inertia::render('Machinery/Show', [
             'item' => [
+                'current_sale_price' => $machinery->current_sale_price,
                 'id' => $machinery->id,
                 'category' => $machinery->category->name,
                 'name' => $machinery->name,
