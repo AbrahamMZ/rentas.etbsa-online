@@ -23,6 +23,7 @@ class Machinery extends Model
         'slug',
         'description',
         'cost_price',
+        'value_price',
         'invoice',
         'current_price',
         'sale_price',

@@ -15,10 +15,10 @@ class UsersController extends Controller
     public function index()
     {
         return Inertia::render('Users/Index', [
-            'filters' => Request::all('search', 'role', 'trashed', 'page'),
+            'filters' => Request::all(['search', 'role', 'trashed', 'page']),
             'users' => Auth::user()->account->users()
                 ->orderByName()
-                ->filter(Request::only('search', 'role', 'trashed'))
+                ->filter(Request::only(['search', 'role', 'trashed']))
                 ->paginate()
                 ->transform(function ($user) {
                     return [

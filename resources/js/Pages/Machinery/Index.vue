@@ -48,7 +48,9 @@
               <span class="caption">{{ item.category }}</span>
             </td>
             <td class="text-no-wrap">
-              <div class="font-weight-bold">{{ item.equipment_serial }}</div>
+              <div class="font-weight-bold">
+                {{ item.equipment_serial }}
+              </div>
               <div class="grey--text text-subtitle-2">
                 N.E: {{ item.economic_serial }}
               </div>
@@ -56,28 +58,36 @@
             <td class="text-no-wrap">
               {{
                 item.total_monthly_expenses_amount
-                  | currency("$", 2, { spaceBetweenAmountAndSymbol: true })
+                  | currency("$", 2, {
+                    spaceBetweenAmountAndSymbol: true,
+                  })
               }}
               MXN
             </td>
             <td class="text-no-wrap">
               {{
                 item.total_expenses_amount
-                  | currency("$", 2, { spaceBetweenAmountAndSymbol: true })
+                  | currency("$", 2, {
+                    spaceBetweenAmountAndSymbol: true,
+                  })
               }}
               MXN
             </td>
             <td class="text-no-wrap">
               {{
                 item.total_service_expenses_amount
-                  | currency("$", 2, { spaceBetweenAmountAndSymbol: true })
+                  | currency("$", 2, {
+                    spaceBetweenAmountAndSymbol: true,
+                  })
               }}
               MXN
             </td>
             <td class="text-no-wrap">
               {{
                 item.total_cost_equipment
-                  | currency("$", 2, { spaceBetweenAmountAndSymbol: true })
+                  | currency("$", 2, {
+                    spaceBetweenAmountAndSymbol: true,
+                  })
               }}
               MXN
             </td>
@@ -87,11 +97,11 @@
                 Eliminado
               </v-chip>
 
-              <v-btn text icon small @click="edit(item.id)">
-                <v-icon small>mdi-pencil</v-icon>
-              </v-btn>
               <v-btn text icon small @click="show(item.id)">
                 <v-icon small>mdi-eye</v-icon>
+              </v-btn>
+              <v-btn text icon small @click="edit(item.id)">
+                <v-icon small>mdi-pencil</v-icon>
               </v-btn>
             </td>
           </tr>
@@ -143,7 +153,10 @@ export default {
           text: "Gastos",
           value: "total_expenses_amount",
         },
-        { text: "Cargos Internos", value: "total_service_expenses_amount" },
+        {
+          text: "Cargos Internos",
+          value: "total_service_expenses_amount",
+        },
         { text: "Costo Total Equipo", value: "total_cost_equipment" },
         {
           text: "",

@@ -82,6 +82,7 @@ class MachineryController extends Controller
                         'engine_serial' => ['nullable', 'max:50', Rule::unique('machineries')],
                         'description' => ['nullable'],
                         'cost_price' => ['required'],
+                        'value_price' => ['nullable'],
                         'invoice' => ['nullable'],
                         'percent_depreciation' => ['required'],
                         'acquisition_date' => ['nullable'],
@@ -141,6 +142,7 @@ class MachineryController extends Controller
                 'engine_serial' => $machinery->engine_serial,
                 'description' => $machinery->description,
                 'cost_price' => $machinery->cost_price,
+                'value_price' => $machinery->value_price,
                 'total_cost_amount' => $machinery->total_cost_equipment,
                 'invoice' => $machinery->invoice,
                 'acquisition_date' => $machinery->acquisition_date,
@@ -232,6 +234,7 @@ class MachineryController extends Controller
                 'engine_serial' => $machinery->engine_serial,
                 'description' => $machinery->description,
                 'cost_price' => $machinery->cost_price,
+                'value_price' => $machinery->value_price,
                 'invoice' => $machinery->invoice,
                 'percent_depreciation' => $machinery->percent_depreciation * 100,
                 'acquisition_date' => $machinery->acquisition_date,
@@ -270,6 +273,7 @@ class MachineryController extends Controller
                     ],
                     'description' => ['nullable'],
                     'cost_price' => ['required'],
+                    'value_price' => ['nullable'],
                     'invoice' => ['nullable'],
                     'percent_depreciation' => ['required'],
                     'acquisition_date' => ['nullable'],
@@ -365,14 +369,11 @@ class MachineryController extends Controller
                 ];
             }, $payload);
 
-            foreach ($result as $item) {
-                $machineryExpense = MachineryExpense::find($item['id']);
-                if (is_null($machineryExpense)) {
-                    MachineryExpense::create($item);
-                } else {
-                    $machineryExpense->update($item);
-                }
-            }
+            MachineryExpense::upsert(
+                $result,
+                ['id', 'machinery_id', 'expense_id'],
+                ['folio', 'amount', 'applied_date', 'reference']
+            );
         }
     }
     public function attachServicesExpenses(Machinery $machinery, array $payload = []): void

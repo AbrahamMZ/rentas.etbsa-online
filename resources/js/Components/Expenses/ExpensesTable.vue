@@ -11,13 +11,13 @@
     >
       <template v-slot:top>
         <v-toolbar flat>
-          <v-toolbar-title>Gastos</v-toolbar-title>
+          <v-toolbar-title>Gastos Fijos</v-toolbar-title>
           <v-divider class="mx-4" inset vertical />
           <v-spacer />
           <v-dialog v-model="dialog" max-width="500px">
             <template v-slot:activator="{ on, attrs }">
               <v-btn color="primary" dark class="mb-2" v-bind="attrs" v-on="on">
-                Agregar Nuevo Gasto
+                Agregar Nuevo Gasto Fijo
               </v-btn>
             </template>
             <v-card>

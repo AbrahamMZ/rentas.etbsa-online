@@ -144,7 +144,7 @@
                   </v-tab>
                   <v-tab>
                     <v-icon left> mdi-currency-usd </v-icon>
-                    Gastos
+                    Gastos Inicia/Fijo
                   </v-tab>
                   <v-tab>
                     <v-icon left> mdi-toolbox </v-icon>

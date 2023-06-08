@@ -33,7 +33,7 @@
           dense
         />
       </v-col>
-      <v-col cols="12">
+      <v-col cols="12" md="6">
         <v-text-field
           v-model="form.engine_serial"
           :error-messages="errors.engine_serial"
@@ -43,7 +43,7 @@
           dense
         />
       </v-col>
-      <v-col cols="12">
+      <v-col cols="12" md="6">
         <v-text-field
           v-model="form.economic_serial"
           :error-messages="errors.economic_serial"
@@ -63,7 +63,7 @@
           dense
         />
       </v-col>
-      <v-col cols="6">
+      <v-col cols="12" md="6">
         <v-text-field
           v-model.number="form.cost_price"
           :error-messages="errors.cost_price"
@@ -75,7 +75,19 @@
           dense
         />
       </v-col>
-      <v-col cols="6">
+      <v-col cols="12" md="6">
+        <v-text-field
+          v-model.number="form.value_price"
+          :error-messages="errors.value_price"
+          label="Valor Actual Equipo"
+          class="overline"
+          type="number"
+          prefix="$"
+          outlined
+          dense
+        />
+      </v-col>
+      <v-col cols="12" md="12">
         <v-text-field
           v-model.number="form.percent_depreciation"
           :error-messages="errors.percent_depreciation"
@@ -92,7 +104,7 @@
           dense
         />
       </v-col>
-      <v-col cols="12">
+      <v-col cols="12" md="12">
         <v-text-field
           v-model="form.invoice"
           :error-messages="errors.invoice"
@@ -102,7 +114,7 @@
           dense
         />
       </v-col>
-      <v-col cols="12">
+      <v-col cols="12" md="6">
         <v-text-field
           v-model="form.acquisition_date"
           :error-messages="errors.acquisition_date"
@@ -113,11 +125,11 @@
           dense
         />
       </v-col>
-      <v-col cols="12">
+      <v-col cols="12" md="6">
         <v-text-field
           v-model="form.warranty_date"
           :error-messages="errors.warranty_date"
-          label="Fecha Garantia Extendida"
+          label="F. Garantia Extendida"
           class="overline"
           type="date"
           outlined

@@ -108,29 +108,29 @@
 </template>
 
 <script>
-import Layout from '@/Shared/Layout'
-import DataTableWrapper from '@/Shared/DataTableWrapper'
-import SearchFilter from '@/Shared/SearchFilter'
-import Pagination from '@/Shared/Pagination'
-import { mapValues, pickBy, throttle } from 'lodash'
+import Layout from "@/Shared/Layout";
+import DataTableWrapper from "@/Shared/DataTableWrapper";
+import SearchFilter from "@/Shared/SearchFilter";
+import Pagination from "@/Shared/Pagination";
+import { mapValues, pickBy, throttle } from "lodash";
 
 export default {
-  metaInfo: { title: 'Usuarios' },
+  metaInfo: { title: "Usuarios" },
   layout: Layout,
   components: { DataTableWrapper, SearchFilter, Pagination },
   props: { users: Object, filters: Object },
   data() {
     return {
       headers: [
-        { text: '', value: 'photo', sortable: false },
-        { text: 'Nombre', value: 'name' },
-        { text: 'Email', value: 'email' },
-        { text: 'Rol', value: 'role', align: 'end', width: '75' },
+        { text: "", value: "photo", sortable: false },
+        { text: "Nombre", value: "name" },
+        { text: "Email", value: "email" },
+        { text: "Rol", value: "role", align: "end", width: "75" },
         {
-          text: '',
-          align: 'end',
-          width: '100',
-          value: 'action',
+          text: "",
+          align: "end",
+          width: "100",
+          value: "action",
           sortable: false,
         },
       ],
@@ -142,48 +142,48 @@ export default {
       },
       filtersOption: {
         trashed: [
-          { text: 'Con', value: 'with' },
-          { text: 'Solamente', value: 'only' },
+          { text: "Con", value: "with" },
+          { text: "Solamente", value: "only" },
         ],
         role: [
-          { text: 'Usuario', value: 'user' },
-          { text: 'Admin', value: 'owner' },
+          { text: "Usuario", value: "user" },
+          { text: "Admin", value: "owner" },
         ],
       },
-      breadcrumbs: [{ text: 'Usuarios' }],
-    }
+      breadcrumbs: [{ text: "Usuarios" }],
+    };
   },
 
   watch: {
     form: {
       handler: throttle(function() {
-        let query = pickBy(this.form)
+        let query = pickBy(this.form);
         this.$inertia.get(
           this.route(
-            'users',
-            Object.keys(query).length ? query : { remember: 'forget' }
+            "users",
+            Object.keys(query).length ? query : { remember: "forget" }
           )
-        )
+        );
       }, 150),
       deep: true,
     },
   },
   methods: {
     reset() {
-      this.form = mapValues(this.form, () => null)
-      this.form.page = 1
+      this.form = mapValues(this.form, () => null);
+      this.form.page = 1;
     },
     create() {
-      this.$inertia.visit(this.route('users.create'))
+      this.$inertia.visit(this.route("users.create"));
     },
     edit(_user_id) {
-      this.$inertia.visit(this.route('users.edit', _user_id))
+      this.$inertia.visit(this.route("users.edit", _user_id));
     },
     destroy(_user_id) {
-      if (confirm('Seguro en Eliminar el Usuario?')) {
-        this.$inertia.delete(this.route('users.destroy', _user_id))
+      if (confirm("Seguro en Eliminar el Usuario?")) {
+        this.$inertia.delete(this.route("users.destroy", _user_id));
       }
     },
   },
-}
+};
 </script>

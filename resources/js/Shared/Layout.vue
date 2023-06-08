@@ -25,37 +25,21 @@
 
       <v-divider />
 
-      <v-list>
-        <v-list-item
-          v-for="tab in Menus"
-          :key="tab.route"
-          link
-          @click="click(tab.route)"
-        >
-          <v-list-item-icon>
-            <v-icon>{{ tab.icon }}</v-icon>
-          </v-list-item-icon>
+      <nested-menu :menus="$page.props.navigation.menu" />
 
-          <v-list-item-content>
-            <v-list-item-title>{{ tab.label }}</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-        <v-divider />
-        <v-list-item>
-          <v-list-item-content>
-            <v-list-item-title>
-              <inertia-link
-                class="overline"
-                :href="route('logout')"
-                method="post"
-                as="button"
-              >
-                Cerrar Sesion
-              </inertia-link>
-            </v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-      </v-list>
+      <template v-slot:append>
+        <div class="pa-2">
+          <inertia-link
+            class="overline"
+            :href="route('logout')"
+            method="post"
+            block
+            as="v-btn"
+          >
+            Cerrar Sesion
+          </inertia-link>
+        </div>
+      </template>
     </v-navigation-drawer>
 
     <v-app-bar app dense flat>
@@ -81,44 +65,16 @@
 
 <script>
 import FlashMessages from "./FlashMessages.vue";
+import NestedMenu from "./NestedMenu.vue";
 export default {
-  components: { FlashMessages },
+  components: { FlashMessages, NestedMenu },
   data: () => ({
     drawer: null,
     showSettingsDrawer: false,
     sidebarColor: "success",
     sidebarTheme: "transparent",
     navbarFixed: false,
-    // showUserMenu: false,
-    // accounts: null,
-    // active: null,
-    // items: [{ title: "Logout", route: "logout" }],
   }),
-  // mounted() {
-  //   for (const key in this.$page.props.tabs) {
-  //     if (!this.$page.props.tabs[key].route) {
-  //       this.active = parseInt(key);
-  //       return;
-  //     }
-  //   }
-  // },
-  computed: {
-    Menus() {
-      return this.$page.props.tabs.filter((menu) => {
-        return !!menu.show;
-      });
-    },
-  },
-  methods: {
-    click(_route) {
-      this.$inertia.visit(this.route(_route));
-    },
-    // url() {
-    //   return location.pathname.substr(1);
-    // },
-    // hideDropdownMenus() {
-    //   this.showUserMenu = false;
-    // },
-  },
+  methods: {},
 };
 </script>

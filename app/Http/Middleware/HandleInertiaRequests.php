@@ -56,16 +56,23 @@ class HandleInertiaRequests extends Middleware
                     ] : null,
                 ];
             },
-            'tabs' => [
-                // ['label' => 'Dashboard', 'route' => 'dashboard'],
-                ['label' => 'Expedientes', 'route' => 'expedients', "icon" => 'mdi-folder', 'show' => true],
-                ['label' => 'Plantillas', 'route' => 'templates', "icon" => 'mdi-content-copy', 'show' => $request->user()->owner ?? false],
-                ['label' => 'Requisitos', 'route' => 'requirements', "icon" => 'mdi-alert-octagon', 'show' => $request->user()->owner ?? false],
-                ['label' => 'Maquinarias', 'route' => 'machineries', "icon" => 'mdi-alert-octagon', 'show' => $request->user()->owner ?? false],
-                // ['label' => 'Costos Fijos', 'route' => 'fixes-costs', "icon" => 'mdi-alert-octagon', 'show' => $request->user()->owner ?? false],
-                ['label' => 'Catalogo Gastos', 'route' => 'expenses', "icon" => 'mdi-alert-octagon', 'show' => $request->user()->owner ?? false],
-                ['label' => 'Categorias', 'route' => 'categories', "icon" => 'mdi-shape-plus', 'show' => $request->user()->owner ?? false],
-                ['label' => 'Usuarios', 'route' => 'users', "icon" => 'mdi-account-box-multiple', 'show' => $request->user()->owner ?? false],
+            'navigation' => [
+                'menu' => [
+                    ['name' => 'Expedientes', 'route' => 'expedients', "icon" => 'mdi-folder', 'enabled' => true],
+                    ['name' => 'Plantillas', 'route' => 'templates', "icon" => 'mdi-content-copy', 'enabled' => $request->user()->owner ?? false],
+                    ['name' => 'Requisitos', 'route' => 'requirements', "icon" => 'mdi-alert-octagon', 'enabled' => $request->user()->owner ?? false],
+                    ['name' => 'Maquinarias', 'route' => 'machineries', "icon" => 'mdi-tractor', 'enabled' => $request->user()->owner ?? false],
+                    [
+                        'name' => 'Admin',
+                        "icon" => 'mdi-view-headline',
+                        'enabled' => $request->user()->owner ?? false,
+                        'children' => [
+                            ['name' => 'Catalogo Gastos', 'route' => 'expenses', "icon" => 'mdi-alert-octagon', 'enabled' => $request->user()->owner ?? false],
+                            ['name' => 'Categorias', 'route' => 'categories', "icon" => 'mdi-shape-plus', 'enabled' => $request->user()->owner ?? false],
+                            ['name' => 'Usuarios', 'route' => 'users', "icon" => 'mdi-account-box-multiple', 'enabled' => $request->user()->owner ?? false],
+                        ]
+                    ],
+                ]
             ],
             'flash' => function () use ($request) {
                 return [

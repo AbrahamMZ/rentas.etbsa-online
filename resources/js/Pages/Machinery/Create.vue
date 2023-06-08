@@ -99,6 +99,7 @@ export default {
         engine_serial: "",
         description: "",
         cost_price: "",
+        value_price: "",
         invoice: "",
         percent_depreciation: 25,
         acquisition_date: "",
