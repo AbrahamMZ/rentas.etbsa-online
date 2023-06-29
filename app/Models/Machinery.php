@@ -149,8 +149,8 @@ class Machinery extends Model
     public function getTotalCostEquipmentAttribute()
     {
         return doubleval($this->cost_price) +
-            doubleval($this->total_expenses_amount) +
-            doubleval($this->total_service_expenses_amount);
+            doubleval($this->total_expenses_amount);
+        // doubleval($this->total_service_expenses_amount);
     }
 
     public function getMonthsUsedAttribute()
@@ -170,36 +170,41 @@ class Machinery extends Model
 
     public function getCurrentSalePriceAttribute()
     {
-        $percent_margin_cost = 0.85;
-        $percent_margin_value = 0.85;
-        $percent_margin_renta = 0.8;
-        $limitMonthPercent = 24;
-        $MonthsUsed = $this->monthsUsed;
+        if ($this->value_price > 0) {
 
-        $TotalExpensesAmount = $this->totalExpensesAmount;
-        $TotalMonthlyExpensesAmount = $this->totalMonthlyExpensesAmount;
+            $percent_margin_cost = 0.85;
+            $percent_margin_value = 0.85;
+            $percent_margin_renta = 0.8;
+            $limitMonthPercent = 24;
+            $MonthsUsed = $this->monthsUsed;
 
-        $Costo_Real = $this->cost_price + $TotalExpensesAmount;
-        $Valor_Actual = $this->value_price + $TotalExpensesAmount;
+            $TotalExpensesAmount = $this->totalExpensesAmount;
+            $TotalMonthlyExpensesAmount = $this->totalMonthlyExpensesAmount;
 
-        $Monto_Renta = $TotalMonthlyExpensesAmount / $percent_margin_renta;
-        // $Valor_Real = round($Costo_Real / $percent_margin_cost, 2);
-        // $Valor_Comercial = round($Valor_Actual / $percent_margin_value, 2);
-        $Valor_Real = $Costo_Real / $percent_margin_cost;
-        $Valor_Comercial = $Valor_Actual / $percent_margin_value;
+            $Costo_Real = $this->cost_price + $TotalExpensesAmount;
+            $Valor_Actual = $this->value_price + $TotalExpensesAmount;
 
-        $Gasto_Mensual_Estimado = $TotalMonthlyExpensesAmount * $MonthsUsed;
-        $Valor_Real_Estimado = $Valor_Real - $Gasto_Mensual_Estimado;
-        $Valor_Comercial_Estimado = $Valor_Comercial - $Gasto_Mensual_Estimado;
+            $Monto_Renta = $TotalMonthlyExpensesAmount / $percent_margin_renta;
+            // $Valor_Real = round($Costo_Real / $percent_margin_cost, 2);
+            // $Valor_Comercial = round($Valor_Actual / $percent_margin_value, 2);
+            $Valor_Real = $Costo_Real / $percent_margin_cost;
+            $Valor_Comercial = $Valor_Actual / $percent_margin_value;
 
-        // $Percent_Valor_Comercial = round($Valor_Comercial_Estimado / $Valor_Actual, 2);
-        $Percent_Valor_Comercial = $Valor_Comercial_Estimado / $Valor_Actual;
-        if ($limitMonthPercent < $MonthsUsed) {
-            $Percent_Valor_Comercial += 0.01;
+            $Gasto_Mensual_Estimado = $TotalMonthlyExpensesAmount * $MonthsUsed;
+            $Valor_Real_Estimado = $Valor_Real - $Gasto_Mensual_Estimado;
+            $Valor_Comercial_Estimado = $Valor_Comercial - $Gasto_Mensual_Estimado;
+
+            // $Percent_Valor_Comercial = round($Valor_Comercial_Estimado / $Valor_Actual, 2);
+            $Percent_Valor_Comercial = $Valor_Comercial_Estimado / $Valor_Actual;
+            if ($limitMonthPercent < $MonthsUsed) {
+                $Percent_Valor_Comercial += 0.01;
+            }
+            $Price_Sales = $Valor_Actual * $Percent_Valor_Comercial;
+
+            return $Price_Sales;
+        } else {
+            return 0;
         }
-        $Price_Sales = $Valor_Actual * $Percent_Valor_Comercial;
-
-        return $Price_Sales;
     }
 
 
