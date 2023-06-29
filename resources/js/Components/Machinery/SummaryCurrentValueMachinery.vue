@@ -49,10 +49,19 @@ export default {
         {
           title: "Utilidad Renta Optima:",
           stats:
-            (this.calculatorParams.TotalAmountMounthlyExpenses / 0.8) *
+            (this.calculatorParams.TotalAmountMounthlyExpenses / 0.8 -
+              this.calculatorParams.TotalAmountMounthlyExpenses) *
             this.monthMachinery,
           icon: "mdi-currency-usd",
           color: "indigo",
+        },
+        {
+          title: "Acumuldado de Renta Optima:",
+          stats:
+            (this.calculatorParams.TotalAmountMounthlyExpenses / 0.8) *
+            this.monthMachinery,
+          icon: "mdi-currency-usd",
+          color: "yellow",
         },
       ],
     };
@@ -111,7 +120,6 @@ export default {
                 {{ item.title }}
               </span>
               <span v-if="typeof item.stats === 'number'" class="text-h6">
-                <!-- {{ item.stats | number("0,0.00") }} -->
                 {{ item.stats | currency }}
               </span>
               <span v-else class="text-h6">{{ item.stats }}</span>

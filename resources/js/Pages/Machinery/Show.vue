@@ -265,8 +265,6 @@ import ServicesExpensesTable from "@/Components/ServiceExpenses/ServicesExpenses
 import ExpensesTable from "@/Components/Expenses/ExpensesTable.vue";
 import LeasesMachineryIncomeTable from "@/Components/Lease/LeasesMachineryIncomeTable.vue";
 import MonthlyExpensesTable from "@/Components/Expenses/MonthlyExpensesTable.vue";
-// import SummaryStatsMachinery from "@/Components/Machinery/SummaryStatsMachinery.vue";
-// import SummaryProfitMachinery from "@/Components/Machinery/SummaryProfitMachinery.vue";
 import ValuationTable from "@/Components/Machinery/ValuationTable.vue";
 import DialogModal from "@/Shared/DialogModal.vue";
 import SummaryCurrentValueMachinery from "@/Components/Machinery/SummaryCurrentValueMachinery.vue";
@@ -282,8 +280,6 @@ export default {
     ExpensesTable,
     LeasesMachineryIncomeTable,
     MonthlyExpensesTable,
-    // SummaryStatsMachinery,
-    // SummaryProfitMachinery,
     ValuationTable,
     DialogModal,
     SummaryCurrentValueMachinery,
