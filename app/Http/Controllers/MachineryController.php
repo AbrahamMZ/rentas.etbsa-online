@@ -87,21 +87,23 @@ class MachineryController extends Controller
                         'percent_depreciation' => ['required'],
                         'acquisition_date' => ['nullable'],
                         'warranty_date' => ['nullable'],
+                        'images' => ['array'],
                     ])
                 ),
                 function (Machinery $machinery) {
-                    $this->createOrUpdateMachineryExpense(
-                        $machinery,
-                        Request::validate(['expenses' => ['array']])['expenses']
-                    );
-                    $this->attachServicesExpenses(
-                        $machinery,
-                        Request::validate(['services_expenses' => ['array']])['services_expenses']
-                    );
-                    // $this->attachLeaseIncome(
-                    //     $machinery,
-                    //     Request::validate(['lease_incomes' => ['array']])['lease_incomes']
-                    // );
+                    if ($images = Request::file('images') ?? []) {
+                        foreach ($images as $image) {
+                            $machinery->images()->create([
+                                'full' => $image
+                                ? $machinery->uploadOne(
+                                    $image,
+                                    $machinery->getFolderPath(),
+                                    's3', $image->getClientOriginalName()
+                                )
+                                : null
+                            ]);
+                        }
+                    }
                 }
             );
             return Redirect::route('machineries')
@@ -152,6 +154,7 @@ class MachineryController extends Controller
                 'months_used' => $machinery->months_used,
                 'monthly_depreciation' => $machinery->monthly_depreciation,
                 'percent_depreciation' => $machinery->percent_depreciation,
+                'images' => $machinery->images,
                 'expenses' => MachineryExpense::with('expense')
                     ->where('machinery_id', $machinery->id)->get()
                     ->map(function ($item) {
@@ -241,6 +244,7 @@ class MachineryController extends Controller
                 'percent_depreciation' => $machinery->percent_depreciation * 100,
                 'acquisition_date' => $machinery->acquisition_date,
                 'warranty_date' => $machinery->warranty_date,
+                'images' => $machinery->images,
                 'deleted_at' => $machinery->deleted_at,
             ],
         ]);
@@ -275,7 +279,7 @@ class MachineryController extends Controller
                     ],
                     'description' => ['nullable'],
                     'cost_price' => ['required'],
-                    'value_price' => ['nullable'],
+                    'value_price' => ['required'],
                     'invoice' => ['nullable'],
                     'percent_depreciation' => ['required'],
                     'acquisition_date' => ['nullable'],
@@ -323,18 +327,8 @@ class MachineryController extends Controller
     public function getOptionsForm()
     {
         return [
-            'categories' => Category::all('id', 'name')->map(function ($item) {
-                return ['value' => $item->id, 'text' => $item->name];
-            }),
-            // 'fixesCosts' => $this->getAllFixesCosts(),
-            // 'expensesCatalogs' => ExpenseCatalog::get()->map(function ($expense) {
-            //     return [
-            //         'value' => $expense->id,
-            //         'text' => $expense->name,
-            //     ];
-            // }),
-            // 'servicesExpenses' => [],
-            // 'expenses' => []
+            'categories' => Category::all('id', 'name', 'parent_id'),
+            'treeCategories' => Category::getTreeCategories()
         ];
     }
 

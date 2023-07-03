@@ -8,6 +8,7 @@ use App\Http\Controllers\ExpedientController;
 use App\Http\Controllers\ImagesController;
 use App\Http\Controllers\RequirementController;
 use App\Http\Controllers\TemplateController;
+use App\Http\Controllers\ReportsController;
 
 /*
 |--------------------------------------------------------------------------

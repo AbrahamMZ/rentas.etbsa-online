@@ -15,12 +15,16 @@ use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
+use League\Flysystem\AwsS3v3\AwsS3Adapter;
+use League\Flysystem\Filesystem;
+use ZipArchive;
+
 class DocumentController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Inertia\Response
      */
     public function index()
     {
@@ -89,7 +93,7 @@ class DocumentController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \App\Models\Expedient  $expedient
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
 
     public function update(HttpRequest $request, Document $document)
@@ -110,7 +114,7 @@ class DocumentController extends Controller
             $document->status()->associate($status)->save();
         } catch (Exception $e) {
             DB::rollback();
-            return $e;
+            // return $e;
             return Redirect::back()->with('error', 'ERROR Servidor para el Documento.');
         }
         DB::commit();
@@ -147,7 +151,13 @@ class DocumentController extends Controller
                             'document_id' => $document->id,
                             'user_id' => Auth::user()->id,
                             'file_name' => $file->getClientOriginalName(),
-                            'file_path' => $file ? $file->store('files/expedients/' . $document->expedient_id . "/" . $document->id) : null
+                            'file_path' => $file
+                            ? $document->uploadOne(
+                                $file,
+                                $document->getFolderPath(),
+                                's3', $file->getClientOriginalName()
+                            )
+                            : null
                         ]
                     );
                 }
@@ -157,7 +167,7 @@ class DocumentController extends Controller
             }
         } catch (Exception $e) {
             DB::rollback();
-            return $e;
+            // return $e;
             return Redirect::back()->with('error', 'ERROR Servidor para el Documento.');
         }
         DB::commit();
@@ -175,7 +185,7 @@ class DocumentController extends Controller
             $file->delete();
         } catch (Exception $e) {
             DB::rollback();
-            return $e;
+            // return $e;
             return Redirect::back()->with('error', 'ERROR Servidor para el Documento.');
         }
         DB::commit();
@@ -185,23 +195,97 @@ class DocumentController extends Controller
 
     public function downloadFilesZip(Document $document)
     {
-        $zip_file = 'documents.zip';
-        $zip = new \ZipArchive();
-        $zip->open($zip_file, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
+        // Obtén los archivos que deseas descargar desde S3
+        $folderPath = Storage::path('files/expedients/id_' . $document->expedient_id . "/id_" . $document->id);
+        $zip = new ZipArchive();
 
-        $path = Storage::path('files/expedients/' . $document->expedient_id . "/" . $document->id);
-        $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path));
-        foreach ($files as $name => $file) {
-            // We're skipping all subfolders
-            if (!$file->isDir()) {
-                $filePath = $file->getRealPath();
-                // extracting filename with substr/strlen
-                // return dd($file->getFileName());
-                $relativePath =  $document->expedient->name . "/" . $document->requirement->name . '/' . $file->getFileName();
-                $zip->addFile($filePath, $relativePath);
+        // Establece el nombre y la ubicación del archivo ZIP temporal
+        $zipFileName = 'archivos.zip';
+        $zipFilePath = storage_path('app/' . $zipFileName);
+
+        // Abre el archivo ZIP para escribir
+        $zip->open($zipFilePath, ZipArchive::CREATE | ZipArchive::OVERWRITE);
+        // Obtiene el adaptador de S3 configurado en Laravel
+
+        // Obtiene el Cliente y  Nombre del bucket
+        $client = Storage::disk('s3')->getAdapter()->getClient();
+        $bucketName = Storage::disk('s3')->getAdapter()->getBucket();
+        // Configura el adaptador de AWS S3 para Flysystem
+        $s3Adapter = new AwsS3Adapter($client, $bucketName);
+
+        // Configura el sistema de archivos para Flysystem
+        $filesystem = new Filesystem($s3Adapter);
+
+        // Obtiene los archivos dentro de la carpeta en S3
+        $files = $filesystem->listContents($folderPath, false);
+
+        // Agrega los archivos al archivo ZIP
+        foreach ($files as $file) {
+            if ($file['type'] === 'file') {
+                // Obtiene el contenido del archivo desde S3
+                $fileContent = $filesystem->read($file['path']);
+
+                // Obtiene el nombre del archivo sin la ruta completa
+                $fileName = basename($file['path']);
+
+                // Agrega el archivo al archivo ZIP
+                $zip->addFromString($fileName, $fileContent);
             }
         }
+
+        // Cierra el archivo ZIP
         $zip->close();
-        return response()->download($zip_file);
+
+        // Descarga el archivo ZIP
+        return response()->download($zipFilePath, $zipFileName)->deleteFileAfterSend(true);
+
     }
+
+    // public function getFilesFromS3()
+    // {
+    //     // Configura el adaptador de AWS S3 para Flysystem
+    //     $s3Adapter = new AwsS3Adapter(Storage::disk('s3')->getAdapter()->getClient(), 'tu_bucket');
+
+    //     // Configura el sistema de archivos para Flysystem
+    //     $filesystem = new Filesystem($s3Adapter);
+
+    //     // Obtiene todos los archivos en el bucket
+    //     $files = $filesystem->listContents('/', true);
+
+    //     // Filtra los resultados para obtener solo los archivos (excluyendo directorios)
+    //     $filePaths = array_filter($files, function ($file) {
+    //         return $file['type'] === 'file';
+    //     });
+
+    //     // Extrae los paths de los archivos
+    //     $paths = array_map(function ($file) {
+    //         return $file['path'];
+    //     }, $filePaths);
+
+    //     return $paths;
+    // }
+
+    // public function downloadFilesZip(Document $document)
+    // {
+    //     $zip_file = 'documents.zip';
+    //     $zip = new \ZipArchive();
+    //     $zip->open($zip_file, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
+
+    //     // $path = Storage::path('files/expedients/id_' . $document->expedient_id . "/id_" . $document->id);
+    //     $path = Storage::url('files/expedients/id_' . $document->expedient_id . "/id_" . $document->id);
+    //     dd($path);
+    //     $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path));
+    //     foreach ($files as $name => $file) {
+    //         // We're skipping all subfolders
+    //         if (!$file->isDir()) {
+    //             $filePath = $file->getRealPath();
+    //             // extracting filename with substr/strlen
+    //             // return dd($file->getFileName());
+    //             $relativePath = $document->expedient->name . "/" . $document->requirement->name . '/' . $file->getFileName();
+    //             $zip->addFile($filePath, $relativePath);
+    //         }
+    //     }
+    //     $zip->close();
+    //     return response()->download($zip_file);
+    // }
 }

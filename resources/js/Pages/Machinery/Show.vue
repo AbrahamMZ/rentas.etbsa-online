@@ -12,8 +12,28 @@
           <v-row>
             <v-col cols="12">
               <VCard class="mb-4">
-                <v-card-title class="title text-uppercase">
-                  Resumen
+                <v-carousel
+                  height="275px"
+                  hide-delimiter-background
+                  hide-delimiters
+                  show-arrows-on-hover
+                >
+                  <v-carousel-item v-for="(photo, i) in Images" :key="i">
+                    <v-img
+                      v-if="photo.path"
+                      height="275px"
+                      :src="photo.path"
+                      :lazy-src="`https://picsum.photos/10/6?image=${
+                        i * 5 + 10
+                      }`"
+                      :alt="photo.path"
+                      aspect-ratio="2"
+                    />
+                  </v-carousel-item>
+                </v-carousel>
+
+                <v-card-title>
+                  {{ item.name }}
                   <v-spacer />
                   <v-menu transition="slide-x-transition" bottom right offset-x>
                     <template v-slot:activator="{ on, attrs }">
@@ -41,7 +61,74 @@
                     </v-list>
                   </v-menu>
                 </v-card-title>
+                <v-card-subtitle>
+                  No. Serie: {{ item.equipment_serial }}
+                </v-card-subtitle>
                 <VCardText>
+                  <VList class="card-list pa-0">
+                    <VListItem class="pa-0">
+                      <v-list-item-avatar>
+                        <VIcon :height="29" :width="28">
+                          mdi-currency-usd
+                        </VIcon>
+                      </v-list-item-avatar>
+
+                      <v-list-item-content class="pa-0">
+                        <VListItemTitle class="text-sm font-weight-medium mb-1">
+                          Costo Equipo
+                        </VListItemTitle>
+                        <VListItemSubtitle class="text-xs">
+                          Valor de Adquisicon
+                        </VListItemSubtitle>
+                      </v-list-item-content>
+
+                      <VListItemAction class="green--text font-weight-medium">
+                        {{ item.cost_price | currency }}
+                      </VListItemAction>
+                    </VListItem>
+                    <VListItem class="pa-0">
+                      <v-list-item-avatar>
+                        <VIcon :height="29" :width="28">
+                          mdi-currency-usd
+                        </VIcon>
+                      </v-list-item-avatar>
+
+                      <v-list-item-content class="pa-0">
+                        <VListItemTitle class="text-sm font-weight-medium mb-1">
+                          Costo Actual del Equipo
+                        </VListItemTitle>
+                        <VListItemSubtitle class="text-xs">
+                          Valor Actual
+                        </VListItemSubtitle>
+                      </v-list-item-content>
+
+                      <VListItemAction class="green--text font-weight-medium">
+                        {{ item.value_price | currency }}
+                      </VListItemAction>
+                    </VListItem>
+                    <VListItem class="pa-0">
+                      <v-list-item-avatar>
+                        <VIcon :height="29" :width="28">
+                          mdi-calendar-clock
+                        </VIcon>
+                      </v-list-item-avatar>
+
+                      <v-list-item-content class="pa-0">
+                        <VListItemTitle class="text-sm font-weight-medium mb-1">
+                          Fecha de Adquisicion
+                        </VListItemTitle>
+                        <VListItemSubtitle class="text-xs">
+                          {{ item.acquisition_date }}
+                        </VListItemSubtitle>
+                      </v-list-item-content>
+
+                      <VListItemAction class="green--text font-weight-medium">
+                        {{ item.months_used }} Meses
+                      </VListItemAction>
+                    </VListItem>
+                  </VList>
+                </VCardText>
+                <!-- <VCardText>
                   <VList
                     class="card-list text-medium-emphasis text-secondary"
                     dense
@@ -149,7 +236,7 @@
                       </VListItemActionText>
                     </VListItem>
                   </VList>
-                </VCardText>
+                </VCardText> -->
               </VCard>
             </v-col>
           </v-row>
@@ -167,23 +254,26 @@
         <v-col cols="12" md="8">
           <v-row>
             <v-col cols="12">
+              <analytics-real-withoptimal :profitability="Profitability" />
+            </v-col>
+            <v-col cols="12">
               <v-card>
-                <v-tabs right color="secondary">
+                <v-tabs fixed-tabs icons-and-text centered color="indigo">
                   <v-tab>
+                    Gasto Mensual Proyectado
                     <v-icon left> mdi-currency-usd </v-icon>
-                    Gasto Mensual
                   </v-tab>
                   <v-tab>
+                    Gastos Operativos
                     <v-icon left> mdi-currency-usd </v-icon>
-                    Gasto Fijo Inicial
                   </v-tab>
                   <v-tab>
-                    <v-icon left> mdi-toolbox </v-icon>
                     Cargos de Servicio
+                    <v-icon left> mdi-toolbox </v-icon>
                   </v-tab>
                   <v-tab>
-                    <v-icon left> mdi-car-key </v-icon>
                     Rentas
+                    <v-icon left> mdi-car-key </v-icon>
                   </v-tab>
 
                   <v-tab-item>
@@ -216,13 +306,13 @@
               </v-card>
             </v-col>
           </v-row>
-          <!-- <v-row>
-            <v-col cols="12">
+          <v-row>
+            <!-- <v-col cols="12">
               <summary-stats-machinery
                 :statistics="Statistics"
                 :percent="item.percent_depreciation"
               />
-            </v-col>
+            </v-col> -->
             <v-col cols="12">
               <summary-profit-machinery
                 class="mt-2"
@@ -231,7 +321,7 @@
                 :balance="TotalBalanceIncome"
               />
             </v-col>
-          </v-row> -->
+          </v-row>
         </v-col>
       </v-row>
     </v-card-text>
@@ -239,7 +329,7 @@
     <!-- Dialogs -->
     <dialog-modal
       :show="dialog"
-      max-width="750"
+      max-width="700"
       persistent
       @close="closeDialog"
     >
@@ -268,6 +358,9 @@ import MonthlyExpensesTable from "@/Components/Expenses/MonthlyExpensesTable.vue
 import ValuationTable from "@/Components/Machinery/ValuationTable.vue";
 import DialogModal from "@/Shared/DialogModal.vue";
 import SummaryCurrentValueMachinery from "@/Components/Machinery/SummaryCurrentValueMachinery.vue";
+import AnalyticsRealWithoptimal from "@/Components/Machinery/AnalyticsRealWithoptimal.vue";
+import SummaryProfitMachinery from "@/Components/Machinery/SummaryProfitMachinery.vue";
+// import SummaryStatsMachinery from "@/Components/Machinery/SummaryStatsMachinery.vue";
 
 export default {
   name: "MachineryShow",
@@ -283,6 +376,9 @@ export default {
     ValuationTable,
     DialogModal,
     SummaryCurrentValueMachinery,
+    AnalyticsRealWithoptimal,
+    SummaryProfitMachinery,
+    // SummaryStatsMachinery,
   },
   props: {
     errors: Object,
@@ -306,35 +402,17 @@ export default {
           disabled: true,
         },
       ],
-      lastThreeTransactions: [
-        {
-          avatar: {
-            icon: "mdi-trending-up",
-            color: "success",
-          },
-          title: "$48,568.20",
-          subtitle: "Total Profit",
-        },
-        {
-          avatar: {
-            icon: "mdi-account-outline",
-            color: "primary",
-          },
-          title: "$38,453.25",
-          subtitle: "Total Income",
-        },
-        {
-          avatar: {
-            icon: "mdi-currency-usd",
-            color: "secondary",
-          },
-          title: "$2,453.45",
-          subtitle: "Total Expense",
-        },
-      ],
     };
   },
   computed: {
+    Images() {
+      return this.item.images.length > 0
+        ? this.item.images
+        : [{ path: `https://picsum.photos/10/6?image=${5 + 10}` }];
+    },
+    NameMachinery() {
+      return `${this.item.category} ${this.item.name}`;
+    },
     TotalAmountExpenses() {
       return this.item.expenses.reduce((acc, curr) => acc + curr.amount, 0);
     },
@@ -401,6 +479,57 @@ export default {
           color: "info",
         },
       ];
+    },
+    Profitability() {
+      return {
+        real: [
+          {
+            title: "Gasto Mensual",
+            subtitle: "Promedio desde la Adquisicion",
+            amount:
+              (this.TotalAmountExpenses + this.TotalAmountSerivcesExpenses) /
+              this.item.months_used,
+            logo: "mdi-currency-usd",
+          },
+          {
+            title: "Costo Adquisicion",
+            subtitle: "Incluye los Gastos Operativos",
+            amount: this.TotalCostEquipment,
+            logo: "mdi-currency-usd",
+          },
+          {
+            title: "Utilidad",
+            subtitle: "Por Arrendamientos",
+            amount:
+              this.TotalIncome -
+              (this.TotalAmountSerivcesExpenses + this.TotalAmountExpenses),
+            logo: "mdi-currency-usd",
+          },
+        ],
+        withoptimal: [
+          {
+            title: "Gasto Mensual",
+            subtitle: "Proyectado",
+            amount: this.TotalAmountMounthlyExpenses,
+            logo: "mdi-currency-usd",
+          },
+          {
+            title: "Valor Comercial",
+            subtitle: "Precio de venta Proyectado",
+            amount: this.item.current_sale_price,
+            logo: "mdi-currency-usd",
+          },
+          {
+            title: "Utilidad",
+            subtitle: "Proyectado",
+            amount:
+              (this.TotalAmountMounthlyExpenses / 0.8 -
+                this.TotalAmountMounthlyExpenses) *
+              this.item.months_used,
+            logo: "mdi-currency-usd",
+          },
+        ],
+      };
     },
     Profit() {
       return [
@@ -476,6 +605,20 @@ export default {
 <style lang="scss" scoped>
 .card-list {
   --v-card-list-gap: 16px;
+}
+
+.text-overlay {
+  position: absolute;
+  top: 200px; /* Ajusta la posición vertical según tus necesidades */
+  left: 100px; /* Ajusta la posición horizontal según tus necesidades */
+  transform: translateX(-50%);
+  z-index: 1;
+}
+
+.text {
+  color: white;
+  font-size: 24px;
+  font-weight: bold;
 }
 </style>
 

@@ -18,7 +18,7 @@
           <v-spacer />
           <v-dialog v-model="dialog" max-width="500px">
             <template v-slot:activator="{ on, attrs }">
-              <v-btn color="primary" dark class="mb-2" v-bind="attrs" v-on="on">
+              <v-btn color="primary" dark class="mb-2" v-on="on">
                 Registrar Ingreso de Renta
               </v-btn>
             </template>
@@ -214,17 +214,11 @@
               Total:
             </td>
             <td class="blue--text subtitle-2">
-              {{
-                TotalAmountLeases
-                  | currency("$", 2, { spaceBetweenAmountAndSymbol: true })
-              }}
+              {{ TotalAmountLeases | currency }}
               MXN
             </td>
             <td colspan="2" class="green--text subtitle-2">
-              {{
-                TotalBalanceLeases
-                  | currency("$", 2, { spaceBetweenAmountAndSymbol: true })
-              }}
+              {{ TotalBalanceLeases | currency }}
               MXN
             </td>
           </tr>
@@ -476,7 +470,10 @@ export default {
       return nameArray.map((word) => word.charAt(0).toUpperCase()).join("");
     },
     resolveInvoiceBalanceVariant(balance, total) {
-      if (balance === total)
+      if (
+        this.$options.filters.currency(balance) ===
+        this.$options.filters.currency(total)
+      )
         return {
           status: "Pagada",
           chip: { color: "success" },
@@ -488,8 +485,8 @@ export default {
         };
 
       return {
-        status: balance,
-        chip: "text",
+        status: this.$options.filters.currency(total - balance),
+        chip: { text: true, dark: true, label: true },
       };
     },
   },

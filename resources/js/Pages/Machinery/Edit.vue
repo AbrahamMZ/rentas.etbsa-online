@@ -7,13 +7,13 @@
       Este Registro a sido Eliminado.
     </trashed-message>
 
-    <v-card-text>
-      <MachineryForm
-        :form.sync="form"
-        :errors="errors"
-        :form-options="formOptions"
-      />
-    </v-card-text>
+    <MachineryForm
+      :form.sync="form"
+      :errors="errors"
+      :form-options="formOptions"
+      @upload-images="uplodadImages"
+    />
+
     <v-card-actions>
       <v-btn v-if="!item.deleted_at" color="error" @click="destroy">
         Eliminar
@@ -61,8 +61,8 @@ export default {
         invoice: this.item.invoice,
         percent_depreciation: this.item.percent_depreciation,
         acquisition_date: this.item.acquisition_date,
+        images: this.item.images,
         warranty_date: this.item.warranty_date,
-        images: [],
       },
       breadcrumbs: [
         {
@@ -79,7 +79,42 @@ export default {
       ],
     };
   },
+  mounted() {
+    this.$eventBus.$on("remove-image", ({ index, image }) => {
+      image.id ? this.removeImage(image.id) : this.form.images.splice(index, 1);
+    });
+  },
   methods: {
+    async uplodadImages(images = []) {
+      await this.$inertia.post(
+        this.route("machinery-images.store"),
+        {
+          machinery_id: this.item.id,
+          images,
+        },
+        {
+          forceFormData: true,
+          onStart: () => (this.sending = true),
+          onFinish: () => (this.sending = false),
+          only: ["item", "flash", "errors"],
+          preserveState: true,
+        }
+      );
+      this.$nextTick(() => {
+        this.form.images = this.item.images;
+      });
+    },
+    async removeImage(imageId) {
+      await this.$inertia.delete(this.route("machinery-images.destroy", imageId), {
+        onStart: () => (this.sending = true),
+        onFinish: () => (this.sending = false),
+        only: ["item", "flash", "errors"],
+        preserveState: true,
+      });
+      this.$nextTick(() => {
+        this.form.images = this.item.images;
+      });
+    },
     submit() {
       let payload = {
         ...this.form,

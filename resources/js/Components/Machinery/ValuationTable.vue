@@ -41,17 +41,17 @@
         dense
       />
     </v-card-title>
-    <v-toolbar flat dark>
+    <v-toolbar flat dark dense>
       <v-toolbar-title>Tabla de Avaluo</v-toolbar-title>
     </v-toolbar>
-    <v-simple-table>
+    <v-simple-table fixed-header height="300px">
       <template v-slot:default>
         <thead>
           <tr>
-            <th class="text-left">#</th>
-            <th class="text-left">Gasto Mes</th>
-            <th class="text-left">Renta Mes</th>
-            <th class="text-left">Utilidad</th>
+            <th class="text-left"># Mes</th>
+            <th class="text-left">Acumulado Gasto Mes</th>
+            <th class="text-left">Acumulado Renta Mes</th>
+            <th class="text-left">Acumulado Utilidad</th>
           </tr>
         </thead>
         <tbody>
@@ -71,7 +71,7 @@
 
 <script>
 export default {
-  name: "ValuationMachinaryTable",
+  name: "LeaseIncomeProjection",
   props: {
     machineryId: {
       type: [Number, String],

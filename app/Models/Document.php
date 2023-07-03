@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\UploadableFile;
 use GrahamCampbell\ResultType\Result;
 use Illuminate\Database\Eloquent\Relations\Concerns\AsPivot;
 use Illuminate\Support\Facades\DB;
 
 class Document extends Model
 {
+    use UploadableFile;
     use AsPivot {
     }
     /**
@@ -43,5 +45,10 @@ class Document extends Model
     public function expedient()
     {
         return $this->belongsTo(Expedient::class, 'expedient_id');
+    }
+
+    public function getFolderPath()
+    {
+        return 'rentas/expedients/id_' . $this->expedient_id . "/requisito_id_" . $this->id;
     }
 }

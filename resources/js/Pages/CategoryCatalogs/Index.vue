@@ -34,15 +34,11 @@
     </v-row>
 
     <v-card-text>
-      <data-table-wrapper
-        :items="items.data"
-        :headers="headers"
-        with-search
-      >
+      <data-table-wrapper :items="items.data" :headers="headers" with-search>
         <template #item="{ item }">
           <tr>
             <td class="text-no-wrap">
-              {{ item.name }}
+              <v-breadcrumbs :items="item.full_name" class="py-0" />
             </td>
 
             <td class="text-right">
@@ -75,15 +71,38 @@
       route="categories"
       @input="(v) => (form.page = v)"
     />
-    <dialog-modal :show="dialog" max-width="500" persistent @close="close()">
+    <dialog-modal :show="dialog" max-width="600" persistent @close="close()">
       <template #title> {{ formTitle }} Categoria </template>
       <template #content>
         <v-text-field
           v-model="editedForm.name"
-          outlined
           label="Nombre Categoria:"
           :error-messages="editedForm.errors.name"
+          outlined
         />
+        <v-select
+          v-model="editedForm.parent_id"
+          label="Categoria Padre"
+          :items="categories"
+          item-value="id"
+          item-text="name"
+          :error-messages="editedForm.errors.parent_id"
+          outlined
+          clearable
+        >
+          <template #selection="{ item }">
+            <v-breadcrumbs
+              :items="item.breadcrumbs_category"
+              class="py-0 pl-0"
+            />
+          </template>
+          <template #item="{ item }">
+            <v-breadcrumbs
+              :items="item.breadcrumbs_category"
+              class="py-0 pl-0"
+            />
+          </template>
+        </v-select>
       </template>
       <template #footer>
         <v-btn block dark :loading="sending" @click="save()">
@@ -134,7 +153,13 @@ export default {
     DialogModal,
     ConfirmationModal,
   },
-  props: { items: Object, filters: Object, errors: Object },
+  props: {
+    items: Object,
+    filters: Object,
+    errors: Object,
+    categories: Array,
+    treeCategories: Array,
+  },
   data() {
     return {
       headers: [
@@ -165,6 +190,8 @@ export default {
       editedIndex: -1,
       editedForm: this.$inertia.form({
         name: "",
+        parent_id: null,
+        categories_ids: [],
       }),
     };
   },
@@ -202,6 +229,7 @@ export default {
       this.editedIndex = this.items.data.indexOf(item);
       this.editedForm.id = item.id;
       this.editedForm.name = item.name;
+      this.editedForm.parent_id = item.parent_id;
       this.dialog = true;
     },
     close() {

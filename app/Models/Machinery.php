@@ -3,12 +3,14 @@
 namespace App\Models;
 
 use App\Pivots\MachineryExpense;
+use App\Traits\UploadableFile;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Machinery extends Model
 {
     use SoftDeletes;
+    use UploadableFile;
 
     protected $table = 'machineries';
 
@@ -205,6 +207,11 @@ class Machinery extends Model
         } else {
             return 0;
         }
+    }
+
+    public function getFolderPath()
+    {
+        return 'rentas/machineries/id_' . $this->id . '/images';
     }
 
 

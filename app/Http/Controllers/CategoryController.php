@@ -23,15 +23,32 @@ class CategoryController extends Controller
             'items' => Category::orderByName()
                 ->filter(Request::only(['search', 'trashed', 'folio']))
                 ->paginate(10)
-                ->transform(function ($fixes_cost) {
+                ->transform(function ($category) {
                     return [
-                        'id' => $fixes_cost->id,
-                        'name' => $fixes_cost->name,
-                        'deleted_at' => $fixes_cost->deleted_at,
+                        'id' => $category->id,
+                        'name' => $category->name,
+                        'parent_id' => $category->parent_id,
+                        'full_name' => $category->breadcrumbs_category,
+                        'deleted_at' => $category->deleted_at,
                     ];
                 }),
+            'categories' => Category::all(['id', 'name', 'parent_id']),
+            // 'treeCategories' => Category::getTreeCategories()
         ]);
     }
+
+    // function getCategoryArray($category)
+    // {
+    //     $categoryArray = [
+    //         'name' => $category->name,
+    //         'id' => $category->id,
+    //         'children' => $category->allChildCategories->map(function ($childCategory) {
+    //             return $this->getCategoryArray($childCategory);
+    //         }),
+    //     ];
+
+    //     return $categoryArray;
+    // }
 
     /**
      * Show the form for creating a new resource.
@@ -54,6 +71,7 @@ class CategoryController extends Controller
         Category::create(
             Request::validate([
                 'name' => ['required', Rule::unique('expense_catalogs')],
+                'parent_id' => ['numeric', 'nullable'],
             ])
         );
         return Redirect::back()
@@ -94,6 +112,7 @@ class CategoryController extends Controller
         $category->update(
             Request::validate([
                 'name' => ['required', Rule::unique('categories')],
+                'parent_id' => ['numeric', 'nullable'],
             ])
         );
 

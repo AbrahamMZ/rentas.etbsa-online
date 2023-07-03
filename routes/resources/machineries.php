@@ -1,5 +1,6 @@
 <?php
 use App\Http\Controllers\MachineryController;
+use App\Http\Controllers\MachineryImageController;
 
 Route::prefix('machineries')->name('machineries')->middleware(['auth', 'role:owner'])->group(function () {
     Route::get('/', [MachineryController::class, 'index'])->middleware('remember');
@@ -12,4 +13,5 @@ Route::prefix('machineries')->name('machineries')->middleware(['auth', 'role:own
     Route::put('/{machinery}/restore', [MachineryController::class, 'restore'])->name('.restore');
 
     Route::put('/{machinery}/updateMachineryFixesCosts', [MachineryController::class, 'updateMachineryFixesCosts'])->name('.updateMachineryFixesCosts');
+
 });
