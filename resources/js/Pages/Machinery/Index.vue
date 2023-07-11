@@ -44,8 +44,26 @@
         <template #item="{ item }">
           <tr>
             <td class="text-no-wrap">
-              <div class="font-weight-bold">{{ item.name }}</div>
-              <span class="caption">{{ item.category }}</span>
+              <div class="d-flex align-center">
+                <v-avatar size="34" class="me-3">
+                  <v-img v-if="item.images[0]" :src="item.images[0].path" />
+                  <v-img
+                    v-else
+                    :src="`https://picsum.photos/10/6?image=${5 + 10}`"
+                  />
+                </v-avatar>
+
+                <div class="d-flex flex-column">
+                  <div class="font-weight-medium mb-0">
+                    {{ item.name }}
+                  </div>
+                  <span class="text-caption">
+                    {{ item.category }}
+                  </span>
+                </div>
+              </div>
+              <!-- <div class="font-weight-bold">{{ item.name }}</div> -->
+              <!-- <span class="caption">{{ item.category }}</span> -->
             </td>
             <td class="text-no-wrap">
               <div class="font-weight-bold">

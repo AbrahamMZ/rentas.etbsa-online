@@ -21,10 +21,10 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
 
-    \Schema::defaultStringLength(191);
+        \Schema::defaultStringLength(191);
 
     }
-    
+
     /**
      * Register any application services.
      *
@@ -51,8 +51,7 @@ class AppServiceProvider extends ServiceProvider
     protected function registerLengthAwarePaginator()
     {
         $this->app->bind(LengthAwarePaginator::class, function ($app, $values) {
-            return new class(...array_values($values)) extends LengthAwarePaginator
-            {
+            return new class (...array_values($values)) extends LengthAwarePaginator {
                 public function only(...$attributes)
                 {
                     return $this->transform(function ($item) use ($attributes) {
@@ -88,7 +87,6 @@ class AppServiceProvider extends ServiceProvider
                         is_array($window['last']) ? '...' : null,
                         $window['last'],
                     ]);
-
                     return Collection::make($elements)->flatMap(function ($item) {
                         if (is_array($item)) {
                             return Collection::make($item)->map(function ($url, $page) {
@@ -96,6 +94,8 @@ class AppServiceProvider extends ServiceProvider
                                     'url' => $url,
                                     'label' => $page,
                                     'active' => $this->currentPage() === $page,
+                                    'total' => $this->total,
+                                    'perPage' => $this->perPage,
                                 ];
                             });
                         } else {

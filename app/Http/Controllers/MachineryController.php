@@ -45,6 +45,7 @@ class MachineryController extends Controller
                         'total_service_expenses_amount' => $machinery->total_service_expenses_amount,
                         'total_cost_equipment' => $machinery->total_cost_equipment,
                         'months_used' => $machinery->months_used,
+                        'images' => $machinery->images
                     ];
                 })
         ]);

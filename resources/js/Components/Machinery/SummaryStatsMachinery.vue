@@ -62,7 +62,7 @@ export default {
       <h6 class="subtitle-1 font-weight-medium mb-6">
         <span>Porcentaje Depreciacion Anual {{ percent | percent }} </span>
         <span class="font-weight-regular">
-          😎 {{ (1 / percent) * 12 }} Meses Fiscales
+          {{ (1 / percent) * 12 }} Meses Fiscales
         </span>
       </h6>
 
