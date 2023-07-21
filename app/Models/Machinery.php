@@ -32,6 +32,7 @@ class Machinery extends Model
         'monthly_lease_base_amount',
         'percent_depreciation',
         'months_depreciation',
+        'warranty_date',
         'acquisition_date',
         'purchase_date',
         'sale_date',

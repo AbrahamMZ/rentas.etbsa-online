@@ -23,11 +23,12 @@ class MachineryController extends Controller
      */
     public function index()
     {
+
         return Inertia::render('Machinery/Index', [
-            'filters' => Request::all(['search', 'trashed', 'page']),
+            'filters' => Request::all(['search', 'trashed', 'page', 'per_page']),
             'items' => Machinery::orderByName()
                 ->filter(Request::only(['search', 'trashed', 'folio']))
-                ->paginate(10)
+                ->paginate(Request::get('per_page') == -1 ? 999999 : Request::get('per_page') ?? 10)
                 ->transform(function ($machinery) {
                     return [
                         'id' => $machinery->id,

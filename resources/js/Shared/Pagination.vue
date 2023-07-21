@@ -20,8 +20,12 @@ export default {
       type: Number,
       required: true,
     },
+    perPage: {
+      type: Number,
+      required: true,
+    },
   },
-}
+};
 </script>
 <style scoped>
 .active {

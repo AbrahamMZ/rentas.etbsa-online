@@ -34,126 +34,88 @@
     </v-row>
 
     <v-card-text>
-      <data-table-wrapper
-        :items="items.data"
+      <v-data-table
         :headers="headers"
-        with-search
-        sort-by="id"
-        sort-desc
+        :items="items.data"
+        :items-per-page.sync="form.per_page"
+        :page.sync="form.page"
+        :server-items-length="items.total"
+        calculate-widths
+        fixed-header
+        caption
+        dense
       >
-        <template #item="{ item }">
-          <tr>
-            <td class="text-no-wrap">
-              <div class="d-flex align-center">
-                <v-avatar size="34" class="me-3">
-                  <v-img v-if="item.images[0]" :src="item.images[0].path" />
-                  <v-img
-                    v-else
-                    :src="`https://picsum.photos/10/6?image=${5 + 10}`"
-                  />
-                </v-avatar>
+        <template #[`item.name`]="{ item }">
+          <div class="d-flex align-center">
+            <v-avatar size="34" class="me-3">
+              <v-img v-if="item.images[0]" :src="item.images[0].path" />
+              <v-img
+                v-else
+                :src="`https://picsum.photos/10/6?image=${5 + 10}`"
+              />
+            </v-avatar>
 
-                <div class="d-flex flex-column">
-                  <div class="font-weight-medium mb-0">
-                    {{ item.name }}
-                  </div>
-                  <span class="text-caption">
-                    {{ item.category }}
-                  </span>
-                </div>
+            <div class="d-flex flex-column">
+              <div class="font-weight-medium mb-0">
+                {{ item.name }}
               </div>
-              <!-- <div class="font-weight-bold">{{ item.name }}</div> -->
-              <!-- <span class="caption">{{ item.category }}</span> -->
-            </td>
-            <td class="text-no-wrap">
-              <div class="font-weight-bold">
-                {{ item.equipment_serial }}
-              </div>
-              <div class="grey--text text-subtitle-2">
-                N.E: {{ item.economic_serial }}
-              </div>
-            </td>
-            <td class="text-no-wrap">
-              {{
-                item.total_monthly_expenses_amount
-                  | currency("$", 2, {
-                    spaceBetweenAmountAndSymbol: true,
-                  })
-              }}
-              MXN
-            </td>
-            <td class="text-no-wrap">
-              {{
-                item.total_expenses_amount
-                  | currency("$", 2, {
-                    spaceBetweenAmountAndSymbol: true,
-                  })
-              }}
-              MXN
-            </td>
-            <td class="text-no-wrap">
-              {{
-                item.total_service_expenses_amount
-                  | currency("$", 2, {
-                    spaceBetweenAmountAndSymbol: true,
-                  })
-              }}
-              MXN
-            </td>
-            <td class="text-no-wrap">
-              {{
-                item.total_cost_equipment
-                  | currency("$", 2, {
-                    spaceBetweenAmountAndSymbol: true,
-                  })
-              }}
-              MXN
-            </td>
-
-            <td class="text-right">
-              <v-chip v-if="item.deleted_at" color="warning" outlined x-small>
-                Eliminado
-              </v-chip>
-
-              <v-btn text icon small @click="show(item.id)">
-                <v-icon small>mdi-eye</v-icon>
-              </v-btn>
-              <v-btn text icon small @click="edit(item.id)">
-                <v-icon small>mdi-pencil</v-icon>
-              </v-btn>
-            </td>
-          </tr>
+              <span class="text-caption">
+                {{ item.category }}
+              </span>
+            </div>
+          </div>
         </template>
-      </data-table-wrapper>
+        <template #[`item.equipment_serial`]="{ item }">
+          <div class="font-weight-bold">
+            {{ item.equipment_serial }}
+          </div>
+          <div class="grey--text text-subtitle-2">
+            N.E: {{ item.economic_serial }}
+          </div>
+        </template>
+        <template #[`item.total_monthly_expenses_amount`]="{ value }">
+          {{ value | currency }}
+        </template>
+        <template #[`item.total_expenses_amount`]="{ value }">
+          {{ value | currency }}
+        </template>
+        <template #[`item.total_service_expenses_amount`]="{ value }">
+          {{ value | currency }}
+        </template>
+        <template #[`item.total_cost_equipment`]="{ value }">
+          {{ value | currency }}
+        </template>
+
+        <template #[`item.action`]="{ item }">
+          <v-chip v-if="item.deleted_at" color="warning" outlined x-small>
+            Eliminado
+          </v-chip>
+
+          <v-btn text icon small @click="show(item.id)">
+            <v-icon small>mdi-eye</v-icon>
+          </v-btn>
+          <v-btn text icon small @click="edit(item.id)">
+            <v-icon small>mdi-pencil</v-icon>
+          </v-btn>
+        </template>
+      </v-data-table>
     </v-card-text>
-    <Pagination
-      v-if="items.links.length > 1"
-      :links="items.links"
-      :page="form.page"
-      route="machineries"
-      @input="(v) => (form.page = v)"
-    />
   </layout>
 </template>
 
 <script>
 import Layout from "@/Shared/Layout";
-import DataTableWrapper from "@/Shared/DataTableWrapper";
 import mapValues from "lodash/mapValues";
 import pickBy from "lodash/pickBy";
 import throttle from "lodash/throttle";
 import SearchFilter from "@/Shared/SearchFilter";
-import Pagination from "@/Shared/Pagination";
 import Breadcrumbs from "@/Shared/Breadcrumbs.vue";
 
 export default {
   name: "MachineryIndex",
   metaInfo: { title: "Maquinaria" },
-  // layout: Layout,
   components: {
-    DataTableWrapper,
     SearchFilter,
-    Pagination,
     Breadcrumbs,
     Layout,
   },
@@ -186,7 +148,8 @@ export default {
       form: {
         search: this.filters.search,
         trashed: this.filters.trashed,
-        page: this.filters.page | 1,
+        page: Number(this.filters.page) || 1,
+        per_page: Number(this.filters.per_page) || 10,
       },
       options: [
         { text: "(Vacio)", value: "" },

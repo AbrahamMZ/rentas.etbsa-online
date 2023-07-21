@@ -68,10 +68,29 @@ class AppServiceProvider extends ServiceProvider
 
                 public function toArray()
                 {
+                    // return [
+                    //     'data' => $this->items->toArray(),
+                    //     'links' => $this->links(),
+                    // ];
                     return [
+                        'current_page' => $this->currentPage(),
                         'data' => $this->items->toArray(),
-                        'links' => $this->links(),
+                        'first_page_url' => $this->url(1),
+                        'from' => $this->firstItem(),
+                        'last_page' => $this->lastPage(),
+                        'last_page_url' => $this->url($this->lastPage()),
+                        // 'links' => $this->linkCollection()->toArray(),
+                        'links' =>  $this->links(),
+                        'next_page_url' => $this->nextPageUrl(),
+                        'path' => $this->path(),
+                        'per_page' => $this->perPage(),
+                        'prev_page_url' => $this->previousPageUrl(),
+                        'to' => $this->lastItem(),
+                        'total' => $this->total(),
+
                     ];
+
+
                 }
 
                 public function links($view = null, $data = [])

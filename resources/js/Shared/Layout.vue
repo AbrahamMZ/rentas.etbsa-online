@@ -6,7 +6,7 @@
       :sidebar-color="sidebarColor"
       :sidebar-theme="sidebarTheme"
     /> -->
-    <v-navigation-drawer v-model="drawer" app>
+    <v-navigation-drawer v-model="drawer" app class="d-print-none">
       <v-sheet color="grey lighten-4" class="pa-4">
         <v-avatar
           class="hidden-sm-and-down mb-4"
@@ -42,17 +42,17 @@
       </template>
     </v-navigation-drawer>
 
-    <v-app-bar app dense flat>
+    <v-app-bar app dense flat class="d-print-none">
       <v-app-bar-nav-icon @click="drawer = !drawer" />
       <slot name="breadcrumbs" />
     </v-app-bar>
 
     <v-main>
-      <v-container fluid>
+      <v-container fluid class="overflow-y-auto grey lighten-5 ">
         <v-row>
           <v-col cols="12">
             <flash-messages />
-            <v-card>
+            <v-card class="d-print-table">
               <slot />
             </v-card>
           </v-col>
