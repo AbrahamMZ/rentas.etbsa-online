@@ -58,12 +58,28 @@ class HandleInertiaRequests extends Middleware
             },
             'navigation' => [
                 'menu' => [
-                    ['name' => 'Expedientes', 'route' => 'expedients', "icon" => 'mdi-folder', 'enabled' => true],
-                    ['name' => 'Plantillas', 'route' => 'templates', "icon" => 'mdi-content-copy', 'enabled' => $request->user()->owner ?? false],
-                    ['name' => 'Requisitos', 'route' => 'requirements', "icon" => 'mdi-alert-octagon', 'enabled' => $request->user()->owner ?? false],
-                    ['name' => 'Maquinarias', 'route' => 'machineries', "icon" => 'mdi-tractor', 'enabled' => $request->user()->owner ?? false],
                     [
-                        'name' => 'Admin',
+                        'name' => 'Rentas',
+                        "icon" => 'mdi-view-headline',
+                        'enabled' => $request->user()->owner ?? false,
+                        'children' => [
+                            ['name' => 'Maquinarias', 'route' => 'machineries', "icon" => 'mdi-tractor', 'enabled' => $request->user()->owner ?? false],
+                            ['name' => 'Categorias', 'route' => 'categories', "icon" => 'mdi-shape-plus', 'enabled' => $request->user()->owner ?? false],
+                            ['name' => 'Catalogo Gastos', 'route' => 'expenses', "icon" => 'mdi-alert-octagon', 'enabled' => $request->user()->owner ?? false],
+                        ]
+                    ],
+                    [
+                        'name' => 'Expediente',
+                        "icon" => 'mdi-view-headline',
+                        'enabled' => $request->user()->owner ?? false,
+                        'children' => [
+                            ['name' => 'Expedientes', 'route' => 'expedients', "icon" => 'mdi-folder', 'enabled' => true],
+                            ['name' => 'Plantillas', 'route' => 'templates', "icon" => 'mdi-content-copy', 'enabled' => $request->user()->owner ?? false],
+                            ['name' => 'Requisitos', 'route' => 'requirements', "icon" => 'mdi-alert-octagon', 'enabled' => $request->user()->owner ?? false],
+                        ]
+                    ],
+                    [
+                        'name' => 'Administracion',
                         "icon" => 'mdi-view-headline',
                         'enabled' => $request->user()->owner ?? false,
                         'children' => [

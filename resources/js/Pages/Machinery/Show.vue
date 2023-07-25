@@ -481,28 +481,30 @@ export default {
       ];
     },
     Profitability() {
+      let month_used = this.item.months_used <= 1 ? 1 : this.item.months_used;
+      let expenses_total =
+        this.TotalAmountExpenses + this.TotalAmountSerivcesExpenses;
       return {
         real: [
           {
             title: "Gasto Mensual",
             subtitle: "Promedio desde la Adquisicion",
-            amount:
-              (this.TotalAmountExpenses + this.TotalAmountSerivcesExpenses) /
-              this.item.months_used,
+            amount: expenses_total / month_used,
             logo: "mdi-currency-usd",
           },
           {
             title: "Costo Adquisicion",
-            subtitle: "Incluye los Gastos Operativos",
+            subtitle: "+ Gastos",
             amount: this.TotalCostEquipment,
             logo: "mdi-currency-usd",
           },
           {
             title: "Utilidad",
-            subtitle: "Por Arrendamientos",
-            amount:
-              this.TotalIncome -
-              (this.TotalAmountSerivcesExpenses + this.TotalAmountExpenses),
+            subtitle: `Ingreso: ${this.$options.filters.currency(
+              this.TotalBalanceIncome
+            )}`,
+            // amount: this.TotalIncome - expenses_total,
+            amount: this.TotalBalanceIncome - expenses_total,
             logo: "mdi-currency-usd",
           },
         ],
@@ -525,7 +527,7 @@ export default {
             amount:
               (this.TotalAmountMounthlyExpenses / 0.8 -
                 this.TotalAmountMounthlyExpenses) *
-              this.item.months_used,
+              month_used,
             logo: "mdi-currency-usd",
           },
         ],
@@ -534,23 +536,32 @@ export default {
     Profit() {
       return [
         {
-          title: "total Beneficio",
-          stats: this.TotalIncome,
+          title: "Ingreso Estimado",
+          stats: this.$options.filters.number(this.TotalIncome, "0.00 a"),
           icon: "mdi-trending-up",
           color: "primary",
         },
         {
-          title: "Total Gastos",
-          stats: this.TotalCostEquipment,
-          icon: "mdi-currency-usd",
+          title: "Gastos Total",
+          stats: this.$options.filters.number(
+            this.TotalCostEquipment,
+            "0.00 a"
+          ),
+          icon: "mdi-trending-down",
           color: "error",
         },
         {
-          title: "Total Ingresos",
-          stats: this.TotalBalanceIncome,
-          icon: "mdi-account-outline",
-          color: "success",
+          title: "Tasa de Ocupacion",
+          stats: `${this.$options.filters.percent(this.item.occupancy_rate)}`,
+          icon: "mdi-percent",
+          color: "grey",
         },
+        // {
+        //   title: "Total Ingresos",
+        //   stats: this.TotalBalanceIncome,
+        //   icon: "mdi-account-outline",
+        //   color: "success",
+        // },
       ];
     },
     ParamsToCalculateValue() {

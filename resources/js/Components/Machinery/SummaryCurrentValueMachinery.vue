@@ -1,7 +1,7 @@
 <script>
 import CalculatorValueMachinery from "./CalculatorValueMachinery.vue";
 export default {
-  name: "SummaryCurrentValueMAchienry",
+  name: "SummaryCurrentValueMachinery",
   components: { CalculatorValueMachinery },
   props: {
     valuePrice: {

@@ -42,7 +42,6 @@ class Machinery extends Model
         'total_expenses_amount',
         'total_service_expenses_amount',
         'total_cost_equipment',
-        'current_value'
     ];
     public function images()
     {
@@ -151,8 +150,7 @@ class Machinery extends Model
      */
     public function getTotalCostEquipmentAttribute()
     {
-        return doubleval($this->cost_price) +
-            doubleval($this->total_expenses_amount);
+        return doubleval($this->cost_price + $this->total_expenses_amount);
         // doubleval($this->total_service_expenses_amount);
     }
 
@@ -208,6 +206,14 @@ class Machinery extends Model
         } else {
             return 0;
         }
+    }
+
+    public function getOcupancyRateAttribute()
+    {
+        $sumLeaseTerm = (int) $this->leaseIncomes()->sum('term_lease');
+        $max_occupancy = $this->months_used < 1 ? 1 : $this->months_used;
+        $occupancy_rate = $sumLeaseTerm / $max_occupancy;
+        return $occupancy_rate;
     }
 
     public function getFolderPath()

@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\FixesCosts;
+use App\Models\LeaseIncomes;
 use App\Models\Machinery;
 use App\Models\MachineryMonthlyExpenses;
 use App\Pivots\MachineryExpense;
+use Carbon\Carbon;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
@@ -24,8 +26,9 @@ class MachineryController extends Controller
     public function index()
     {
 
+        $year = Request::get('year') ?? Carbon::now()->year;
         return Inertia::render('Machinery/Index', [
-            'filters' => Request::all(['search', 'trashed', 'page', 'per_page']),
+            'filters' => Request::all(['search', 'trashed', 'page', 'per_page', 'year']),
             'items' => Machinery::orderByName()
                 ->filter(Request::only(['search', 'trashed', 'folio']))
                 ->paginate(Request::get('per_page') == -1 ? 999999 : Request::get('per_page') ?? 10)
@@ -46,9 +49,32 @@ class MachineryController extends Controller
                         'total_service_expenses_amount' => $machinery->total_service_expenses_amount,
                         'total_cost_equipment' => $machinery->total_cost_equipment,
                         'months_used' => $machinery->months_used,
-                        'images' => $machinery->images
+                        'images' => $machinery->images,
+                        'current_sale_price' => $machinery->current_sale_price,
+                        'ocupancy_rate' => $machinery->ocupancy_rate,
                     ];
-                })
+                }),
+            'calendar' => Machinery::with([
+                'leaseIncomes' => function ($query) use ($year) {
+                    $query->whereRaw('YEAR(start_date) <= ?', $year);
+                }
+            ])->filter(Request::only(['search', 'trashed', 'folio']))
+                ->select('id', 'name', 'equipment_serial')
+                ->selectSub(function ($query) use ($year) {
+                    $query->selectRaw('SUM(balance)')
+                        ->from('lease_incomes')
+                        ->whereColumn('machineries.id', 'lease_incomes.machinery_id')
+                        ->whereRaw('YEAR(lease_incomes.start_date) <= ?', $year);
+                }, 'total_balance')
+                ->selectSub(function ($query) use ($year) {
+                    $query->selectRaw('SUM(total_income)')
+                        ->from('lease_incomes')
+                        ->whereColumn('machineries.id', 'lease_incomes.machinery_id')
+                        ->whereRaw('YEAR(lease_incomes.start_date) <= ?', $year);
+                }, 'total_income')
+                ->groupBy('id', 'name', 'equipment_serial')
+                ->orderByName()
+                ->get()
         ]);
     }
 
@@ -87,7 +113,7 @@ class MachineryController extends Controller
                         'value_price' => ['nullable'],
                         'invoice' => ['nullable'],
                         'percent_depreciation' => ['required'],
-                        'acquisition_date' => ['nullable'],
+                        'acquisition_date' => ['required'],
                         'warranty_date' => ['nullable'],
                         'images' => ['array'],
                     ])
@@ -217,7 +243,8 @@ class MachineryController extends Controller
                             'email' => "mail@example.com",
                         ],
                     ];
-                })
+                }),
+                'occupancy_rate' => $machinery->ocupancy_rate,
             ],
         ]);
     }

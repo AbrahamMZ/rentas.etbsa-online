@@ -1,6 +1,6 @@
 <script>
 export default {
-  name: "SummaryStatsMachinery",
+  name: "SummaryProfitMachinery",
   props: {
     statistics: {
       type: Array,
@@ -52,23 +52,30 @@ export default {
 <template>
   <VCard>
     <VCardTitle class="title text-uppercase">
-      Beneficio Total:
+      Beneficio Actual Proyectado:
       <span
         class="ml-2"
         :class="[Math.sign(profit) == 1 ? 'green--text' : 'red--text']"
       >
-        {{ profit | currency("$", 2, { spaceBetweenAmountAndSymbol: true }) }}
+        {{ profit | currency }}
         MXN
       </span>
       <v-spacer />
       <div class="me-n3">
-        <VBtn icon>
-          <VIcon size="24">mdi-dots-vertical</VIcon>
-        </VBtn>
+        <v-tooltip left>
+          <template v-slot:activator="{ on, attrs }">
+            <VIcon size="24" color="blue" v-bind="attrs" v-on="on">
+              mdi-information
+            </VIcon>
+          </template>
+          <span max-width="100px" class="">
+            Se considera el Ingreso Estimado de todos los Arrendamientos
+          </span>
+        </v-tooltip>
       </div>
     </VCardTitle>
     <v-card-subtitle>
-      Ultimo balance total: $ {{ balance | number("0.00 a") }}
+      Ingreso Actual: {{ balance | currency }}
     </v-card-subtitle>
 
     <VCardText>
@@ -90,7 +97,8 @@ export default {
               <span class="text-caption">
                 {{ item.title }}
               </span>
-              <span class="text-h6">{{ item.stats | number("0.00 a") }}</span>
+              <span class="text-h6">{{ item.stats }}</span>
+              <!-- <span class="text-h6">{{ item.stats | number("0.00 a") }}</span> -->
             </div>
           </div>
         </VCol>
