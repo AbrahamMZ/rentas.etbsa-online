@@ -42,6 +42,7 @@ class RouteServiceProvider extends ServiceProvider
                         include(base_path('routes/resources/fixesCosts.php'));
                         include(base_path('routes/resources/machineries.php'));
                         include(base_path('routes/resources/leaseIncomes.php'));
+                        include(base_path('routes/resources/leaseFeesIncomes.php'));
                         include(base_path('routes/resources/categories.php'));
                         include(base_path('routes/resources/machineryExpenses.php'));
                         include(base_path('routes/resources/machineryMonthlyExpenses.php'));
