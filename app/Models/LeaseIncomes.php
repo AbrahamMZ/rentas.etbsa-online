@@ -13,7 +13,9 @@ class LeaseIncomes extends Model
         'contract_lease',
         'reference',
         'term_lease',
+        'term_in_days',
         'amount',
+        'daily_fee',
         'balance',
         'start_date',
         'end_date',
@@ -24,5 +26,10 @@ class LeaseIncomes extends Model
     public function machinery()
     {
         return $this->belongsTo(Machinery::class, 'machinery_id');
+    }
+
+    public function leaseFees()
+    {
+        return $this->hasMany(LeaseFees::class, 'lease_id', 'id');
     }
 }

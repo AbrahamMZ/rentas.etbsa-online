@@ -67,11 +67,18 @@ class MachineryController extends Controller
                         ->whereRaw('YEAR(lease_incomes.start_date) <= ?', $year);
                 }, 'total_balance')
                 ->selectSub(function ($query) use ($year) {
+                    // $query->selectRaw('amount * 12')
                     $query->selectRaw('SUM(total_income)')
                         ->from('lease_incomes')
                         ->whereColumn('machineries.id', 'lease_incomes.machinery_id')
                         ->whereRaw('YEAR(lease_incomes.start_date) <= ?', $year);
                 }, 'total_income')
+                ->selectSub(function ($query) use ($year) {
+                    $query->selectRaw('SUM(term_in_days)')
+                        ->from('lease_incomes')
+                        ->whereColumn('machineries.id', 'lease_incomes.machinery_id')
+                        ->whereRaw('YEAR(lease_incomes.start_date) <= ?', $year);
+                }, 'total_days')
                 ->groupBy('id', 'name', 'equipment_serial')
                 ->orderByName()
                 ->get()
@@ -161,8 +168,6 @@ class MachineryController extends Controller
      */
     public function show(Machinery $machinery)
     {
-
-
         return Inertia::render('Machinery/Show', [
             'item' => [
                 'current_sale_price' => $machinery->current_sale_price,
@@ -228,15 +233,18 @@ class MachineryController extends Controller
                 'leases_incomes' => $machinery->leaseIncomes->map(function ($item) {
                     return [
                         'id' => $item->id,
+                        'machinery_id' => $item->machinery_id,
                         'contract_lease' => $item->contract_lease,
                         'reference' => $item->reference,
                         'term_lease' => $item->term_lease,
+                        'daily_fee' => $item->daily_fee,
+                        'term_in_days' => $item->term_in_days,
                         'amount' => $item->amount,
                         'balance' => $item->balance,
                         'start_date' => $item->start_date,
                         'end_date' => $item->end_date,
                         'total_income' => $item->total_income,
-                        'machinery_id' => $item->machinery_id,
+                        'lease_fees' => $item->leaseFees,
                         'customer' => [
                             'avatar' => null,
                             'name' => $item->reference,

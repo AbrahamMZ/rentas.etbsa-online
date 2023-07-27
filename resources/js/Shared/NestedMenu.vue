@@ -23,7 +23,7 @@
         </v-list-item-icon>
       </v-list-item>
       <v-list-group
-        v-else-if="menu.children"
+        v-else-if="menu.enabled && menu.children"
         :key="`list-group-${menu.route || menu.name}`"
         :prepend-icon="menu.icon"
       >

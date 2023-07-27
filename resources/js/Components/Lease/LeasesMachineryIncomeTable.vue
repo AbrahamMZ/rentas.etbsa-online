@@ -17,7 +17,7 @@
           <v-divider class="mx-4" inset vertical />
           <v-spacer />
           <v-dialog v-model="dialog" max-width="500px">
-            <template v-slot:activator="{ on, attrs }">
+            <template v-slot:activator="{ on }">
               <v-btn color="primary" dark class="mb-2" v-on="on">
                 Registrar Ingreso de Renta
               </v-btn>
@@ -51,10 +51,22 @@
                           dense
                         />
                       </v-col>
-                      <v-col cols="12" md="6">
+                      <!-- <v-col cols="12" md="6">
                         <v-text-field
                           v-model.number="editedItem.amount"
                           label="Monto de Renta Mensual"
+                          :rules="[(v) => !!v || 'Requerido']"
+                          type="number"
+                          prefix="$"
+                          suffix="MXN"
+                          outlined
+                          dense
+                        />
+                      </v-col> -->
+                      <v-col cols="12" md="6">
+                        <v-currency-field
+                          v-model.number="editedItem.daily_fee"
+                          label="Monto Renta/Dia"
                           :rules="[(v) => !!v || 'Requerido']"
                           type="number"
                           prefix="$"
@@ -85,11 +97,14 @@
                       </v-col>
                       <v-col> Periodo (Meses): {{ TermInMonths }} </v-col>
                       <v-col> Dias Totales: {{ TermInDays }} </v-col>
-                      <v-col> Renta/Dia: {{ DailyFee | currency }} </v-col>
                       <v-col>
-                        Ingreso Total: {{ (DailyFee * TermInDays) | currency }}
+                        Renta/Dia: {{ editedItem.daily_fee | currency }}
                       </v-col>
-                      <v-col cols="12">
+                      <v-col>
+                        Ingreso Total:
+                        {{ (editedItem.daily_fee * TermInDays) | currency }}
+                      </v-col>
+                      <v-col v-show="false" cols="12">
                         <v-text-field
                           v-model.number="editedItem.balance"
                           label="Balance Actual"
@@ -141,32 +156,71 @@
               </v-card-actions>
             </v-card>
           </v-dialog>
+          <v-dialog v-model="dialogCheckout" max-width="900px" persistent>
+            <VCard>
+              <VRow no-gutters>
+                <VCol cols="12" md="6">
+                  <VCardTitle>Agregar Ingreso</VCardTitle>
+                  <VCardText class="pb-0">
+                    <lease-fees-form />
+                  </VCardText>
+                  <v-card-actions class="d-flex justify-space-between">
+                    <v-btn
+                      color="blue darken-1"
+                      dark
+                      @click="cancelLeaseFees()"
+                    >
+                      Cancelar
+                    </v-btn>
+                    <v-btn color="blue darken-1" text @click="saveLeaseFees()">
+                      Guardar
+                    </v-btn>
+                  </v-card-actions>
+                </VCol>
+
+                <VDivider
+                  :vertical="$vuetify.breakpoint.mdAndUp"
+                  :inset="$vuetify.breakpoint.mdAndUp"
+                />
+
+                <VCol cols="12" md="6">
+                  <VCardTitle>
+                    Historico de Ingresos
+                    <v-spacer />
+                    <v-icon color="red" @click="cancelLeaseFees()">
+                      mdi-close
+                    </v-icon>
+                  </VCardTitle>
+
+                  <VCardText class="pb-0">
+                    <lease-fees-income-table
+                      :items.sync="editedItem.lease_fees"
+                    />
+                  </VCardText>
+                  <v-card-actions class="d-flex justify-space-between">
+                    <span class="title">Total:</span>
+                    <span class="title text=-weigh-bold">
+                      {{ TotalFeesIncome | currency }}
+                    </span>
+                  </v-card-actions>
+                </VCol>
+              </VRow>
+            </VCard>
+          </v-dialog>
         </v-toolbar>
       </template>
 
-      <template #[`item.contract_lease`]="{ value }">
-        <span class="blue--text"> #{{ value }} </span>
-      </template>
       <template #[`item.customer`]="{ item }">
-        <div class="d-flex align-center">
-          <!-- <v-avatar size="28" color="green" class="me-3">
-            <img v-if="item.customer.avatar" :src="item.customer.avatar" />
-            <span v-else class="white--text text-sm">{{
-              avatarText(item.customer.name)
-            }}</span>
-          </v-avatar> -->
-
-          <div class="d-flex flex-column">
-            <h6 class="text-sm font-weight-medium mb-0">
-              {{ item.customer.name }}
-            </h6>
-            <!-- <span class="text-caption">
-              {{ item.customer.email }}
-            </span> -->
+        <div class="d-flex flex-column">
+          <div class="font-weight-medium mb-0 blue--text">
+            {{ item.contract_lease }}
           </div>
+          <span class="text-caption">
+            {{ item.customer.name }}
+          </span>
         </div>
       </template>
-      <template #[`item.term_lease`]="{ item }">
+      <!-- <template #[`item.term_lease`]="{ item }">
         <div class="d-flex flex-column pt-1" style="min-width: 100px">
           <h6 class="text-md font-weight-medium mb-1">
             {{ item.term_lease }} Meses
@@ -180,32 +234,72 @@
             {{ item.end_date }}
           </div>
         </div>
+      </template> -->
+      <template #[`item.term`]="{ item }">
+        <div class="d-flex flex-column pt-1" style="min-width: 100px">
+          <div class="d-flex flex-column caption">
+            <span>
+              <v-icon left x-small>mdi-calendar</v-icon>
+              {{ item.start_date }}
+            </span>
+            <span>
+              <v-icon left x-small>mdi-calendar</v-icon>
+              {{ item.end_date }}
+            </span>
+          </div>
+        </div>
       </template>
-      <template #[`item.amount`]="{ value }">
-        {{ value | currency("$", 2, { spaceBetweenAmountAndSymbol: true }) }}
+      <template #[`item.term_in_days`]="{ item }">
+        {{ item.term_in_days }}
+      </template>
+      <template #[`item.daily_fee`]="{ value }">
+        {{ value | currency }}
       </template>
       <template #[`item.total_income`]="{ value }">
-        {{ value | currency("$", 2, { spaceBetweenAmountAndSymbol: true }) }}
+        {{ value | currency }}
+        <!-- {{
+          item.lease_fees.reduce((acc, curr) => acc + curr.amount_income, 0)
+            | currency
+        }} -->
       </template>
       <template #[`item.balance`]="{ item }">
+        <!-- resolveInvoiceBalanceVariant(item.balance, item.total_income).chip -->
         <VChip
           v-bind="
-            resolveInvoiceBalanceVariant(item.balance, item.total_income).chip
+            resolveInvoiceBalanceVariant(item.lease_fees, item.total_income)
+              .chip
           "
           small
         >
+          <!-- item.lease_fees.reduce(
+                (acc, curr) => acc + curr.amount_income,
+                0
+              ), -->
           {{
-            resolveInvoiceBalanceVariant(item.balance, item.total_income).status
+            resolveInvoiceBalanceVariant(item.lease_fees, item.total_income)
+              .status
           }}
         </VChip>
-        <!-- {{
-          (item.total_income - item.balance)
-            | currency("$", 2, { spaceBetweenAmountAndSymbol: true })
-        }} -->
       </template>
       <template #[`item.actions`]="{ item }">
-        <v-icon small class="mr-2" @click="editItem(item)"> mdi-pencil </v-icon>
-        <v-icon small @click="deleteItem(item)"> mdi-delete </v-icon>
+        <v-tooltip bottom>
+          <template #activator="{ on, attrs }">
+            <v-icon
+              class="mr-2"
+              color="green"
+              v-bind="attrs"
+              @click="showLeaseFees(item)"
+              v-on="on"
+            >
+              mdi-cash-register
+            </v-icon>
+          </template>
+          <span>Registrar Ingreso</span>
+        </v-tooltip>
+        <v-icon class="mr-2" color="blue" @click="editItem(item)">
+          mdi-pencil
+        </v-icon>
+        <v-icon color="red" @click="deleteItem(item)"> mdi-delete </v-icon>
       </template>
       <template #foot>
         <tfoot>
@@ -233,8 +327,11 @@
 
 <script>
 import { differenceInMonths, differenceInDays } from "date-fns";
+import LeaseFeesIncomeTable from "./LeaseFeesIncomeTable.vue";
+import LeaseFeesForm from "./LeaseFeesForm.vue";
 export default {
   name: "LeasesMachineryIncomeTable",
+  components: { LeaseFeesIncomeTable, LeaseFeesForm },
   props: {
     items: {
       type: Array,
@@ -249,40 +346,38 @@ export default {
     },
   },
   data: () => ({
+    dialogCheckout: false,
     valid: true,
     dialog: false,
     sending: false,
     dialogDelete: false,
     headers: [
-      {
-        text: "Contrato",
-        align: "start",
-        value: "contract_lease",
-      },
-      { text: "Cliente", value: "customer" },
-      { text: "Periodo", value: "term_lease" },
-      { text: "Monto Renta/Mes", value: "amount" },
-      { text: "Ingreso", value: "total_income" },
-      { text: "Balance", value: "balance" },
-      // { text: "Status", value: "status", sortable: false },
+      { text: "Contrato", value: "customer", sortable: false },
+      { text: "Periodo", value: "term", sortable: false },
+      { text: "Dias", value: "term_in_days", sortable: false },
+      { text: "Monto Renta/Dia", value: "daily_fee", sortable: false },
+      { text: "Ingreso", value: "total_income", sortable: false },
+      { text: "Balance", value: "balance", sortable: false },
       { text: "", value: "actions", sortable: false },
     ],
     leases: [],
-    editedIndex: -1,
     options: {
       expense_options: [],
     },
+    editedIndex: -1,
     editedItem: {
       id: null,
       contract_lease: "",
       reference: "",
       term_lease: 0,
       amount: 0,
+      daily_fee: 0,
       balance: 0,
       start_date: null,
       end_date: null,
       total_income: 0,
       machinery_id: null,
+      lease_fees: [],
     },
     defaultItem: {
       id: null,
@@ -290,11 +385,13 @@ export default {
       reference: "",
       term_lease: 0,
       amount: 0,
+      daily_fee: 0,
       balance: 0,
       start_date: null,
       end_date: null,
       total_income: 0,
       machinery_id: null,
+      lease_fees: [],
     },
   }),
   computed: {
@@ -311,20 +408,38 @@ export default {
     },
     TermInDays() {
       return !!this.editedItem.end_date && !!this.editedItem.start_date
-        ? differenceInDays(
-            new Date(this.editedItem.end_date),
-            new Date(this.editedItem.start_date)
+        ? Number(
+            differenceInDays(
+              new Date(this.editedItem.end_date),
+              new Date(this.editedItem.start_date)
+            )
           )
         : 0;
     },
-    DailyFee() {
-      return this.editedItem.amount > 0 ? this.editedItem.amount / 30 : 0;
-    },
+    // DailyFee() {
+    //   return this.editedItem.amount > 0 ? this.editedItem.amount / 30 : 0;
+    // },
     TotalAmountLeases() {
       return this.leases.reduce((acc, curr) => acc + curr.total_income, 0);
     },
     TotalBalanceLeases() {
-      return this.leases.reduce((acc, curr) => acc + curr.balance, 0);
+      // return this.leases.reduce((acc, curr) => acc + curr.balance, 0);
+      return this.leases.reduce((accumulator, item) => {
+        const leaseFees = item.lease_fees;
+        if (leaseFees && Array.isArray(leaseFees)) {
+          const amountIncomeSum = leaseFees.reduce((sum, fee) => {
+            return sum + fee.amount_income;
+          }, 0);
+          return accumulator + amountIncomeSum;
+        }
+        return accumulator;
+      }, 0);
+    },
+    TotalFeesIncome() {
+      return this.editedItem.lease_fees.reduce(
+        (acc, curr) => acc + curr.amount_income,
+        0
+      );
     },
   },
   watch: {
@@ -336,8 +451,11 @@ export default {
     },
   },
   mounted() {
+    const _this = this;
+    this.$eventBus.$on("REFRESH_LEASES_INCOME", () => {
+      _this.initialize();
+    });
     this.initialize();
-    // this.getFormOptions();
   },
   methods: {
     initialize() {
@@ -377,6 +495,7 @@ export default {
         this.editedIndex = -1;
       });
     },
+
     async save() {
       if (!this.$refs.formLease.validate()) return;
       if (this.editedIndex > -1) {
@@ -394,7 +513,7 @@ export default {
                 name: this.editedItem.reference,
                 email: "mail@example.com",
               },
-              total_income: this.DailyFee * this.TermInDays,
+              total_income: this.daily_fee * this.TermInDays,
             });
       } else {
         this.machineryId
@@ -411,7 +530,7 @@ export default {
                 name: this.editedItem.reference,
                 email: "mail@example.com",
               },
-              total_income: this.DailyFee * this.TermInDays,
+              total_income: this.daily_fee * this.TermInDays,
             });
         this.close;
       }
@@ -420,10 +539,11 @@ export default {
       const _this = this;
       let payload = {
         ..._this.editedItem,
-        machinery_id: this.machineryId,
+        machinery_id: _this.machineryId,
         term_lease:
-          this.TermInMonths == 0 ? this.TermInMonths + 1 : this.TermInMonths,
-        total_income: this.DailyFee * this.TermInDays,
+          _this.TermInMonths == 0 ? _this.TermInMonths + 1 : _this.TermInMonths,
+        term_in_days: _this.TermInDays,
+        total_income: _this.editedItem.daily_fee * _this.TermInDays,
       };
       await _this.$inertia.post(_this.route("lease-incomes.store"), payload, {
         onStart: () => (_this.sending = true),
@@ -436,10 +556,11 @@ export default {
       const _this = this;
       let payload = {
         ..._this.editedItem,
-        machinery_id: this.machineryId,
+        machinery_id: _this.machineryId,
         term_lease:
-          this.TermInMonths == 0 ? this.TermInMonths + 1 : this.TermInMonths,
-        total_income: this.DailyFee * this.TermInDays,
+          _this.TermInMonths == 0 ? _this.TermInMonths + 1 : _this.TermInMonths,
+        term_in_days: _this.TermInDays,
+        total_income: _this.editedItem.daily_fee * _this.TermInDays,
       };
       await _this.$inertia.put(
         _this.route("lease-incomes.update", _this.editedItem.id),
@@ -469,7 +590,8 @@ export default {
 
       return nameArray.map((word) => word.charAt(0).toUpperCase()).join("");
     },
-    resolveInvoiceBalanceVariant(balance, total) {
+    resolveInvoiceBalanceVariant(feeds, total) {
+      let balance = feeds.reduce((acc, curr) => acc + curr.amount_income, 0);
       if (
         this.$options.filters.currency(balance) ===
         this.$options.filters.currency(total)
@@ -488,6 +610,25 @@ export default {
         status: this.$options.filters.currency(total - balance),
         chip: { text: true, dark: true, label: true },
       };
+    },
+
+    showLeaseFees(item) {
+      this.editedIndex = this.leases.indexOf(item);
+      this.editedItem = { ...item };
+      this.dialogCheckout = true;
+    },
+    saveLeaseFees() {
+      this.$eventBus.$emit("STORE_LEASE_FEES", {
+        lease_id: this.editedItem.id,
+      });
+    },
+    cancelLeaseFees() {
+      this.dialogCheckout = false;
+      this.$nextTick(() => {
+        this.editedItem = Object.assign({}, this.defaultItem);
+        this.editedIndex = -1;
+        this.$eventBus.$emit("CLOSE_LEASE_FEES");
+      });
     },
   },
 };
