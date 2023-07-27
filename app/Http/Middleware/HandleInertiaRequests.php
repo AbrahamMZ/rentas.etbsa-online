@@ -71,7 +71,7 @@ class HandleInertiaRequests extends Middleware
                     [
                         'name' => 'Expediente',
                         "icon" => 'mdi-view-headline',
-                        'enabled' => $request->user()->owner ?? false,
+                        'enabled' => true,
                         'children' => [
                             ['name' => 'Expedientes', 'route' => 'expedients', "icon" => 'mdi-folder', 'enabled' => true],
                             ['name' => 'Plantillas', 'route' => 'templates', "icon" => 'mdi-content-copy', 'enabled' => $request->user()->owner ?? false],
