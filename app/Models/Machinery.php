@@ -105,13 +105,18 @@ class Machinery extends Model
         $query->when($filters['search'] ?? null, function ($query, $search) {
             $query->where('equipment_serial', 'like', '%' . $search . '%')
                 ->orWhere('name', 'like', '%' . $search . '%');
-        })->when($filters['trashed'] ?? null, function ($query, $trashed) {
-            if ($trashed === 'with') {
-                $query->withTrashed();
-            } elseif ($trashed === 'only') {
-                $query->onlyTrashed();
-            }
-        });
+        })->when($filters['category_ids'] ?? null, function ($query, $category_ids) {
+            $query->whereHas('category', function ($query) use ($category_ids) {
+                return $query->whereIn('id', $category_ids);
+            });
+        })
+            ->when($filters['trashed'] ?? null, function ($query, $trashed) {
+                if ($trashed === 'with') {
+                    $query->withTrashed();
+                } elseif ($trashed === 'only') {
+                    $query->onlyTrashed();
+                }
+            });
     }
 
     /**

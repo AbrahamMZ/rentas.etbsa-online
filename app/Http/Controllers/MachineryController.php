@@ -28,9 +28,10 @@ class MachineryController extends Controller
 
         $year = Request::get('year') ?? Carbon::now()->year;
         return Inertia::render('Machinery/Index', [
-            'filters' => Request::all(['search', 'trashed', 'page', 'per_page', 'year']),
+            'filters' => Request::all(['search', 'trashed', 'page', 'per_page', 'category_ids', 'year']),
+            'optionsFilters' => $this->getOptionsForm(),
             'items' => Machinery::orderByName()
-                ->filter(Request::only(['search', 'trashed', 'folio']))
+                ->filter(Request::only(['search', 'trashed', 'category_ids', 'folio']))
                 ->paginate(Request::get('per_page') == -1 ? 999999 : Request::get('per_page') ?? 10)
                 ->transform(function ($machinery) {
                     return [
@@ -58,8 +59,10 @@ class MachineryController extends Controller
                 'leaseIncomes' => function ($query) use ($year) {
                     $query->whereRaw('YEAR(start_date) <= ?', $year);
                 }
-            ])->filter(Request::only(['search', 'trashed', 'folio']))
-                ->select('id', 'name', 'equipment_serial')
+                ,
+                'leaseIncomes.leaseFees'
+            ])->filter(Request::only(['search', 'trashed', 'category_ids', 'folio']))
+                ->select('id', 'name', 'equipment_serial', 'description')
                 ->selectSub(function ($query) use ($year) {
                     $query->selectRaw('SUM(balance)')
                         ->from('lease_incomes')
@@ -79,7 +82,7 @@ class MachineryController extends Controller
                         ->whereColumn('machineries.id', 'lease_incomes.machinery_id')
                         ->whereRaw('YEAR(lease_incomes.start_date) <= ?', $year);
                 }, 'total_days')
-                ->groupBy('id', 'name', 'equipment_serial')
+                ->groupBy('id', 'name', 'equipment_serial', 'description')
                 ->orderByName()
                 ->get()
         ]);
@@ -122,7 +125,7 @@ class MachineryController extends Controller
                         'percent_depreciation' => ['required'],
                         'acquisition_date' => ['required'],
                         'warranty_date' => ['nullable'],
-                        'images' => ['array'],
+                        'images' => ['array', 'nullable'],
                     ])
                 ),
                 function (Machinery $machinery) {
@@ -321,6 +324,7 @@ class MachineryController extends Controller
                     'percent_depreciation' => ['required'],
                     'acquisition_date' => ['nullable'],
                     'warranty_date' => ['nullable'],
+                    'images' => ['array', 'nullable'],
                 ])
             );
 
@@ -364,8 +368,8 @@ class MachineryController extends Controller
     public function getOptionsForm()
     {
         return [
-            'categories' => Category::all('id', 'name', 'parent_id'),
-            'treeCategories' => Category::getTreeCategories()
+            'categories' => Category::all('id', 'name', 'parent_id')
+            // 'treeCategories' => Category::getTreeCategories()
         ];
     }
 

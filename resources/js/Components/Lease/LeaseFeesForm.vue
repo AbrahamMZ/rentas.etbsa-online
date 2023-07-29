@@ -5,13 +5,9 @@
         <v-currency-field
           v-model.number="form.amount_income"
           label="Monto del Pago"
+          :rules="[(v) => !!v || 'Requerido']"
           :error-messages="form.errors.amount_income"
-          :rules="[
-            (v) => !!v || 'Importe Requerido',
-          ]"
-          :default-value="form.amount_income"
-          :allow-negative="false"
-          value-as-integer
+          type="number"
           prefix="$"
           suffix="MXN"
           outlined
@@ -96,7 +92,7 @@ export default {
           },
           only: ["item", "flash", "errors"],
           preserveState: true,
-           preserveScroll: true,
+          preserveScroll: true,
         });
     },
   },

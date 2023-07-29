@@ -12,8 +12,8 @@
       item-key="id"
     >
       <template #top>
-        <v-toolbar flat>
-          <v-toolbar-title>Ingresos de RENTAS</v-toolbar-title>
+        <v-toolbar flat dark>
+          <v-toolbar-title>RENTAS</v-toolbar-title>
           <v-divider class="mx-4" inset vertical />
           <v-spacer />
           <v-dialog v-model="dialog" max-width="500px">
@@ -36,7 +36,7 @@
                           v-model="editedItem.reference"
                           label="Nombre del Cliente"
                           :rules="[(v) => !!v || 'Requerido']"
-                          counter="50"
+                          counter="100"
                           outlined
                           dense
                         />
@@ -211,42 +211,26 @@
       </template>
 
       <template #[`item.customer`]="{ item }">
-        <div class="d-flex flex-column">
+        <div class="d-flex flex-column caption">
           <div class="font-weight-medium mb-0 blue--text">
             {{ item.contract_lease }}
           </div>
-          <span class="text-caption">
+          <span>
             {{ item.customer.name }}
           </span>
         </div>
       </template>
-      <!-- <template #[`item.term_lease`]="{ item }">
-        <div class="d-flex flex-column pt-1" style="min-width: 100px">
-          <h6 class="text-md font-weight-medium mb-1">
-            {{ item.term_lease }} Meses
-          </h6>
-          <div class="caption">
+      <template #[`item.term`]="{ item }">
+        <div class="d-flex flex-column caption text-no-wrap">
+          <span>  <v-icon left x-small>mdi-timelapse</v-icon> {{ item.term_lease }} Meses</span>
+          <span>
             <v-icon left x-small>mdi-calendar</v-icon>
             {{ item.start_date }}
-          </div>
-          <div class="caption">
+          </span>
+          <span>
             <v-icon left x-small>mdi-calendar</v-icon>
             {{ item.end_date }}
-          </div>
-        </div>
-      </template> -->
-      <template #[`item.term`]="{ item }">
-        <div class="d-flex flex-column pt-1" style="min-width: 100px">
-          <div class="d-flex flex-column caption">
-            <span>
-              <v-icon left x-small>mdi-calendar</v-icon>
-              {{ item.start_date }}
-            </span>
-            <span>
-              <v-icon left x-small>mdi-calendar</v-icon>
-              {{ item.end_date }}
-            </span>
-          </div>
+          </span>
         </div>
       </template>
       <template #[`item.term_in_days`]="{ item }">
@@ -307,11 +291,11 @@
             <td class="text-right overline" :colspan="headers.length - 3">
               Total:
             </td>
-            <td class="blue--text subtitle-2">
+            <td class="blue--text subtitle-2 text-no-wrap">
               {{ TotalAmountLeases | currency }}
               MXN
             </td>
-            <td colspan="2" class="green--text subtitle-2">
+            <td colspan="2" class="green--text subtitle-2 text-no-wrap">
               {{ TotalBalanceLeases | currency }}
               MXN
             </td>
@@ -356,7 +340,7 @@ export default {
       { text: "Periodo", value: "term", sortable: false },
       { text: "Dias", value: "term_in_days", sortable: false },
       { text: "Monto Renta/Dia", value: "daily_fee", sortable: false },
-      { text: "Ingreso", value: "total_income", sortable: false },
+      { text: "Ingreso Total", value: "total_income", sortable: false },
       { text: "Balance", value: "balance", sortable: false },
       { text: "", value: "actions", sortable: false },
     ],

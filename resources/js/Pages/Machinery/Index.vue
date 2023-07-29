@@ -19,6 +19,30 @@
         />
       </v-col>
       <v-col cols="12" md="3" class="pa-1">
+        <v-select
+          v-model="form.category_ids"
+          label="Filtro Categoria"
+          :items="optionsFilters.categories"
+          item-value="id"
+          item-text="name"
+          outlined
+          clearable
+          dense
+          hide-details
+          multiple
+          chips
+          small-chips
+          deletable-chips
+        >
+          <template #item="{ item }">
+            <v-breadcrumbs
+              :items="item.breadcrumbs_category"
+              class="py-0 pl-0"
+            />
+          </template>
+        </v-select>
+      </v-col>
+      <v-col cols="12" md="3" class="pa-1">
         <v-text-field
           v-model="form.search"
           label="Filtro:"
@@ -134,36 +158,37 @@
       </v-data-table>
     </v-card-text>
     <v-card-text v-show="viewPort == 'calendar'">
-      <v-simple-table max-height="500px" fixed-header dense>
+      <v-simple-table max-height="500px" fixed-header dense class="caption">
         <template v-slot:default>
           <thead class="text-uppercase">
             <tr>
               <th class="text-left title">Totales:</th>
-              <th v-for="month in 12" :key="month"></th>
-              <th class="text-right title text-no-wrap">
+              <!-- <th class="text-right title text-no-wrap">
                 {{ getTotalAnualIncome || 0 | currency }}
-              </th>
+              </th> -->
               <th class="text-right title text-no-wrap">
                 {{ getTotalIncome || 0 | currency }}
               </th>
               <th class="text-right title text-no-wrap">
                 {{ getTotalBalance || 0 | currency }}
               </th>
+              <th v-for="month in 12" :key="month"></th>
             </tr>
           </thead>
           <thead>
             <tr>
               <th class="text-left">No Serie</th>
+              <!-- <th class="text-right text-no-wrap">Ingreso Estimado</th> -->
+              <th class="text-right text-no-wrap">Ingreso Total Estimado</th>
+              <th class="text-right">Ingreso Total</th>
               <th
                 v-for="month in 12"
                 :key="month"
                 class="text-uppercase text-center pa-0"
+                style="width: 3px"
               >
                 {{ getMonthNameByIndex(month) }}
               </th>
-              <th class="text-right text-no-wrap">A. Anual Estimado</th>
-              <th class="text-right text-no-wrap">A. Ingreso Estimado</th>
-              <th class="text-right">Ingreso Total</th>
             </tr>
           </thead>
           <tbody>
@@ -178,6 +203,22 @@
                   </span>
                 </div>
               </td>
+
+              <!-- <td class="text-right">
+                {{
+                  getAccumulatedLeaseAmount(machinery.lease_incomes) | currency
+                }}
+              </td> -->
+              <td class="text-right">
+                {{ machinery.total_income || 0 | currency }}
+              </td>
+              <td class="text-right">
+                <!-- {{ machinery.total_balance || 0 | currency }} -->
+                {{
+                  getAccumulatedLeaseFeesAmount(machinery.lease_incomes)
+                    | currency
+                }}
+              </td>
               <td
                 v-for="month in 12"
                 :key="`row-${machinery.equipment_serial}-${month}`"
@@ -185,6 +226,8 @@
                 style="border: 1px solid; width: 3px"
               >
                 <v-menu
+                  v-if="hasRentInRange(month, machinery.lease_incomes)"
+                  :key="`sheet-${machinery.equipment_serial}-${month}`"
                   v-model="menu[`menu-${machinery.equipment_serial}-${month}`]"
                   :close-on-content-click="false"
                   :nudge-width="200"
@@ -192,54 +235,45 @@
                 >
                   <template v-slot:activator="{ on, attrs }">
                     <v-sheet
-                      :key="`sheet-${machinery.equipment_serial}-${month}`"
                       :color="getRentColor(month, machinery.lease_incomes)"
-                      height="100%"
-                      width="100%"
-                      tile
                       v-bind="attrs"
                       v-on="on"
-                    />
+                    >
+                      <v-row align="center" class="text-center white--text">
+                        <v-col>
+                          {{
+                            getLeaseInfo(month, machinery.lease_incomes)
+                              .daysInMonth
+                          }}
+                        </v-col>
+                      </v-row>
+                    </v-sheet>
                   </template>
-                  <v-card
-                    v-if="getLeaseInfo(month, machinery.lease_incomes)"
-                    max-width="350"
-                  >
-                    <v-list>
-                      <v-list-item>
-                        <v-list-item-content>
-                          <v-list-item-title class="text-wrap">
-                            Cliente:
-                            {{
-                              getLeaseInfo(month, machinery.lease_incomes)
-                                .reference
-                            }}
-                          </v-list-item-title>
-                          <v-list-item-subtitle class="text-uppercase">
-                            MES: {{ getMonthNameByIndex(month, "MMMM") }}
-                          </v-list-item-subtitle>
-                          <v-list-item-subtitle>
-                            {{
-                              getLeaseInfo(month, machinery.lease_incomes)
-                                .start_date
-                            }}
-                            -
-                            {{
-                              getLeaseInfo(month, machinery.lease_incomes)
-                                .end_date
-                            }}
-                          </v-list-item-subtitle>
-                          <v-list-item-subtitle>
-                            Monto de Renta:
-                            {{
-                              getLeaseInfo(month, machinery.lease_incomes)
-                                .amount | currency
-                            }}
-                          </v-list-item-subtitle>
-                        </v-list-item-content>
-                      </v-list-item>
-                    </v-list>
-                    <v-divider />
+                  <v-card class="mx-auto" max-width="360">
+                    <v-card-text>
+                      <div class="text-uppercase">
+                        {{
+                          `${getMonthNameByIndex(month, "MMMM")}/${form.year}`
+                        }}
+                        <v-spacer />
+                        {{
+                          getLeaseInfo(month, machinery.lease_incomes)
+                            .start_date
+                        }}
+                        -
+                        {{
+                          getLeaseInfo(month, machinery.lease_incomes).end_date
+                        }}
+                      </div>
+                      <p class="subheader text--primary">
+                        {{
+                          getLeaseInfo(month, machinery.lease_incomes).reference
+                        }}
+                      </p>
+                      <!-- <div class="text--primary">
+                        {{ machinery.description }}
+                      </div> -->
+                    </v-card-text>
                     <v-card-actions>
                       <v-spacer />
                       <v-btn
@@ -250,7 +284,7 @@
                           ] = false
                         "
                       >
-                        Cancel
+                        Cerrar
                       </v-btn>
                       <v-btn color="primary" text @click="show(machinery.id)">
                         Ir a Detalle
@@ -258,17 +292,6 @@
                     </v-card-actions>
                   </v-card>
                 </v-menu>
-              </td>
-              <td class="text-right">
-                {{
-                  getAccumulatedLeaseAmount(machinery.lease_incomes) | currency
-                }}
-              </td>
-              <td class="text-right">
-                {{ machinery.total_income || 0 | currency }}
-              </td>
-              <td class="text-right">
-                {{ machinery.total_balance || 0 | currency }}
               </td>
             </tr>
           </tbody>
@@ -279,7 +302,17 @@
 </template>
 
 <script>
-import { format, parse, startOfMonth, endOfMonth } from "date-fns";
+import {
+  format,
+  parse,
+  startOfMonth,
+  endOfMonth,
+  getDaysInMonth,
+  getMonth,
+  getYear,
+  differenceInDays,
+  getDate,
+} from "date-fns";
 import Layout from "@/Shared/Layout";
 import mapValues from "lodash/mapValues";
 import pickBy from "lodash/pickBy";
@@ -295,7 +328,12 @@ export default {
     Breadcrumbs,
     Layout,
   },
-  props: { items: Object, filters: Object, calendar: Array },
+  props: {
+    items: Object,
+    filters: Object,
+    calendar: Array,
+    optionsFilters: Object,
+  },
   data() {
     return {
       fav: {},
@@ -316,6 +354,7 @@ export default {
       form: {
         search: this.filters.search,
         trashed: this.filters.trashed,
+        category_ids: this.filters.category_ids || [],
         year: Number(this.filters.year) || 2023,
         page: Number(this.filters.page) || 1,
         per_page: Number(this.filters.per_page) || 10,
@@ -336,6 +375,7 @@ export default {
       ],
       usedColors: new Set(),
       selectedColor: null,
+      selectedLeaseIncome: [],
       breadcrumbs: [{ text: "Inventario Maquinaria", disabled: true }],
     };
   },
@@ -349,11 +389,17 @@ export default {
         0
       );
     },
-    getTotalBalance() {
-      return this.calendar.reduce((acc, curr) => acc + curr.total_balance, 0);
-    },
     getTotalIncome() {
       return this.calendar.reduce((acc, curr) => acc + curr.total_income, 0);
+    },
+    getTotalBalance() {
+      // return this.calendar.reduce((acc, curr) => acc + curr.total_balance, 0);
+      const _this = this;
+      return this.calendar.reduce(
+        (acc, machinery) =>
+          acc + _this.getAccumulatedLeaseFeesAmount(machinery.lease_incomes),
+        0
+      );
     },
   },
 
@@ -419,6 +465,10 @@ export default {
         end: parsedEndDate,
       });
     },
+    isDateInMonthYearInRange(date, month, year) {
+      const parsedDate = parse(date, "yyyy-MM-dd", new Date());
+      return getMonth(parsedDate) + 1 === month && getYear(parsedDate) === year;
+    },
     hasRentInRange(month, leases) {
       const _this = this;
       return leases.length > 0
@@ -427,54 +477,79 @@ export default {
           )
         : false;
     },
-    getLeaseInfo(month, leases) {
-      const foundLease = leases.find((lease) =>
-        this.isMonthYearInRange(month, lease.start_date, lease.end_date)
-      );
-      return foundLease || false;
-    },
-    getAccumulatedLeaseAmount(leases) {
-      const accumulatedAmountByMonth = Array.from({ length: 12 }, () => 0);
+    getDaysInMonthRange(month, year, { start, end }) {
+      let currentStartMonth = startOfMonth(new Date(year, month - 1, 1));
+      // const currentEndMonth = endOfMonth(new Date(year, month - 1, 1));
+      const isStartDateInMonthYear =
+        getMonth(start) + 1 === month && getYear(start) === year;
+      const isEndDateInMonthYear =
+        getMonth(end) + 1 === month && getYear(end) === year;
+      let daysInMonthElapsed = 0;
+      if (isStartDateInMonthYear)
+        daysInMonthElapsed =
+          differenceInDays(endOfMonth(currentStartMonth), start) - 1;
+      else if (isEndDateInMonthYear) daysInMonthElapsed = getDate(end) + 1;
+      else {
+        daysInMonthElapsed = getDaysInMonth(new Date(year, month - 1, 1));
+      }
 
-      leases.forEach((lease) => {
-        for (let month = 1; month <= 12; month++) {
-          if (
-            this.isMonthYearInRange(month, lease.start_date, lease.end_date)
-          ) {
-            accumulatedAmountByMonth[month - 1] += lease.amount;
-          }
-        }
-      });
-      return accumulatedAmountByMonth.reduce((acc, amount) => acc + amount, 0);
+      return daysInMonthElapsed;
+    },
+    getLeaseInfo(month, leases) {
+      const _this = this;
+      let foundLease = leases
+        .map((item) => {
+          return {
+            ...item,
+            daysInMonth: _this.getDaysInMonthRange(month, _this.form.year, {
+              start: new Date(item.start_date),
+              end: new Date(item.end_date),
+            }),
+          };
+        })
+        .find((lease) =>
+          _this.isMonthYearInRange(month, lease.start_date, lease.end_date)
+        );
+
+      return foundLease || false;
     },
     getRentColor(month, leases) {
       const foundLease = leases.find((lease) =>
         this.isMonthYearInRange(month, lease.start_date, lease.end_date)
       );
-      // ? this.colors[leases.indexOf(foundLease)]
-      // ? this.colors[this.rnd(0, this.colors.length - 1)]
       return foundLease
         ? this.colors[leases.indexOf(foundLease)]
         : "transparent";
     },
-    // rnd(a, b) {
-    //   return Math.floor((b - a + 1) * Math.random()) + a;
-    // },
-    // getRandomColor() {
-    //   // Obtener un color aleatorio no utilizado
-    //   while (this.usedColors.size < this.colors.length) {
-    //     const randomIndex = Math.floor(Math.random() * this.colors.length);
-    //     const randomColor = this.colors[randomIndex];
-    //     if (!this.usedColors.has(randomColor)) {
-    //       this.usedColors.add(randomColor);
-    //       return randomColor;
-    //     }
-    //   }
-
-    //   // Todos los colores han sido utilizados, reiniciar el registro
-    //   this.usedColors.clear();
-    //   return this.getRandomColor(); // Volver a intentar obtener el color aleatorio
-    // },
+    getAccumulatedLeaseAmount(leases) {
+      if (Array.isArray(leases)) {
+        return leases.reduce((acumulado, objeto) => {
+          if (objeto.lease_fees && Array.isArray(objeto.lease_fees)) {
+            const amountIncomeAcumulado = objeto.lease_fees.reduce(
+              (subtotal, leaseFee) =>
+                subtotal + leaseFee.amount_income * objeto.term_in_days,
+              0
+            );
+            return acumulado + amountIncomeAcumulado;
+          }
+          return acumulado;
+        }, 0);
+      }
+    },
+    getAccumulatedLeaseFeesAmount(leases) {
+      if (Array.isArray(leases)) {
+        return leases.reduce((acumulado, objeto) => {
+          if (objeto.lease_fees && Array.isArray(objeto.lease_fees)) {
+            const amountIncomeAcumulado = objeto.lease_fees.reduce(
+              (subtotal, leaseFee) => subtotal + leaseFee.amount_income,
+              0
+            );
+            return acumulado + amountIncomeAcumulado;
+          }
+          return acumulado;
+        }, 0);
+      }
+    },
   },
 };
 </script>

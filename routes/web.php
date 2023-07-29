@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\MachineryController;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\DashboardController;
@@ -30,7 +31,7 @@ Route::get('simulador', [DashboardController::class, 'showSimulator'])
 // Route::get('/', [DashboardController::class, 'index'])
 //     ->name('dashboard')
 //     ->middleware('auth');
-Route::get('/', [ExpedientController::class, 'index'])->middleware('auth');
+Route::get('/', [MachineryController::class, 'index'])->middleware('auth');
 
 // Reports
 Route::get('reports', [ReportsController::class, 'index'])
@@ -98,10 +99,10 @@ Route::get('/files/{path}', [ImagesController::class, 'files'])->where('path', '
 
 Route::get('/optimize', function () {
     $exitCode = Artisan::call('optimize');
-    return '<h1>Reoptimized class loader</h1>';
+    return '<h1>Reoptimized class loader</h1>'. $exitCode;
 });
 
 Route::get('/config-cache', function () {
     $exitCode = Artisan::call('config:cache');
-    return '<h1>Clear Config cleared</h1>';
+    return '<h1>Clear Config cleared</h1>' . $exitCode;
 });
