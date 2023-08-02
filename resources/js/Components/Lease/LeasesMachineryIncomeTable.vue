@@ -16,7 +16,7 @@
           <v-toolbar-title>RENTAS</v-toolbar-title>
           <v-divider class="mx-4" inset vertical />
           <v-spacer />
-          <v-dialog v-model="dialog" max-width="500px">
+          <v-dialog v-model="dialog" max-width="550px">
             <template v-slot:activator="{ on }">
               <v-btn color="primary" dark class="mb-2" v-on="on">
                 Registrar Ingreso de Renta
@@ -25,6 +25,8 @@
             <v-card>
               <v-card-title>
                 <span class="text-h5">{{ formTitle }}</span>
+                <v-spacer />
+                <v-icon color="red" @click="close">mdi-close</v-icon>
               </v-card-title>
 
               <v-card-text>
@@ -95,13 +97,20 @@
                           dense
                         />
                       </v-col>
-                      <v-col> Periodo (Meses): {{ TermInMonths }} </v-col>
-                      <v-col> Dias Totales: {{ TermInDays }} </v-col>
                       <v-col>
-                        Renta/Dia: {{ editedItem.daily_fee | currency }}
+                        <div>Meses:</div>
+                        {{ TermInMonths }}
                       </v-col>
                       <v-col>
-                        Ingreso Total:
+                        <div>Dias Totales:</div>
+                        {{ TermInDays }}
+                      </v-col>
+                      <v-col>
+                        <div>Renta/Dia:</div>
+                        {{ editedItem.daily_fee | currency }}
+                      </v-col>
+                      <v-col>
+                        <div>Ingreso Total:</div>
                         {{ (editedItem.daily_fee * TermInDays) | currency }}
                       </v-col>
                       <v-col v-show="false" cols="12">
@@ -124,8 +133,8 @@
 
               <v-card-actions>
                 <v-spacer />
-                <v-btn color="blue darken-1" text @click="close">
-                  Cancel
+                <v-btn color="blue darken-1" dark @click="close">
+                  Cancelar
                 </v-btn>
                 <v-btn
                   color="blue darken-1"
@@ -134,7 +143,7 @@
                   :disabled="sending"
                   @click="save"
                 >
-                  Save
+                  Guardar
                 </v-btn>
               </v-card-actions>
             </v-card>
@@ -222,7 +231,10 @@
       </template>
       <template #[`item.term`]="{ item }">
         <div class="d-flex flex-column caption text-no-wrap">
-          <span>  <v-icon left x-small>mdi-timelapse</v-icon> {{ item.term_lease }} Meses</span>
+          <span>
+            <v-icon left x-small>mdi-timelapse</v-icon>
+            {{ item.term_lease }} Meses</span
+          >
           <span>
             <v-icon left x-small>mdi-calendar</v-icon>
             {{ item.start_date }}
@@ -310,7 +322,7 @@
 </template>
 
 <script>
-import { differenceInMonths, differenceInDays } from "date-fns";
+import { differenceInMonths, differenceInDays, parseISO } from "date-fns";
 import LeaseFeesIncomeTable from "./LeaseFeesIncomeTable.vue";
 import LeaseFeesForm from "./LeaseFeesForm.vue";
 export default {
@@ -383,22 +395,18 @@ export default {
       return this.editedIndex === -1 ? "Agregar Renta" : "Editar Renta";
     },
     TermInMonths() {
-      return !!this.editedItem.end_date && !!this.editedItem.start_date
-        ? differenceInMonths(
-            new Date(this.editedItem.end_date),
-            new Date(this.editedItem.start_date)
-          )
-        : 0;
+      const endDate = parseISO(this.editedItem.end_date);
+      const startDate = parseISO(this.editedItem.start_date);
+      return !!endDate && !!startDate
+        ? differenceInMonths(endDate, startDate)
+        : 1;
     },
     TermInDays() {
-      return !!this.editedItem.end_date && !!this.editedItem.start_date
-        ? Number(
-            differenceInDays(
-              new Date(this.editedItem.end_date),
-              new Date(this.editedItem.start_date)
-            )
-          )
-        : 0;
+      const endDate = parseISO(this.editedItem.end_date);
+      const startDate = parseISO(this.editedItem.start_date);
+      return !!endDate && !!startDate
+        ? differenceInDays(endDate, startDate)
+        : 1;
     },
     // DailyFee() {
     //   return this.editedItem.amount > 0 ? this.editedItem.amount / 30 : 0;
@@ -480,43 +488,43 @@ export default {
       });
     },
 
-    async save() {
-      if (!this.$refs.formLease.validate()) return;
-      if (this.editedIndex > -1) {
-        this.editedItem.id
-          ? this.update()
-          : Object.assign(this.leases[this.editedIndex], {
-              ...this.editedItem,
-              machinery_id: this.machineryId,
+    save() {
+      const _this = this;
+      if (!_this.$refs.formLease.validate()) return;
+      if (_this.editedIndex > -1) {
+        _this.editedItem.id
+          ? _this.update()
+          : Object.assign(_this.leases[_this.editedIndex], {
+              ..._this.editedItem,
+              machinery_id: _this.machineryId,
               term_lease:
-                this.TermInMonths == 0
-                  ? this.TermInMonths + 1
-                  : this.TermInMonths,
+                _this.TermInMonths == 0
+                  ? _this.TermInMonths + 1
+                  : _this.TermInMonths,
               customer: {
                 avatar: "https://cdn.vuetifyjs.com/images/john.jpg",
-                name: this.editedItem.reference,
+                name: _this.editedItem.reference,
                 email: "mail@example.com",
               },
-              total_income: this.daily_fee * this.TermInDays,
+              total_income: _this.daily_fee * _this.TermInDays,
             });
       } else {
-        this.machineryId
-          ? this.store()
-          : this.leases.push({
-              ...this.editedItem,
-              machinery_id: this.machineryId,
+        _this.machineryId
+          ? _this.store()
+          : _this.leases.push({
+              ..._this.editedItem,
+              machinery_id: _this.machineryId,
               term_lease:
-                this.TermInMonths == 0
-                  ? this.TermInMonths + 1
-                  : this.TermInMonths,
+                _this.TermInMonths == 0
+                  ? _this.TermInMonths + 1
+                  : _this.TermInMonths,
               customer: {
                 avatar: "https://cdn.vuetifyjs.com/images/john.jpg",
-                name: this.editedItem.reference,
+                name: _this.editedItem.reference,
                 email: "mail@example.com",
               },
-              total_income: this.daily_fee * this.TermInDays,
+              total_income: _this.daily_fee * _this.TermInDays,
             });
-        this.close;
       }
     },
     async store() {
@@ -535,6 +543,7 @@ export default {
         only: ["item", "flash", "errors"],
         preserveState: true,
       });
+      _this.close();
     },
     async update() {
       const _this = this;
@@ -556,6 +565,7 @@ export default {
           preserveState: true,
         }
       );
+      _this.close();
     },
     destroy() {
       const _this = this;

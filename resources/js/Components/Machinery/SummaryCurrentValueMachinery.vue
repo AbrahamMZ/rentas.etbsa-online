@@ -41,7 +41,7 @@ export default {
           color: "primary",
         },
         {
-          title: "Renta Mensual Suguerida:",
+          title: "Renta Mensual Sugerida:",
           stats: this.calculatorParams.TotalAmountMounthlyExpenses / 0.8,
           icon: "mdi-cash-multiple",
           color: "pink",

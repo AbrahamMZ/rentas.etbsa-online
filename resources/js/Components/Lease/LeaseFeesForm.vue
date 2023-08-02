@@ -94,6 +94,7 @@ export default {
           preserveState: true,
           preserveScroll: true,
         });
+        _this.$eventBus.$emit("CLOSE_LEASE_FEES");
     },
   },
 };

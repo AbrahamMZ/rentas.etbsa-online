@@ -435,10 +435,16 @@ export default {
       );
     },
     TotalBalanceIncome() {
-      return this.item.leases_incomes.reduce(
-        (acc, curr) => acc + curr.balance,
-        0
-      );
+      return this.item.leases_incomes.reduce((acumulado, objeto) => {
+          if (objeto.lease_fees && Array.isArray(objeto.lease_fees)) {
+            const amountIncomeAcumulado = objeto.lease_fees.reduce(
+              (subtotal, leaseFee) => subtotal + leaseFee.amount_income,
+              0
+            );
+            return acumulado + amountIncomeAcumulado;
+          }
+          return acumulado;
+        }, 0);
     },
     TotalProfit() {
       return this.TotalIncome - this.TotalCostEquipment;
