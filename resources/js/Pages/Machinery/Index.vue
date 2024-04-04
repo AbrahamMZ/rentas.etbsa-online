@@ -194,12 +194,16 @@
           <tbody>
             <tr v-for="machinery in calendar" :key="machinery.equipment_serial">
               <td>
-                <div class="d-flex flex-column">
+                <div class="d-flex flex-column my-1">
                   <div class="font-weight-medium mb-0 text-wrap">
-                    {{ machinery.name }}
+                    <v-label @click="show(machinery.id)">
+                      <span class="blue--text" style="cursor: pointer">
+                        {{ machinery.equipment_serial }}
+                      </span>
+                    </v-label>
                   </div>
                   <span class="text-caption">
-                    {{ machinery.equipment_serial }}
+                    {{ machinery.name }}
                   </span>
                 </div>
               </td>
