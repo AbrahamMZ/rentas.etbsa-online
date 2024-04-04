@@ -45,7 +45,7 @@
       <v-col cols="12" md="3" class="pa-1">
         <v-text-field
           v-model="form.search"
-          label="Filtro:"
+          label="Buscar:"
           placeholder=""
           outlined
           dense
