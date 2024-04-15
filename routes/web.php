@@ -28,10 +28,10 @@ Route::get('simulador', [DashboardController::class, 'showSimulator'])
 
 // Dashboard
 
-// Route::get('/', [DashboardController::class, 'index'])
+// Route::get('/dashboard', [DashboardController::class, 'index'])
 //     ->name('dashboard')
-//     ->middleware('auth');
-Route::get('/', [MachineryController::class, 'index'])->middleware('auth');
+//     ->middleware('auth', 'role:owner');
+Route::get('/', [ExpedientController::class, 'index'])->middleware('auth');
 
 // Reports
 Route::get('reports', [ReportsController::class, 'index'])
@@ -99,7 +99,7 @@ Route::get('/files/{path}', [ImagesController::class, 'files'])->where('path', '
 
 Route::get('/optimize', function () {
     $exitCode = Artisan::call('optimize');
-    return '<h1>Reoptimized class loader</h1>'. $exitCode;
+    return '<h1>Reoptimized class loader</h1>' . $exitCode;
 });
 
 Route::get('/config-cache', function () {

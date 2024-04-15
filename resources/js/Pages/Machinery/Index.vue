@@ -317,6 +317,7 @@ import {
   differenceInDays,
   getDate,
 } from "date-fns";
+const currentDate = new Date();
 import Layout from "@/Shared/Layout";
 import mapValues from "lodash/mapValues";
 import pickBy from "lodash/pickBy";
@@ -359,7 +360,7 @@ export default {
         search: this.filters.search,
         trashed: this.filters.trashed,
         category_ids: this.filters.category_ids || [],
-        year: Number(this.filters.year) || 2023,
+        year: Number(this.filters.year) || getYear(currentDate),
         page: Number(this.filters.page) || 1,
         per_page: Number(this.filters.per_page) || 10,
       },

@@ -21,7 +21,8 @@ class CheckRole
         // }
 
         if ($role == 'owner' && !auth()->user()->owner) {
-            abort(403);
+            // abort(403);
+            return redirect()->intended();
         }
 
         return $next($request);
