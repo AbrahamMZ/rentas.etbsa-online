@@ -27,6 +27,7 @@ class Machinery extends Model
         'cost_price',
         'value_price',
         'invoice',
+        'hours_work',
         'current_price',
         'sale_price',
         'monthly_lease_base_amount',

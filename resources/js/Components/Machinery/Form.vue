@@ -180,6 +180,16 @@
                   outlined
                 />
               </v-col>
+              <v-col cols="6">
+                <v-text-field
+                  v-model.number="form.hours_work"
+                  :error-messages="errors.hours_work"
+                  type="number"
+                  label="Horas de Trabajo"
+                  suffix="hrs"
+                  outlined
+                />
+              </v-col>
             </v-row>
           </v-form>
         </v-tab-item>

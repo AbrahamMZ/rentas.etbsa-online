@@ -59,6 +59,7 @@ export default {
         cost_price: this.item.cost_price,
         value_price: this.item.value_price,
         invoice: this.item.invoice,
+        hours_work: this.item.hours_work,
         percent_depreciation: this.item.percent_depreciation,
         acquisition_date: this.item.acquisition_date,
         images: this.item.images,

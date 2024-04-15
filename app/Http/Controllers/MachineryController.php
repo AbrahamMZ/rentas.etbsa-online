@@ -104,7 +104,7 @@ class MachineryController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @return mixed
-     * 
+     *
      */
     public function store(Request $request)
     {
@@ -167,7 +167,7 @@ class MachineryController extends Controller
      * Display the specified resource.
      *
      * @param  \App\Models\Machinery  $machinery
-     * 
+     *
      */
     public function show(Machinery $machinery)
     {
@@ -185,6 +185,7 @@ class MachineryController extends Controller
                 'value_price' => $machinery->value_price,
                 'total_cost_amount' => $machinery->total_cost_equipment,
                 'invoice' => $machinery->invoice,
+                'hours_work' => $machinery->hours_work,
                 'acquisition_date' => $machinery->acquisition_date,
                 'deleted_at' => $machinery->deleted_at,
                 'months_used' => $machinery->months_used,
@@ -281,6 +282,7 @@ class MachineryController extends Controller
                 'cost_price' => $machinery->cost_price,
                 'value_price' => $machinery->value_price,
                 'invoice' => $machinery->invoice,
+                'hours_work' => $machinery->hours_work,
                 'percent_depreciation' => $machinery->percent_depreciation * 100,
                 'acquisition_date' => $machinery->acquisition_date,
                 'warranty_date' => $machinery->warranty_date,
@@ -295,7 +297,7 @@ class MachineryController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \App\Models\Machinery  $machinery
-     * 
+     *
      */
     public function update(Request $request, Machinery $machinery)
     {
@@ -321,6 +323,7 @@ class MachineryController extends Controller
                     'cost_price' => ['required'],
                     'value_price' => ['required'],
                     'invoice' => ['nullable'],
+                    'hours_work' => ['nullable'],
                     'percent_depreciation' => ['required'],
                     'acquisition_date' => ['nullable'],
                     'warranty_date' => ['nullable'],
@@ -343,7 +346,7 @@ class MachineryController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  \App\Models\Machinery  $machinery
-     * 
+     *
      */
     public function destroy(Machinery $machinery)
     {
@@ -356,7 +359,7 @@ class MachineryController extends Controller
      * Restore the specified resource from storage.
      *
      * @param  \App\Models\Machinery  $machinery
-     * 
+     *
      */
     public function restore(Machinery $machinery)
     {

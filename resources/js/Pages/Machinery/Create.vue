@@ -50,6 +50,7 @@ export default {
         cost_price: "",
         value_price: "",
         invoice: "",
+        hours_work: null,
         percent_depreciation: 25,
         acquisition_date: "",
         warranty_date: "",
