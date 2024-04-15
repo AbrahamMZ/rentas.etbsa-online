@@ -22,7 +22,7 @@ export default {
     },
     perPage: {
       type: Number,
-      required: true,
+      required: false,
     },
   },
 };
