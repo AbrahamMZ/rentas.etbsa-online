@@ -131,7 +131,7 @@ class ExpedientController extends Controller
                 "owner_use" => $expedient->owner_user,
                 "users_follower" => $expedient->follower_users,
             ],
-            'folders' => Status::all()->map(function ($S) use ($expedient) {
+            'folders' => Status::whereIn('id', [1, 2, 3, 4, 5])->get()->map(function ($S) use ($expedient) {
                 return [
                     'status_text' => $S->text,
                     'documents' => $S->documents
