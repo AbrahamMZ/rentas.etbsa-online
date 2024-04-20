@@ -163,6 +163,7 @@
           <thead class="text-uppercase">
             <tr>
               <th class="text-left title">Totales:</th>
+              <th class="text-left title"></th>
               <!-- <th class="text-right title text-no-wrap">
                 {{ getTotalAnualIncome || 0 | currency }}
               </th> -->
@@ -178,6 +179,7 @@
           <thead>
             <tr>
               <th class="text-left">No Serie</th>
+              <th class="text-left">JDF</th>
               <!-- <th class="text-right text-no-wrap">Ingreso Estimado</th> -->
               <th class="text-right text-no-wrap">Ingreso Total Estimado</th>
               <th class="text-right">Ingreso Total</th>
@@ -207,7 +209,37 @@
                   </span>
                 </div>
               </td>
-
+              <td>
+                <template v-if="machinery.jdf_info">
+                  <v-chip
+                    :color="machinery.jdf_info.isActive ? 'green' : 'grey'"
+                    dark
+                    small
+                  >
+                    Activo
+                  </v-chip>
+                  <v-chip dark small>
+                    {{ machinery.jdf_info.terms }}
+                  </v-chip>
+                  <v-chip color="blue" dark small>
+                    {{ machinery.jdf_info.nextPaymentDate }}
+                  </v-chip>
+                  <v-chip
+                    :color="
+                      machinery.jdf_info.daysUntilNextPayment < 0
+                        ? 'red'
+                        : 'green'
+                    "
+                    dark
+                    small
+                  >
+                    {{ machinery.jdf_info.daysUntilNextPayment }} Dias
+                  </v-chip>
+                  <!-- <pre>
+                {{ machinery.jdf_info }}
+                </pre> -->
+                </template>
+              </td>
               <!-- <td class="text-right">
                 {{
                   getAccumulatedLeaseAmount(machinery.lease_incomes) | currency

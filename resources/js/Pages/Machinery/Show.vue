@@ -8,10 +8,10 @@
     </trashed-message>
     <v-card-text>
       <v-row dense align="start">
-        <v-col cols="12" md="4">
-          <v-row>
+        <v-col>
+          <v-row dense>
             <v-col cols="12">
-              <VCard class="mb-4">
+              <VCard>
                 <v-carousel
                   height="275px"
                   hide-delimiter-background
@@ -239,20 +239,20 @@
                 </VCardText> -->
               </VCard>
             </v-col>
-          </v-row>
-          <v-row>
             <v-col cols="12">
-              <summary-current-value-machinery
-                :value-price="item.value_price"
-                :sale-price="item.current_sale_price"
-                :month-machinery="item.months_used"
-                :calculator-params="ParamsToCalculateValue"
-              />
+              <v-card>
+                <v-card-title> Resumen Financiamiento </v-card-title>
+                <v-card-text>
+                  <pre v-if="item.jdf_info">
+                    {{ item.jdf_info }}
+                  </pre>
+                </v-card-text>
+              </v-card>
             </v-col>
           </v-row>
         </v-col>
         <v-col cols="12" md="8">
-          <v-row>
+          <v-row dense>
             <v-col cols="12">
               <analytics-real-withoptimal :profitability="Profitability" />
             </v-col>
@@ -305,14 +305,6 @@
                 </v-tabs>
               </v-card>
             </v-col>
-          </v-row>
-          <v-row>
-            <!-- <v-col cols="12">
-              <summary-stats-machinery
-                :statistics="Statistics"
-                :percent="item.percent_depreciation"
-              />
-            </v-col> -->
             <v-col cols="12">
               <summary-profit-machinery
                 class="mt-2"
@@ -321,7 +313,23 @@
                 :balance="TotalBalanceIncome"
               />
             </v-col>
+            <v-col cols="12">
+              <summary-current-value-machinery
+                :value-price="item.value_price"
+                :sale-price="item.current_sale_price"
+                :month-machinery="item.months_used"
+                :calculator-params="ParamsToCalculateValue"
+              />
+            </v-col>
           </v-row>
+          <!-- <v-row> -->
+          <!-- <v-col cols="12">
+              <summary-stats-machinery
+                :statistics="Statistics"
+                :percent="item.percent_depreciation"
+              />
+            </v-col> -->
+          <!-- </v-row> -->
         </v-col>
       </v-row>
     </v-card-text>
@@ -436,15 +444,15 @@ export default {
     },
     TotalBalanceIncome() {
       return this.item.leases_incomes.reduce((acumulado, objeto) => {
-          if (objeto.lease_fees && Array.isArray(objeto.lease_fees)) {
-            const amountIncomeAcumulado = objeto.lease_fees.reduce(
-              (subtotal, leaseFee) => subtotal + leaseFee.amount_income,
-              0
-            );
-            return acumulado + amountIncomeAcumulado;
-          }
-          return acumulado;
-        }, 0);
+        if (objeto.lease_fees && Array.isArray(objeto.lease_fees)) {
+          const amountIncomeAcumulado = objeto.lease_fees.reduce(
+            (subtotal, leaseFee) => subtotal + leaseFee.amount_income,
+            0
+          );
+          return acumulado + amountIncomeAcumulado;
+        }
+        return acumulado;
+      }, 0);
     },
     TotalProfit() {
       return this.TotalIncome - this.TotalCostEquipment;

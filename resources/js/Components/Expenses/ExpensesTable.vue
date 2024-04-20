@@ -6,6 +6,7 @@
       class="elevation-0 text-uppercase"
       disable-pagination
       hide-default-footer
+      sort-by="applied_date"
       mobile-breakpoint="0"
       item-key="id"
     >
@@ -185,7 +186,8 @@ export default {
         align: "start",
         value: "expense.name",
       },
-      { text: "Referencia", value: "reference", divider: true },
+      { text: "Referencia", value: "reference" },
+      { text: "F. aplicacion", value: "applied_date", divider: true },
       { text: "Importe", value: "amount" },
       { text: "Actions", value: "actions", sortable: false },
     ],

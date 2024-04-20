@@ -48,11 +48,11 @@
     </v-app-bar>
 
     <v-main>
-      <v-container fluid class="overflow-y-auto grey lighten-5 ">
+      <v-container fluid class="overflow-y-auto grey lighten-4 ">
         <v-row>
           <v-col cols="12">
             <flash-messages />
-            <v-card class="d-print-table">
+            <v-card class="d-print-table transparent" flat>
               <slot />
             </v-card>
           </v-col>
