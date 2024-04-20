@@ -7,6 +7,24 @@
       Este Registro a sido Eliminado.
     </trashed-message>
 
+    <v-card-title flat class="d-flex flex-wrap justify-space-between gap-4">
+      <div class="d-flex flex-column justify-center">
+        <h4 class="text-h4">Editar Maquinaria</h4>
+        <span class="text-medium-emphasis">
+          Equipo para el departamento de Rentas
+        </span>
+      </div>
+
+      <div class="d-flex gap-4 align-center flex-wrap">
+        <v-btn v-if="!item.deleted_at" color="error" @click="destroy">
+          Eliminar
+        </v-btn>
+        <v-btn class="ml-2" :loading="sending" color="primary" @click="submit">
+          Guardar
+        </v-btn>
+      </div>
+    </v-card-title>
+
     <MachineryForm
       :form.sync="form"
       :errors="errors"
@@ -14,13 +32,13 @@
       @upload-images="uplodadImages"
     />
 
-    <v-card-actions>
+    <!-- <v-card-actions>
       <v-btn v-if="!item.deleted_at" color="error" @click="destroy">
         Eliminar
       </v-btn>
       <v-spacer />
       <v-btn :loading="sending" color="primary" @click="submit">Guardar</v-btn>
-    </v-card-actions>
+    </v-card-actions> -->
   </layout>
 </template>
 
@@ -29,6 +47,7 @@ import Layout from "@/Shared/Layout";
 import TrashedMessage from "@/Shared/TrashedMessage";
 import MachineryForm from "@/Components/Machinery/Form";
 import Breadcrumbs from "@/Shared/Breadcrumbs.vue";
+import { differenceInMonths, parseISO } from "date-fns";
 
 export default {
   name: "MachineryEdit",
@@ -64,6 +83,11 @@ export default {
         acquisition_date: this.item.acquisition_date,
         images: this.item.images,
         warranty_date: this.item.warranty_date,
+        dates:
+          !this.item.jdf_start_date && !this.item.jdf_end_date
+            ? []
+            : [this.item.jdf_start_date, this.item.jdf_end_date],
+        jdf_amount: this.item.jdf_amount,
       },
       breadcrumbs: [
         {
@@ -106,12 +130,15 @@ export default {
       });
     },
     async removeImage(imageId) {
-      await this.$inertia.delete(this.route("machinery-images.destroy", imageId), {
-        onStart: () => (this.sending = true),
-        onFinish: () => (this.sending = false),
-        only: ["item", "flash", "errors"],
-        preserveState: true,
-      });
+      await this.$inertia.delete(
+        this.route("machinery-images.destroy", imageId),
+        {
+          onStart: () => (this.sending = true),
+          onFinish: () => (this.sending = false),
+          only: ["item", "flash", "errors"],
+          preserveState: true,
+        }
+      );
       this.$nextTick(() => {
         this.form.images = this.item.images;
       });
@@ -119,6 +146,12 @@ export default {
     submit() {
       let payload = {
         ...this.form,
+        jdf_start_date: this.form.dates[0],
+        jdf_end_date: this.form.dates[1],
+        jdf_terms: differenceInMonths(
+          parseISO(this.form.dates[1]),
+          parseISO(this.form.dates[0])
+        ),
         percent_depreciation: this.form.percent_depreciation / 100,
       };
       this.$inertia.put(
