@@ -37,12 +37,17 @@ class Machinery extends Model
         'acquisition_date',
         'purchase_date',
         'sale_date',
+        'jdf_amount',
+        'jdf_start_date',
+        'jdf_end_date',
+        'jdf_terms',
     ];
 
     protected $appends = [
         'total_expenses_amount',
         'total_service_expenses_amount',
         'total_cost_equipment',
+        'jdf_info'
     ];
     public function images()
     {
@@ -227,5 +232,79 @@ class Machinery extends Model
         return 'rentas/machineries/id_' . $this->id . '/images';
     }
 
+
+    public function getJdfInfoAttribute()
+    {
+        if (!$this->jdf_start_date || !$this->jdf_end_date) {
+            return null;
+        }
+        $startDate = Carbon::create($this->jdf_start_date);
+        $endDate = Carbon::create($this->jdf_end_date);
+        $currentDay = Carbon::now();
+
+        // Verificar si la fecha actual está dentro del periodo de financiamiento
+        $isActive = $currentDay->between($startDate, $endDate);
+        // Obtener el último pago realizado
+        $lastPayment = $this->machineryExpenses->where('expense_id', 19)->last();
+        // Calcular el total de pagos realizados
+        $totalPayments = $this->machineryExpenses->where('expense_id', 19)->sum('amount');
+        // Calcular la cuota mensual
+        $monthlyPayment = $this->jdf_amount ?? 0;
+        $totalAmountJdf = $this->jdf_terms * $this->jdf_amount;
+
+        // Determinar la fecha del próximo pago
+        if ($lastPayment) {
+            $lastPaymentDate = Carbon::create($lastPayment->applied_date);
+
+            // Verificar si el último pago corresponde al mes actual
+            if ($lastPaymentDate->month == $currentDay->month && $lastPaymentDate->year == $currentDay->year) {
+                $nextPaymentDate = $lastPaymentDate->copy()->addMonthsNoOverflow(1)->day($startDate->day);
+            } else {
+                $nextPaymentDate = $lastPaymentDate->copy()->addMonthNoOverflow()->startOfMonth();
+            }
+        } else {
+            // Usar la fecha de inicio como referencia para el próximo pago
+            $nextPaymentDate = $startDate->copy()->addMonthNoOverflow();
+        }
+
+        // Ajustar la fecha del próximo pago si supera la fecha de fin de financiamiento
+        if ($nextPaymentDate->greaterThan($endDate)) {
+            $nextPaymentDate = $endDate;
+        }
+
+        // Calcular días restantes para el próximo pago
+        $daysUntilNextPayment = $currentDay->diffInDays($nextPaymentDate, false);
+        // Calcular días de retraso si el pago del mes actual no se ha realizado
+        $daysDelay = $daysUntilNextPayment > 0 ? $daysUntilNextPayment : 0;
+        // Verificar si el pago del mes actual está pendiente
+        $isPaymentPending = $daysDelay > 0 && $daysDelay <= 30;
+
+        return [
+            'total_amount_jdf' => $totalAmountJdf,
+            'terms' => $this->jdf_start_date . ' - ' . $this->jdf_end_date,
+            'isActive' => $isActive,
+            'lastPaymentDate' => $lastPayment ? $lastPayment->applied_date : null,
+            'totalPayments' => $totalPayments,
+            'monthlyPayment' => $monthlyPayment,
+            'nextPaymentDate' => $nextPaymentDate->format('Y-m-d'),
+            'daysUntilNextPayment' => $daysUntilNextPayment,
+            'daysDelay' => $daysDelay,
+            'isPaymentPending' => $isPaymentPending,
+        ];
+    }
+    public function getLeaseInfoAttribute()
+    {
+
+        // $date = Carbon::parse($this->acquisition_date);
+        $hasFinancial = !is_null($this->jdf_end_date);
+
+        $dayTermJdfPayment = null;
+        $hasPayJdfMonth = null;
+        $nextDayTermJdfPayment = null;
+
+        return [
+            'has_financial' => $hasFinancial
+        ];
+    }
 
 }

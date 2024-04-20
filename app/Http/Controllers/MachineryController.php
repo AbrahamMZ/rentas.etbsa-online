@@ -53,6 +53,7 @@ class MachineryController extends Controller
                         'images' => $machinery->images,
                         'current_sale_price' => $machinery->current_sale_price,
                         'ocupancy_rate' => $machinery->ocupancy_rate,
+                        'jdf_info' => $machinery->jdf_info,
                     ];
                 }),
             'calendar' => Machinery::with([
@@ -62,7 +63,7 @@ class MachineryController extends Controller
                 ,
                 'leaseIncomes.leaseFees'
             ])->filter(Request::only(['search', 'trashed', 'category_ids', 'folio']))
-                ->select('id', 'name', 'equipment_serial', 'description')
+                ->select('id', 'name', 'equipment_serial', 'description', 'jdf_start_date', 'jdf_end_date', 'jdf_terms', 'jdf_amount')
                 ->selectSub(function ($query) use ($year) {
                     $query->selectRaw('SUM(balance)')
                         ->from('lease_incomes')
@@ -82,7 +83,7 @@ class MachineryController extends Controller
                         ->whereColumn('machineries.id', 'lease_incomes.machinery_id')
                         ->whereRaw('YEAR(lease_incomes.start_date) <= ?', $year);
                 }, 'total_days')
-                ->groupBy('id', 'name', 'equipment_serial', 'description')
+                ->groupBy('id', 'name', 'equipment_serial', 'description', 'jdf_start_date', 'jdf_end_date', 'jdf_terms', 'jdf_amount')
                 ->orderByName()
                 ->get()
         ]);
@@ -126,6 +127,11 @@ class MachineryController extends Controller
                         'acquisition_date' => ['required'],
                         'warranty_date' => ['nullable'],
                         'images' => ['array', 'nullable'],
+                        'hours_work' => ['nullable'],
+                        'jdf_amount' => ['nullable'],
+                        'jdf_start_date' => ['nullable'],
+                        'jdf_end_date' => ['nullable'],
+                        'jdf_terms' => ['nullable'],
                     ])
                 ),
                 function (Machinery $machinery) {
@@ -133,12 +139,13 @@ class MachineryController extends Controller
                         foreach ($images as $image) {
                             $machinery->images()->create([
                                 'full' => $image
-                                ? $machinery->uploadOne(
-                                    $image,
-                                    $machinery->getFolderPath(),
-                                    's3', $image->getClientOriginalName()
-                                )
-                                : null
+                                    ? $machinery->uploadOne(
+                                        $image,
+                                        $machinery->getFolderPath(),
+                                        's3',
+                                        $image->getClientOriginalName()
+                                    )
+                                    : null
                             ]);
                         }
                     }
@@ -186,11 +193,15 @@ class MachineryController extends Controller
                 'total_cost_amount' => $machinery->total_cost_equipment,
                 'invoice' => $machinery->invoice,
                 'hours_work' => $machinery->hours_work,
+                'jdf_amount' => $machinery->jdf_amount,
+                'jdf_start_date' => $machinery->jdf_start_date,
+                'jdf_end_date' => $machinery->jdf_end_date,
                 'acquisition_date' => $machinery->acquisition_date,
                 'deleted_at' => $machinery->deleted_at,
                 'months_used' => $machinery->months_used,
                 'monthly_depreciation' => $machinery->monthly_depreciation,
                 'percent_depreciation' => $machinery->percent_depreciation,
+                'jdf_info' => $machinery->jdf_info,
                 'images' => $machinery->images,
                 'expenses' => MachineryExpense::with('expense')
                     ->where('machinery_id', $machinery->id)->get()
@@ -283,6 +294,9 @@ class MachineryController extends Controller
                 'value_price' => $machinery->value_price,
                 'invoice' => $machinery->invoice,
                 'hours_work' => $machinery->hours_work,
+                'jdf_amount' => $machinery->jdf_amount,
+                'jdf_start_date' => $machinery->jdf_start_date,
+                'jdf_end_date' => $machinery->jdf_end_date,
                 'percent_depreciation' => $machinery->percent_depreciation * 100,
                 'acquisition_date' => $machinery->acquisition_date,
                 'warranty_date' => $machinery->warranty_date,
@@ -309,11 +323,13 @@ class MachineryController extends Controller
                     'name' => ['required'],
                     'equipment_serial' => [
                         'required',
-                        'max:50', Rule::unique('machineries')->ignore($machinery->id)
+                        'max:50',
+                        Rule::unique('machineries')->ignore($machinery->id)
                     ],
                     'engine_serial' => [
                         'nullable',
-                        'max:50', Rule::unique('machineries')->ignore($machinery->id)
+                        'max:50',
+                        Rule::unique('machineries')->ignore($machinery->id)
                     ],
                     'economic_serial' => [
                         'required',
@@ -324,6 +340,10 @@ class MachineryController extends Controller
                     'value_price' => ['required'],
                     'invoice' => ['nullable'],
                     'hours_work' => ['nullable'],
+                    'jdf_amount' => ['nullable'],
+                    'jdf_start_date' => ['nullable'],
+                    'jdf_end_date' => ['nullable'],
+                    'jdf_terms' => ['nullable'],
                     'percent_depreciation' => ['required'],
                     'acquisition_date' => ['nullable'],
                     'warranty_date' => ['nullable'],
