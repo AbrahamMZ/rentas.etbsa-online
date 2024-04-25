@@ -202,6 +202,7 @@ class MachineryController extends Controller
                 'monthly_depreciation' => $machinery->monthly_depreciation,
                 'percent_depreciation' => $machinery->percent_depreciation,
                 'jdf_info' => $machinery->jdf_info,
+                'lease_info' => $machinery->lease_info,
                 'images' => $machinery->images,
                 'expenses' => MachineryExpense::with('expense')
                     ->where('machinery_id', $machinery->id)->get()

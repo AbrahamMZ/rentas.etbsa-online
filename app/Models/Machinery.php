@@ -47,7 +47,8 @@ class Machinery extends Model
         'total_expenses_amount',
         'total_service_expenses_amount',
         'total_cost_equipment',
-        'jdf_info'
+        'jdf_info',
+        'lease_info'
     ];
     public function images()
     {
@@ -241,36 +242,21 @@ class Machinery extends Model
         $startDate = Carbon::create($this->jdf_start_date);
         $endDate = Carbon::create($this->jdf_end_date);
         $currentDay = Carbon::now();
+        $payments = $this->machineryExpenses->where('expense_id', 19);
+        $monthsJdf = $startDate->diffInMonths($endDate);
 
         // Verificar si la fecha actual está dentro del periodo de financiamiento
         $isActive = $currentDay->between($startDate, $endDate);
-        // Obtener el último pago realizado
-        $lastPayment = $this->machineryExpenses->where('expense_id', 19)->last();
+        // Obtener conteo de Pagos Realizados
+        $countPayments = $payments->count();
         // Calcular el total de pagos realizados
-        $totalPayments = $this->machineryExpenses->where('expense_id', 19)->sum('amount');
+        $totalPayments = $payments->sum('amount');
         // Calcular la cuota mensual
-        $monthlyPayment = $this->jdf_amount ?? 0;
         $totalAmountJdf = $this->jdf_terms * $this->jdf_amount;
 
         // Determinar la fecha del próximo pago
-        if ($lastPayment) {
-            $lastPaymentDate = Carbon::create($lastPayment->applied_date);
 
-            // Verificar si el último pago corresponde al mes actual
-            if ($lastPaymentDate->month == $currentDay->month && $lastPaymentDate->year == $currentDay->year) {
-                $nextPaymentDate = $lastPaymentDate->copy()->addMonthsNoOverflow(1)->day($startDate->day);
-            } else {
-                $nextPaymentDate = $lastPaymentDate->copy()->addMonthNoOverflow()->startOfMonth();
-            }
-        } else {
-            // Usar la fecha de inicio como referencia para el próximo pago
-            $nextPaymentDate = $startDate->copy()->addMonthNoOverflow();
-        }
-
-        // Ajustar la fecha del próximo pago si supera la fecha de fin de financiamiento
-        if ($nextPaymentDate->greaterThan($endDate)) {
-            $nextPaymentDate = $endDate;
-        }
+        $nextPaymentDate = $currentDay->copy()->addMonthsNoOverflow(1)->day($startDate->day);
 
         // Calcular días restantes para el próximo pago
         $daysUntilNextPayment = $currentDay->diffInDays($nextPaymentDate, false);
@@ -279,31 +265,128 @@ class Machinery extends Model
         // Verificar si el pago del mes actual está pendiente
         $isPaymentPending = $daysDelay > 0 && $daysDelay <= 30;
 
+
+        // --------------------//
+        $paymentDates = $this->machineryExpenses->where('expense_id', 19)->pluck('applied_date')->toArray();
+
+        $scheduledPaymentDatesArray = [];
+        $currentDate = $startDate->copy();
+        while ($currentDate->lte($endDate)) {
+            $scheduledPaymentDatesArray[] = $currentDate->copy()->format('Y-m-d');
+            $currentDate->addMonthNoOverflow();
+        }
+        $scheduledPaymentDates = collect($scheduledPaymentDatesArray);
+        $scheduledPaymentDates->shift();
+
+        $paymentStatuses = collect($scheduledPaymentDates->all())
+            ->map(function ($date) use ($paymentDates) {
+                $formattedDate = Carbon::parse($date);
+                $expense = $this->machineryExpenses->where('expense_id', 19)->first(function ($fee) use ($formattedDate) {
+                    return Carbon::parse($fee->applied_date)->format('Y-m') === $formattedDate->format('Y-m');
+                });
+
+                $hasPaid = collect($paymentDates)
+                    ->map(function ($paymentDate) {
+                        return Carbon::parse($paymentDate)->format('Y-m');
+                    })
+                    ->contains($formattedDate->format('Y-m'));
+
+                return [
+                    'date' => $formattedDate->locale('es')->isoFormat('D MMM Y'),
+                    'jdf_amount' => $this->jdf_amount ?? 0,
+                    'amount_income' => optional($expense)->amount ?? 0,
+                    'applied_date' => optional($expense)->applied_date ?? null,
+                    'is_paid' => $hasPaid
+                ];
+            })
+            ->toArray();
+
+        // ------------- //
         return [
-            'total_amount_jdf' => $totalAmountJdf,
-            'terms' => $this->jdf_start_date . ' - ' . $this->jdf_end_date,
             'isActive' => $isActive,
-            'lastPaymentDate' => $lastPayment ? $lastPayment->applied_date : null,
+            'isPaid' => $totalPayments == $totalAmountJdf,
+            'terms' => $startDate->locale('es')->isoFormat('D MMM Y') . '~' . $endDate->locale('es')->isoFormat('D MMM Y'),
+            'paymentStatuses' => $paymentStatuses,
+            'totalAmountJdf' => $totalAmountJdf,
             'totalPayments' => $totalPayments,
-            'monthlyPayment' => $monthlyPayment,
-            'nextPaymentDate' => $nextPaymentDate->format('Y-m-d'),
+            'amountJDF' => $this->jdf_amount,
+            'balance' => $totalAmountJdf - $totalPayments,
+            'count_payments' => $countPayments . '/' . $this->jdf_terms,
+            'nextPaymentDate' => $nextPaymentDate->locale('es')->isoFormat('Y-MMMM-D'),
             'daysUntilNextPayment' => $daysUntilNextPayment,
-            'daysDelay' => $daysDelay,
-            'isPaymentPending' => $isPaymentPending,
+            'monthsJdf' => $monthsJdf,
         ];
     }
     public function getLeaseInfoAttribute()
     {
 
-        // $date = Carbon::parse($this->acquisition_date);
-        $hasFinancial = !is_null($this->jdf_end_date);
+        $lastLease = $this->leaseIncomes->last();
 
-        $dayTermJdfPayment = null;
-        $hasPayJdfMonth = null;
-        $nextDayTermJdfPayment = null;
+        if (!$lastLease) {
+            return [
+                'has_lease' => false,
+                'next_payment_date' => null,
+                'paid_installments' => 0
+            ];
+        }
 
+        $today = now();
+        $startDate = Carbon::parse($lastLease->start_date);
+        $endDate = Carbon::parse($lastLease->end_date);
+        $monthsLease = $startDate->diffInMonths($endDate);
+
+        // Verificar si la Machinery tiene un Lease vigente
+        $isActive = $today->lte(Carbon::parse($lastLease->end_date));
+
+        // Calcular la próxima fecha de pago
+        $nextPaymentDate = $today->copy()->addMonthsNoOverflow(1)->startOfMonth()->day($startDate->day);
+
+        // Calcular cuántas cuotas se han pagado hasta la fecha
+        $paidInstallments = $lastLease->leaseFees->count();
+        $totalAmountincome = $lastLease->leaseFees->sum('amount_income');
+
+        // --------------------- //
+        $paymentDates = $lastLease->leaseFees->pluck('payment_date')->toArray();
+
+        $scheduledPaymentDatesArray = [];
+        $currentDate = $startDate->copy();
+        while ($currentDate->lte($endDate)) {
+            $scheduledPaymentDatesArray[] = $currentDate->copy()->format('Y-m-d');
+            $currentDate->addMonthNoOverflow();
+        }
+        $scheduledPaymentDates = collect($scheduledPaymentDatesArray);
+        $scheduledPaymentDates->shift();
+
+        $paymentStatuses = collect($scheduledPaymentDates->all())
+            ->map(function ($date) use ($paymentDates, $lastLease) {
+                $formattedDate = Carbon::parse($date);
+                $leaseFee = $lastLease->leaseFees->first(function ($fee) use ($formattedDate) {
+                    return Carbon::parse($fee->payment_date)->format('Y-m') === $formattedDate->format('Y-m');
+                });
+
+                $isPaid = collect($paymentDates)
+                    ->map(function ($paymentDate) {
+                        return Carbon::parse($paymentDate)->format('Y-m');
+                    })
+                    ->contains($formattedDate->format('Y-m'));
+
+                return [
+                    'date' => $formattedDate->locale('es')->isoFormat('D MMM Y'),
+                    'amount_income' => optional($leaseFee)->amount_income ?? 0,
+                    'is_paid' => $isPaid
+                ];
+            })
+            ->toArray();
+        // ------ //
         return [
-            'has_financial' => $hasFinancial
+            'isActive' => $isActive,
+            'monthsLease' => $monthsLease,
+            'terms' => $startDate->locale('es')->isoFormat('D MMM Y') . '~' . $endDate->locale('es')->isoFormat('D MMM Y'),
+            'next_payment_date' => $nextPaymentDate->locale('es')->isoFormat('MMMM D, YYYY'),
+            'paid_installments' => $paidInstallments,
+            'totalAmountincome' => $totalAmountincome,
+            'totalAmountLease' => $lastLease->total_income,
+            'paymentStatuses' => $paymentStatuses,
         ];
     }
 

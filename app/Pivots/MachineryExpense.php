@@ -27,6 +27,7 @@ class MachineryExpense extends Pivot
         'applied_date',
     ];
 
+
     public function machinery()
     {
         return $this->belongsTo(Machinery::class, 'machinery_id');
