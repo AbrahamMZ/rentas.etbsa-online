@@ -8,7 +8,7 @@
     </trashed-message>
     <v-card-text>
       <v-row dense align="start">
-        <v-col>
+        <v-col cols="12" md="4">
           <v-row dense>
             <v-col cols="12">
               <VCard>
@@ -239,13 +239,269 @@
                 </VCardText> -->
               </VCard>
             </v-col>
-            <v-col cols="12">
+            <v-col v-if="item.jdf_info" cols="12">
               <v-card>
-                <v-card-title> Resumen Financiamiento </v-card-title>
+                <v-card-title>
+                  Resumen Financiamiento
+
+                  <v-spacer />
+                  <v-dialog
+                    transition="dialog-top-transition"
+                    max-width="700"
+                    scrollable
+                  >
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-btn color="primary" icon v-bind="attrs" v-on="on">
+                        <v-icon>mdi-information </v-icon>
+                      </v-btn>
+                    </template>
+                    <template v-slot:default="dialog">
+                      <v-card>
+                        <v-card-title color="primary">
+                          Estatus de Pagos
+                        </v-card-title>
+                        <v-card-text class="pa-0">
+                          <v-simple-table
+                            dense
+                            fixed-header
+                            class="text-uppercase text-center caption"
+                            height="500px"
+                          >
+                            <template v-slot:default>
+                              <thead>
+                                <tr>
+                                  <th class="text-left">#</th>
+                                  <th class="text-left">Fecha</th>
+                                  <th class="text-left">Monto a Pagar</th>
+                                  <th class="text-left">Monto Pagado</th>
+                                  <th class="text-left">Fecha del Pago</th>
+                                  <th class="text-left">Estatus</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr
+                                  v-for="(term, index) in item.jdf_info
+                                    .paymentStatuses"
+                                  :key="`jdf_info-${index}-${term.date}`"
+                                >
+                                  <td>{{ index + 1 }}</td>
+                                  <td class="text-start">{{ term.date }}</td>
+                                  <td>{{ term.jdf_amount | currency }}</td>
+                                  <td>{{ term.amount_income | currency }}</td>
+                                  <td class="text-start">
+                                    {{ term.applied_date }}
+                                  </td>
+                                  <td>
+                                    <v-chip
+                                      :class="term.is_paid ? 'green' : 'red'"
+                                      dark
+                                      small
+                                    >
+                                      {{
+                                        term.is_paid ? "Pagada" : "Pendiente"
+                                      }}
+                                    </v-chip>
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </template>
+                          </v-simple-table>
+                        </v-card-text>
+                        <v-card-actions class="justify-end">
+                          <v-btn text @click="dialog.value = false">
+                            Cerrar
+                          </v-btn>
+                        </v-card-actions>
+                      </v-card>
+                    </template>
+                  </v-dialog>
+                </v-card-title>
                 <v-card-text>
-                  <pre v-if="item.jdf_info">
+                  <!-- <pre>
                     {{ item.jdf_info }}
-                  </pre>
+                  </pre> -->
+                  <VCardText>
+                    <VList class="card-list pa-0">
+                      <VListItem class="pa-0">
+                        <v-list-item-avatar>
+                          <VIcon :height="29" :width="28">
+                            mdi-calendar-clock
+                          </VIcon>
+                        </v-list-item-avatar>
+
+                        <v-list-item-content class="pa-0">
+                          <VListItemTitle
+                            class="text-sm font-weight-medium mb-1"
+                          >
+                            Periodo de Financiamiento
+                          </VListItemTitle>
+                          <VListItemSubtitle class="text-xs">
+                            {{ item.jdf_info.terms }}
+                          </VListItemSubtitle>
+                        </v-list-item-content>
+
+                        <VListItemAction class="green--text font-weight-medium">
+                          {{ item.jdf_info.monthsJdf }} Meses
+                        </VListItemAction>
+                      </VListItem>
+                      <VListItem class="pa-0">
+                        <v-list-item-avatar>
+                          <VIcon :height="29" :width="28">
+                            mdi-calendar-clock
+                          </VIcon>
+                        </v-list-item-avatar>
+
+                        <v-list-item-content class="pa-0">
+                          <VListItemTitle
+                            class="text-sm font-weight-medium mb-1"
+                          >
+                            Proxima fecha de Pago
+                          </VListItemTitle>
+                          <VListItemSubtitle class="text-xs">
+                            {{ item.jdf_info.nextPaymentDate }}
+                          </VListItemSubtitle>
+                        </v-list-item-content>
+                        <VListItemAction
+                          class="font-weight-medium"
+                          :class="
+                            item.jdf_info.daysUntilNextPayment < 0
+                              ? 'red--text'
+                              : 'green-text'
+                          "
+                        >
+                          {{ item.jdf_info.daysUntilNextPayment }} Dias
+                        </VListItemAction>
+                      </VListItem>
+                    </VList>
+                  </VCardText>
+                </v-card-text>
+              </v-card>
+            </v-col>
+            <v-col v-if="item.lease_info" cols="12">
+              <v-card>
+                <v-card-title>
+                  Resumen Ultima Renta
+
+                  <v-spacer />
+                  <v-dialog
+                    transition="dialog-top-transition"
+                    max-width="700"
+                    scrollable
+                  >
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-btn color="primary" icon v-bind="attrs" v-on="on">
+                        <v-icon>mdi-information </v-icon>
+                      </v-btn>
+                    </template>
+                    <template v-slot:default="dialogLease">
+                      <v-card>
+                        <v-card-title color="primary">
+                          Estatus de Pagos de Renta
+                        </v-card-title>
+                        <v-card-text class="pa-0">
+                          <v-simple-table
+                            dense
+                            fixed-header
+                            class="text-uppercase text-center caption"
+                            height="500px"
+                          >
+                            <template v-slot:default>
+                              <thead>
+                                <tr>
+                                  <th class="text-left">#</th>
+                                  <th class="text-left">Fecha</th>
+                                  <th class="text-left">Monto Pagado</th>
+                                  <th class="text-left">Estatus</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr
+                                  v-for="(term, index) in item.lease_info
+                                    .paymentStatuses"
+                                  :key="`lease-term-${index}-${term.date}`"
+                                >
+                                  <td>{{ index + 1 }}</td>
+                                  <td class="text-start">{{ term.date }}</td>
+                                  <td>{{ term.amount_income | currency }}</td>
+                                  <td>
+                                    <v-chip
+                                      :class="term.is_paid ? 'green' : 'red'"
+                                      dark
+                                      small
+                                    >
+                                      {{
+                                        term.is_paid ? "Pagada" : "Pendiente"
+                                      }}
+                                    </v-chip>
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </template>
+                          </v-simple-table>
+                        </v-card-text>
+                        <v-card-actions class="justify-end">
+                          <v-btn text @click="dialogLease.value = false">
+                            Cerrar
+                          </v-btn>
+                        </v-card-actions>
+                      </v-card>
+                    </template>
+                  </v-dialog>
+                </v-card-title>
+                <v-card-text>
+                  <VCardText>
+                    <VList class="card-list pa-0">
+                      <VListItem class="pa-0">
+                        <v-list-item-avatar>
+                          <VIcon :height="29" :width="28">
+                            mdi-information
+                          </VIcon>
+                        </v-list-item-avatar>
+
+                        <v-list-item-content class="pa-0">
+                          <VListItemTitle
+                            class="text-sm font-weight-medium mb-1"
+                          >
+                            Estatus Renta
+                          </VListItemTitle>
+                        </v-list-item-content>
+
+                        <VListItemAction class="green--text font-weight-medium">
+                          <v-chip
+                            :class="item.lease_info.isActive ? 'green' : 'red'"
+                            dark
+                            small
+                          >
+                            {{
+                              item.lease_info.isActive ? "Activa" : "Finalizada"
+                            }}
+                          </v-chip>
+                        </VListItemAction>
+                      </VListItem>
+                      <VListItem class="pa-0">
+                        <v-list-item-avatar>
+                          <VIcon :height="29" :width="28">
+                            mdi-calendar-clock
+                          </VIcon>
+                        </v-list-item-avatar>
+
+                        <v-list-item-content class="pa-0">
+                          <VListItemTitle
+                            class="text-sm font-weight-medium mb-1"
+                          >
+                            Periodo de Renta
+                          </VListItemTitle>
+                          <VListItemSubtitle class="text-xs">
+                            {{ item.lease_info.terms }}
+                          </VListItemSubtitle>
+                        </v-list-item-content>
+
+                        <VListItemAction class="green--text font-weight-medium">
+                          {{ item.lease_info.monthsLease }} Meses
+                        </VListItemAction>
+                      </VListItem>
+                    </VList>
+                  </VCardText>
                 </v-card-text>
               </v-card>
             </v-col>

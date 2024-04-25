@@ -160,37 +160,37 @@
     <v-card-text v-show="viewPort == 'calendar'">
       <v-simple-table max-height="500px" fixed-header dense class="caption">
         <template v-slot:default>
-          <thead class="text-uppercase">
-            <tr>
-              <th class="text-left title">Totales:</th>
-              <th class="text-left title"></th>
-              <!-- <th class="text-right title text-no-wrap">
+          <!-- <thead class="text-uppercase"> -->
+          <!-- <tr> -->
+          <!-- <th class="text-left title">Totales:</th> -->
+          <!-- <th class="text-left title"></th> -->
+          <!-- <th class="text-right title text-no-wrap">
                 {{ getTotalAnualIncome || 0 | currency }}
               </th> -->
-              <th class="text-right title text-no-wrap">
+          <!-- <th class="text-right title text-no-wrap">
                 {{ getTotalIncome || 0 | currency }}
-              </th>
-              <th class="text-right title text-no-wrap">
+              </th> -->
+          <!-- <th class="text-right title text-no-wrap">
                 {{ getTotalBalance || 0 | currency }}
-              </th>
-              <th v-for="month in 12" :key="month"></th>
-            </tr>
-          </thead>
+              </th> -->
+          <!-- <th v-for="month in 12" :key="month"></th> -->
+          <!-- </tr> -->
+          <!-- </thead> -->
           <thead>
             <tr>
               <th class="text-left">No Serie</th>
               <th class="text-left">JDF</th>
               <!-- <th class="text-right text-no-wrap">Ingreso Estimado</th> -->
-              <th class="text-right text-no-wrap">Ingreso Total Estimado</th>
-              <th class="text-right">Ingreso Total</th>
-              <th
+              <!-- <th class="text-right text-no-wrap">Ingreso Total Estimado</th> -->
+              <!-- <th class="text-right">Ingreso Total</th> -->
+              <!-- <th
                 v-for="month in 12"
                 :key="month"
                 class="text-uppercase text-center pa-0"
                 style="width: 3px"
               >
                 {{ getMonthNameByIndex(month) }}
-              </th>
+              </th> -->
             </tr>
           </thead>
           <tbody>
@@ -245,17 +245,17 @@
                   getAccumulatedLeaseAmount(machinery.lease_incomes) | currency
                 }}
               </td> -->
-              <td class="text-right">
+              <!-- <td class="text-right">
                 {{ machinery.total_income || 0 | currency }}
-              </td>
-              <td class="text-right">
-                <!-- {{ machinery.total_balance || 0 | currency }} -->
+              </td> -->
+              <!-- {{ machinery.total_balance || 0 | currency }} -->
+              <!-- <td class="text-right">
                 {{
                   getAccumulatedLeaseFeesAmount(machinery.lease_incomes)
                     | currency
                 }}
-              </td>
-              <td
+              </td> -->
+              <!-- <td
                 v-for="month in 12"
                 :key="`row-${machinery.equipment_serial}-${month}`"
                 class="pa-0"
@@ -306,9 +306,6 @@
                           getLeaseInfo(month, machinery.lease_incomes).reference
                         }}
                       </p>
-                      <!-- <div class="text--primary">
-                        {{ machinery.description }}
-                      </div> -->
                     </v-card-text>
                     <v-card-actions>
                       <v-spacer />
@@ -328,7 +325,7 @@
                     </v-card-actions>
                   </v-card>
                 </v-menu>
-              </td>
+              </td> -->
             </tr>
           </tbody>
         </template>
