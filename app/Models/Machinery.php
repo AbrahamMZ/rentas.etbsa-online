@@ -111,7 +111,13 @@ class Machinery extends Model
     {
         $query->when($filters['search'] ?? null, function ($query, $search) {
             $query->where('equipment_serial', 'like', '%' . $search . '%')
-                ->orWhere('name', 'like', '%' . $search . '%');
+                ->orWhere('economic_serial', 'like', '%' . $search . '%')
+                ->orWhere('engine_serial', 'like', '%' . $search . '%')
+                ->orWhere('name', 'like', '%' . $search . '%')
+                ->orWhereHas('leaseIncomes', function ($query) use ($search) {
+                    return $query->where('reference', 'like', '%' . $search . '%');
+                });
+
         })->when($filters['category_ids'] ?? null, function ($query, $category_ids) {
             $query->whereHas('category', function ($query) use ($category_ids) {
                 return $query->whereIn('id', $category_ids);
@@ -257,6 +263,9 @@ class Machinery extends Model
         // Determinar la fecha del próximo pago
 
         $nextPaymentDate = $currentDay->copy()->addMonthsNoOverflow(1)->day($startDate->day);
+        if ($nextPaymentDate->greaterThan($endDate)) {
+            $nextPaymentDate = $endDate;
+        }
 
         // Calcular días restantes para el próximo pago
         $daysUntilNextPayment = $currentDay->diffInDays($nextPaymentDate, false);
@@ -323,11 +332,12 @@ class Machinery extends Model
         $lastLease = $this->leaseIncomes->last();
 
         if (!$lastLease) {
-            return [
-                'has_lease' => false,
-                'next_payment_date' => null,
-                'paid_installments' => 0
-            ];
+            return;
+            // return [
+            //     'has_lease' => false,
+            //     'next_payment_date' => null,
+            //     'paid_installments' => 0
+            // ];
         }
 
         $today = now();
@@ -340,10 +350,16 @@ class Machinery extends Model
 
         // Calcular la próxima fecha de pago
         $nextPaymentDate = $today->copy()->addMonthsNoOverflow(1)->startOfMonth()->day($startDate->day);
+        if ($nextPaymentDate->greaterThan($endDate)) {
+            $nextPaymentDate = $endDate;
+        }
 
         // Calcular cuántas cuotas se han pagado hasta la fecha
         $paidInstallments = $lastLease->leaseFees->count();
         $totalAmountincome = $lastLease->leaseFees->sum('amount_income');
+
+         // Calcular días restantes para el próximo pago
+         $daysUntilNextPayment = $today->diffInDays($nextPaymentDate, false);
 
         // --------------------- //
         $paymentDates = $lastLease->leaseFees->pluck('payment_date')->toArray();
@@ -387,6 +403,8 @@ class Machinery extends Model
             'totalAmountincome' => $totalAmountincome,
             'totalAmountLease' => $lastLease->total_income,
             'paymentStatuses' => $paymentStatuses,
+            'lease' => $lastLease,
+            'daysUntilNextPayment' => $daysUntilNextPayment,
         ];
     }
 
