@@ -179,7 +179,8 @@
           <thead>
             <tr>
               <th class="text-left">No Serie</th>
-              <th class="text-left">JDF</th>
+              <th class="text-left">Estatus JDF</th>
+              <th class="text-left">Ultima Renta</th>
               <!-- <th class="text-right text-no-wrap">Ingreso Estimado</th> -->
               <!-- <th class="text-right text-no-wrap">Ingreso Total Estimado</th> -->
               <!-- <th class="text-right">Ingreso Total</th> -->
@@ -197,7 +198,7 @@
             <tr v-for="machinery in calendar" :key="machinery.equipment_serial">
               <td>
                 <div class="d-flex flex-column my-1">
-                  <div class="font-weight-medium mb-0 text-wrap">
+                  <div class="font-weight-medium mb-1 text-wrap">
                     <v-label @click="show(machinery.id)">
                       <span class="blue--text" style="cursor: pointer">
                         {{ machinery.equipment_serial }}
@@ -211,33 +212,77 @@
               </td>
               <td>
                 <template v-if="machinery.jdf_info">
-                  <v-chip
-                    :color="machinery.jdf_info.isActive ? 'green' : 'grey'"
-                    dark
-                    small
-                  >
-                    Activo
-                  </v-chip>
-                  <v-chip dark small>
-                    {{ machinery.jdf_info.terms }}
-                  </v-chip>
-                  <v-chip color="blue" dark small>
-                    {{ machinery.jdf_info.nextPaymentDate }}
-                  </v-chip>
-                  <v-chip
-                    :color="
-                      machinery.jdf_info.daysUntilNextPayment < 0
-                        ? 'red'
-                        : 'green'
-                    "
-                    dark
-                    small
-                  >
-                    {{ machinery.jdf_info.daysUntilNextPayment }} Dias
-                  </v-chip>
-                  <!-- <pre>
-                {{ machinery.jdf_info }}
-                </pre> -->
+                  <div class="d-flex flex-row my-1 justify-start">
+                    <v-chip
+                      :color="machinery.jdf_info.isActive ? 'green' : 'grey'"
+                      dark
+                      label
+                      small
+                      class="rounded-r-xl"
+                    >
+                      {{
+                        machinery.jdf_info.isActive ? "Vigente" : "Finalizado"
+                      }}
+                    </v-chip>
+                    <v-chip dark label small class="rounded-r-xl">
+                      {{ machinery.jdf_info.terms }}
+                    </v-chip>
+                    <v-chip color="blue" dark label small class="rounded-r-xl">
+                      {{ machinery.jdf_info.nextPaymentDate }}
+                    </v-chip>
+                    <v-chip
+                      :color="
+                        machinery.jdf_info.daysUntilNextPayment < 0
+                          ? 'red'
+                          : 'green'
+                      "
+                      dark
+                      label
+                      small
+                      class="rounded-r-xl"
+                    >
+                      {{ machinery.jdf_info.daysUntilNextPayment }} Dias
+                    </v-chip>
+                  </div>
+                </template>
+              </td>
+              <td>
+                <template v-if="machinery.lease_info">
+                  <div class="d-flex flex-row my-1 justify-start">
+                    <v-chip
+                      :color="machinery.lease_info.isActive ? 'green' : 'grey'"
+                      dark
+                      small
+                      label
+                      class="rounded-r-xl"
+                    >
+                      {{
+                        machinery.lease_info.isActive ? "Vigente" : "Finalizada"
+                      }}
+                    </v-chip>
+                    <v-chip color="pink" dark small label class="rounded-r-xl">
+                      {{ machinery.lease_info.lease.reference }}
+                    </v-chip>
+                    <v-chip dark small label class="rounded-r-xl">
+                      {{ machinery.lease_info.terms }}
+                    </v-chip>
+                    <v-chip color="blue" dark small label class="rounded-r-xl">
+                      {{ machinery.lease_info.next_payment_date }}
+                    </v-chip>
+                    <v-chip
+                      :color="
+                        machinery.lease_info.daysUntilNextPayment < 0
+                          ? 'red'
+                          : 'green'
+                      "
+                      dark
+                      small
+                      label
+                      class="rounded-r-xl"
+                    >
+                      {{ machinery.lease_info.daysUntilNextPayment }} Dias
+                    </v-chip>
+                  </div>
                 </template>
               </td>
               <!-- <td class="text-right">
